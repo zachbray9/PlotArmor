@@ -4,10 +4,12 @@ import { ChangeEvent, useState } from "react";
 
 interface Props extends InputProps {
     name: string
+    label: string
     hideable?: boolean
+    required?: boolean
 }
 
-export default function FormInput({ name, hideable, ...props }: Props) {
+export default function FormInput({ name, label, hideable, required, ...props }: Props) {
     const [field, meta] = useField(name)
     const { setFieldValue } = useFormikContext()
     const [show, setShow] = useState(false)
@@ -22,7 +24,11 @@ export default function FormInput({ name, hideable, ...props }: Props) {
     }
 
     return (
-        <Field.Root invalid={meta.touched && !!meta.error}>
+        <Field.Root invalid={meta.touched && !!meta.error} required={required}>
+            <Field.Label>
+                {label}
+                <Field.RequiredIndicator color="status.error"/>
+            </Field.Label>
             <InputGroup
                 endElement={hideable &&
                     <Button onClick={toggleVisibility} variant='ghost' color='text.subtle' _hover={{ bg: 'none', color: 'text._dark' }}>{show ? 'hide' : 'show'}</Button>

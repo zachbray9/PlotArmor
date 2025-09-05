@@ -6,7 +6,7 @@ import { WatchStatusOptions } from "../../constants/watchStatusOptions";
 import { SortOptions } from "../../constants/sortOptions";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores/store";
-import { ReactSelectOption } from "../../models/reactSelectOption";
+import { ReactSelectOption } from "../../models/selectOption";
 
 export default observer(function FilterSection() {
     const { listStore } = useStore()

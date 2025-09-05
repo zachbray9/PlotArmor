@@ -1,6 +1,6 @@
 import { useToken } from "@chakra-ui/react";
 import { StylesConfig } from "react-select";
-import { ReactSelectOption } from "../models/reactSelectOption";
+import { ReactSelectOption } from "../models/selectOption";
 
 export function useReactSelectStyles(){
     const [primarybase, surface1, surface2, text] = useToken('colors', ['interactive.primary', 'background.secondary', 'background.card', 'text._dark'])

@@ -1,67 +1,81 @@
-import Select, { SingleValue } from 'react-select'
 import { useField, useFormikContext } from "formik";
-import { useToken } from '@chakra-ui/react';
-import { ReactSelectOption } from '../../../models/reactSelectOption';
+import { createListCollection, Field, Portal, Select } from '@chakra-ui/react';
+import { SelectOption } from '../../../models/selectOption';
 
-interface Props {
+interface Props<T> {
     name: string
-    options: ReactSelectOption[]
+    options: SelectOption<T>[]
+    label?: string
     autoSubmit?: boolean
-    isSubmtting?: boolean
+    isSubmitting?: boolean
+    multiple?: boolean
+    required?: boolean
 }
 
-export default function FormSelect({ name, options, autoSubmit, isSubmtting }: Props) {
-    const [field] = useField(name)
+// Define the event type based on Chakra UI's Select component
+interface SelectValueChangeDetails {
+    value: string[]
+}
+
+
+export default function FormSelect<T extends string | number>({ name, label, options, autoSubmit, isSubmitting, multiple, required }: Props<T>) {
+    const [field, meta] = useField(name)
     const { setFieldValue, submitForm } = useFormikContext()
-    const [primarybase, surface1, surface2, text] = useToken('colors', ['interactive.primary', 'background.secondary', 'background.card', 'text._dark'])
+
+    const collection = createListCollection({
+        items: options.map(option => option)
+    })
+
+    const handleValueChange = (details: SelectValueChangeDetails) => {
+        setFieldValue(name, details.value)
+
+        if (autoSubmit) {
+            submitForm()
+        }
+    }
+
 
     return (
-        <Select<ReactSelectOption>
-            options={options}
-            value={options.find(option => option.value === field.value)}
-            isDisabled={isSubmtting}
-            isLoading={isSubmtting}
-            onChange={(selectedOption: SingleValue<ReactSelectOption>) => {
-                setFieldValue(name, selectedOption?.value)
+        <Field.Root invalid={meta.touched && !!meta.error} required={required}>
+            <Field.Label>
+                {label}
+                <Field.RequiredIndicator color="status.error" />
+            </Field.Label>
 
-                if (autoSubmit) {
-                    submitForm()
-                }
-            }}
-            styles={{
-                control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    background: surface1,
-                    borderColor: state.isFocused ? primarybase : surface1,
-                    boxShadow: state.isFocused ? primarybase : surface1,
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                        borderColor: state.isFocused ? primarybase : surface2,
-                        boxShadow: state.isFocused ? primarybase : surface2
-                    }
-                }),
-                option: (baseStyles) => ({
-                    ...baseStyles,
-                    background: surface1,
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                        background: surface2
-                    }
-                }),
-                menu: (baseStyles) => ({
-                    ...baseStyles,
-                    background: surface1
-                }),
-                singleValue: (baseStyles) => ({
-                    ...baseStyles,
-                    color: text
-                }),
-                placeholder: (baseStyles) => ({
-                    ...baseStyles,
-                    color: text
-                })
-            }}
-        />
+            <Select.Root
+                collection={collection}
+                value={field.value}
+                disabled={isSubmitting}
+                onValueChange={handleValueChange}
+                multiple={multiple}
+            >
+                <Select.HiddenSelect />
+                <Select.Control>
+                    <Select.Trigger>
+                        <Select.ValueText placeholder="Select value" />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                        <Select.Indicator />
+                    </Select.IndicatorGroup>
+                </Select.Control>
 
+                <Portal>
+                    <Select.Positioner>
+                        <Select.Content>
+                            {collection.items.map((option) => (
+                                <Select.Item key={option.value} item={option}>
+                                    {option.label}
+                                    <Select.ItemIndicator />
+                                </Select.Item>
+                            ))}
+                        </Select.Content>
+                    </Select.Positioner>
+                </Portal>
+            </Select.Root>
+
+            {meta.touched && meta.error && (
+                <Field.ErrorText>{meta.error}</Field.ErrorText>
+            )}
+        </Field.Root>
     )
 }

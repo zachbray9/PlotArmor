@@ -1,4 +1,4 @@
-import { ReactSelectOption } from "../models/reactSelectOption";
+import { ReactSelectOption } from "../models/selectOption";
 
 export const RatingOptions: ReactSelectOption[] = [
     {value: 1, label: '(1) Appalling'},
