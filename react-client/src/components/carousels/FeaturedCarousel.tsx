@@ -89,7 +89,7 @@ export default observer(function FeaturedCarousel({ data }: Props) {
 
                                         <AddRemoveListIconButton
                                             isInList={userStore.user?.animeIds.includes(anime.id) ?? false}
-                                            loading={userStore.isRemovingAnimeFromList ?? userStore.isAddingAnimeToList}
+                                            loading={userStore.isRemovingAnimeFromList || userStore.isAddingAnimeToList}
                                             onAddToList={() => userStore.addAnimeToList(anime)}
                                             onRemoveFromList={() => userStore.removeAnimeFromList(anime.id)}
                                             variant="ghost"
