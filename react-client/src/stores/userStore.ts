@@ -69,7 +69,7 @@ export default class UserStore {
 
             this.setIsAddingAnimeToList(false)
         } catch (error) {
-            console.log(error)
+            console.log("Failed to add anime to list: " + error)
             toaster.create({
                 title: 'Add failed!',
                 description: 'Looks like we need to power up. Try again!',

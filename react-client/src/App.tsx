@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite'
 import Footer from './components/footer/Footer'
 import usePersistentLogin from './hooks/usePersistentLogin'
 import Navbar from './components/nav/Navbar'
+import { Toaster } from './components/ui/toaster'
 
 export default observer(function App() {
   const { commonStore } = useStore()
@@ -20,6 +21,7 @@ export default observer(function App() {
   return (
     <>
       <ScrollRestoration />
+      <Toaster />
       <Stack id='main' minHeight='100dvh'>
         <Navbar />
         <Box paddingTop={['3.75rem', null, '3rem']} flex={1}>
