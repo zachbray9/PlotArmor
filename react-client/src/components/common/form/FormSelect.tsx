@@ -1,15 +1,16 @@
 import { useField, useFormikContext } from "formik";
-import { createListCollection, Field, Portal, Select } from '@chakra-ui/react';
-import { SelectOption } from '../../../models/selectOption';
+import { Field, ListCollection, Portal, Select, Spinner } from '@chakra-ui/react';
+import { SelectOption } from "../../../models/selectOption";
 
-interface Props<T> {
+interface Props {
     name: string
-    options: SelectOption<T>[]
+    collection: ListCollection<SelectOption>
     label?: string
     autoSubmit?: boolean
     isSubmitting?: boolean
     multiple?: boolean
     required?: boolean
+    loading?: boolean
 }
 
 // Define the event type based on Chakra UI's Select component
@@ -18,13 +19,9 @@ interface SelectValueChangeDetails {
 }
 
 
-export default function FormSelect<T extends string | number>({ name, label, options, autoSubmit, isSubmitting, multiple, required }: Props<T>) {
+export default function FormSelect({ name, label, collection, autoSubmit, isSubmitting, multiple, required, loading }: Props) {
     const [field, meta] = useField(name)
     const { setFieldValue, submitForm } = useFormikContext()
-
-    const collection = createListCollection({
-        items: options.map(option => option)
-    })
 
     const handleValueChange = (details: SelectValueChangeDetails) => {
         setFieldValue(name, details.value)
@@ -55,6 +52,9 @@ export default function FormSelect<T extends string | number>({ name, label, opt
                         <Select.ValueText placeholder="Select value" />
                     </Select.Trigger>
                     <Select.IndicatorGroup>
+                        {loading && (
+                            <Spinner size="xs" borderWidth="1.5px" color="text.subtle" />
+                        )}
                         <Select.Indicator />
                     </Select.IndicatorGroup>
                 </Select.Control>
@@ -62,9 +62,9 @@ export default function FormSelect<T extends string | number>({ name, label, opt
                 <Portal>
                     <Select.Positioner>
                         <Select.Content>
-                            {collection.items.map((option) => (
-                                <Select.Item key={option.value} item={option}>
-                                    {option.label}
+                            {collection.items.map((item) => (
+                                <Select.Item key={item.label} item={item.value}>
+                                    {item.label}
                                     <Select.ItemIndicator />
                                 </Select.Item>
                             ))}

@@ -10,6 +10,8 @@ import { GetListResponse } from "../models/responses/getListResponse";
 import { RefreshResponse } from "../models/responses/refreshResponse";
 import { store } from "../stores/store";
 import { toaster } from "../components/ui/toaster";
+import ApiResponse from "../models/responses/apiResponse";
+import Genre from "../models/genre";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -56,7 +58,12 @@ const List = {
     remove: (animeId: number) => requests.delete(`/user/anime/${animeId}`)
 }
 
+const Genres = {
+    getAll: () => requests.get<ApiResponse<Genre[]>>("/genres")
+}
+
 export const myApiAgent = {
     Auth,
-    List
+    List,
+    Genres
 }

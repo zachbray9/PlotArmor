@@ -4,11 +4,14 @@ import (
 	"fmt"
 	animehandler "myanimevault/internal/handlers/anime_handler"
 	authhandler "myanimevault/internal/handlers/auth_handler"
+	genrehandler "myanimevault/internal/handlers/genre_handler"
 	imagehandler "myanimevault/internal/handlers/image_handler"
 	useranimehandler "myanimevault/internal/handlers/useranime_handler"
 	"myanimevault/internal/middleware"
 	animerepo "myanimevault/internal/repository/anime_repository"
+	genrerepository "myanimevault/internal/repository/genre_repository"
 	animeservice "myanimevault/internal/services/anime_service"
+	genreservice "myanimevault/internal/services/genre_service"
 	imageservice "myanimevault/internal/services/image_service"
 	"os"
 
@@ -17,15 +20,20 @@ import (
 
 func InitRouter(server *gin.Engine) {
 	//initialize dependencies
+	animeRepo := animerepo.NewAnimeRepository()
+	genreRepo := genrerepository.NewGenreRepository()
+
 	imageService, err := imageservice.NewImageService(os.Getenv("AWS_S3_REGION"), os.Getenv("AWS_S3_BUCKET_NAME"))
 	if err != nil {
 		panic(fmt.Sprintf("failed to create new image service: %v", err))
 	}
-	animeRepo := animerepo.NewAnimeRepository()
 	animeService := animeservice.NewAnimeService(animeRepo, imageService)
+	genreService := genreservice.NewGenreService(genreRepo)
 
 	animeHandler := animehandler.NewAnimeHandler(animeService)
 	imageHandler := imagehandler.NewImageHandler(imageService)
+	genreHandler := genrehandler.NewGenreHandler(genreService)
+
 
 	api := server.Group("/api")
 	//auth routes
@@ -46,4 +54,7 @@ func InitRouter(server *gin.Engine) {
 
 	//image routes
 	api.POST("/image/upload", imageHandler.UploadImageHandler)
+
+	//genre routes
+	api.GET("/genres", genreHandler.GetAllGenreHandler)
 }
