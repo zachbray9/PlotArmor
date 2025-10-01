@@ -1,6 +1,5 @@
 import { Field, Textarea, TextareaProps } from "@chakra-ui/react";
-import { useField, useFormikContext } from "formik";
-import { ChangeEvent } from "react";
+import { useFormContext } from "react-hook-form";
 
 interface Props extends TextareaProps {
     name: string
@@ -9,30 +8,27 @@ interface Props extends TextareaProps {
 }
 
 export default function FormTextArea({ name, label, required, ...props }: Props) {
-    const [field, meta] = useField(name)
-    const { setFieldValue } = useFormikContext()
+    const {register, formState: {errors, touchedFields}} = useFormContext()
 
-    const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const input = e.target.value
-        setFieldValue(name, input)
-    }
+    const fieldError = errors[name]
+    const errorMessage = fieldError?.message as string | undefined
+    const isTouched = touchedFields[name]
 
     return (
-        <Field.Root invalid={meta.touched && !!meta.error} required={required}>
+        <Field.Root invalid={isTouched && !!fieldError} required={required}>
             <Field.Label>
                 {label}
                 <Field.RequiredIndicator color="status.error" />
             </Field.Label>
 
             <Textarea
+                {...register(name)}
                 {...props}
-                value={field.value}
-                onChange={handleInputChange}
             />
 
 
-            {meta.touched && meta.error && (
-                <Field.ErrorText>{meta.error}</Field.ErrorText>
+            {isTouched && fieldError && (
+                <Field.ErrorText>{errorMessage}</Field.ErrorText>
             )}
         </Field.Root>
     )

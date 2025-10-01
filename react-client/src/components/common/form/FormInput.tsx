@@ -1,6 +1,6 @@
 import { Button, Field, Input, InputGroup, InputProps } from "@chakra-ui/react";
-import { useField, useFormikContext } from "formik";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 
 interface Props extends InputProps {
     name: string
@@ -10,24 +10,22 @@ interface Props extends InputProps {
 }
 
 export default function FormInput({ name, label, hideable, required, ...props }: Props) {
-    const [field, meta] = useField(name)
-    const { setFieldValue } = useFormikContext()
     const [show, setShow] = useState(false)
-
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const input = e.target.value
-        setFieldValue(name, input)
-    }
+    const {register, formState: {errors, touchedFields}} = useFormContext()
 
     const toggleVisibility = () => {
         setShow(!show)
     }
 
+    const fieldError = errors[name]
+    const isTouched: boolean = touchedFields[name]
+    const errorMessage = fieldError?.message as string | undefined
+
     return (
-        <Field.Root invalid={meta.touched && !!meta.error} required={required}>
+        <Field.Root invalid={isTouched && !!fieldError} required={required}>
             <Field.Label>
                 {label}
-                <Field.RequiredIndicator color="status.error"/>
+                <Field.RequiredIndicator color="status.error" />
             </Field.Label>
             <InputGroup
                 endElement={hideable &&
@@ -35,15 +33,13 @@ export default function FormInput({ name, label, hideable, required, ...props }:
                 }
             >
                 <Input
-                    {...props}
-                    value={field.value}
-                    onChange={handleInputChange}
-                    type={hideable ? (show ? 'text' : 'password') : 'text'}
+                    {...register(name)}
+                    type={props.type ?? (hideable ? (show ? 'text' : 'password') : 'text')}
                 />
             </InputGroup>
 
-            {meta.touched && meta.error && (
-                <Field.ErrorText>{meta.error}</Field.ErrorText>
+            {isTouched && fieldError && (
+                <Field.ErrorText>{errorMessage}</Field.ErrorText>
             )}
         </Field.Root>
     )

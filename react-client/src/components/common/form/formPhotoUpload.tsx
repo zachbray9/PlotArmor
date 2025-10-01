@@ -1,6 +1,6 @@
 import { Box, Field, FileUpload, Icon } from "@chakra-ui/react"
-import { useField, useFormikContext } from "formik"
 import { LucideUploadCloud } from "lucide-react"
+import { useController, useFormContext } from "react-hook-form"
 interface Props {
     name: string
     label: string
@@ -8,11 +8,15 @@ interface Props {
 }
 
 export default function FormPhotoUpload({ name, label, required }: Props) {
-    const [field, meta] = useField(name)
-    const { setFieldValue } = useFormikContext()
+    const { control, formState: { touchedFields, errors, } } = useFormContext()
+    const { field: { value, onChange, onBlur } } = useController({ name, control })
+
+    const fieldError = errors[name]
+    const errorMessage = fieldError?.message as string | undefined
+    const isTouched = touchedFields[name]
 
     return (
-        <Field.Root invalid={meta.touched && !!meta.error} required={required} w="100%">
+        <Field.Root invalid={isTouched && !!fieldError} required={required} w="100%">
             <Field.Label>
                 {label}
                 <Field.RequiredIndicator color="status.error" />
@@ -23,11 +27,9 @@ export default function FormPhotoUpload({ name, label, required }: Props) {
                 maxFiles={1}
                 maxFileSize={5000000}
                 accept={["image/jpeg", "image/png", "image/webp"]}
-                onFileAccept={(files) => {
-                    setFieldValue(name, files.files[0])
-                }}
+                onFileAccept={(value) => onChange(value.files[0])}
             >
-                <FileUpload.HiddenInput />
+                <FileUpload.HiddenInput onBlur={onBlur} />
                 <FileUpload.Dropzone w="100%">
                     <Icon color="text.subtle">
                         <LucideUploadCloud />
@@ -39,20 +41,20 @@ export default function FormPhotoUpload({ name, label, required }: Props) {
                 </FileUpload.Dropzone>
 
                 <FileUpload.ItemGroup>
-                    {field.value && 
-                        <FileUpload.Item file={field.value}>
+                    {value &&
+                        <FileUpload.Item file={value}>
                             <FileUpload.ItemPreviewImage />
                             <FileUpload.ItemPreview />
                             <FileUpload.ItemName />
                             <FileUpload.ItemSizeText />
-                            <FileUpload.ItemDeleteTrigger onClick={() => setFieldValue(name, null)}/>
+                            <FileUpload.ItemDeleteTrigger onClick={() => onChange(null)} />
                         </FileUpload.Item>
                     }
                 </FileUpload.ItemGroup>
             </FileUpload.Root>
 
-            {meta.touched && meta.error && (
-                <Field.ErrorText>{meta.error}</Field.ErrorText>
+            {isTouched && fieldError && (
+                <Field.ErrorText>{errorMessage}</Field.ErrorText>
             )}
         </Field.Root>
     )

@@ -1,6 +1,6 @@
-import { useField, useFormikContext } from "formik";
 import { Field, ListCollection, Portal, Select, Spinner } from '@chakra-ui/react';
 import { SelectOption } from "../../../models/selectOption";
+import { useController, useFormContext } from "react-hook-form";
 
 interface Props {
     name: string
@@ -13,27 +13,16 @@ interface Props {
     loading?: boolean
 }
 
-// Define the event type based on Chakra UI's Select component
-interface SelectValueChangeDetails {
-    value: string[]
-}
+export default function FormSelect({ name, label, collection, isSubmitting, multiple, required, loading }: Props) {
+    const { control, formState: {touchedFields, errors} } = useFormContext()
+    const {field: {onChange, onBlur, value, ref}} = useController({name, control})
 
-
-export default function FormSelect({ name, label, collection, autoSubmit, isSubmitting, multiple, required, loading }: Props) {
-    const [field, meta] = useField(name)
-    const { setFieldValue, submitForm } = useFormikContext()
-
-    const handleValueChange = (details: SelectValueChangeDetails) => {
-        setFieldValue(name, details.value)
-
-        if (autoSubmit) {
-            submitForm()
-        }
-    }
-
+    const fieldError = errors[name]
+    const errorMessage = fieldError?.message as string | undefined
+    const isTouched = touchedFields[name]
 
     return (
-        <Field.Root invalid={meta.touched && !!meta.error} required={required}>
+        <Field.Root invalid={isTouched && !!fieldError} required={required}>
             <Field.Label>
                 {label}
                 <Field.RequiredIndicator color="status.error" />
@@ -41,10 +30,12 @@ export default function FormSelect({ name, label, collection, autoSubmit, isSubm
 
             <Select.Root
                 collection={collection}
-                value={field.value}
+                value={value}
                 disabled={isSubmitting}
-                onValueChange={handleValueChange}
+                onValueChange={({value}) => onChange(value)}
+                onBlur={onBlur}
                 multiple={multiple}
+                ref={ref}
             >
                 <Select.HiddenSelect />
                 <Select.Control>
@@ -73,8 +64,8 @@ export default function FormSelect({ name, label, collection, autoSubmit, isSubm
                 </Portal>
             </Select.Root>
 
-            {meta.touched && meta.error && (
-                <Field.ErrorText>{meta.error}</Field.ErrorText>
+            {isTouched && fieldError && (
+                <Field.ErrorText>{errorMessage}</Field.ErrorText>
             )}
         </Field.Root>
     )
