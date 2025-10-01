@@ -6,13 +6,16 @@ import (
 	authhandler "myanimevault/internal/handlers/auth_handler"
 	genrehandler "myanimevault/internal/handlers/genre_handler"
 	imagehandler "myanimevault/internal/handlers/image_handler"
+	studiohandler "myanimevault/internal/handlers/studio_handler"
 	useranimehandler "myanimevault/internal/handlers/useranime_handler"
 	"myanimevault/internal/middleware"
 	animerepo "myanimevault/internal/repository/anime_repository"
 	genrerepository "myanimevault/internal/repository/genre_repository"
+	studiorepository "myanimevault/internal/repository/studio_repository"
 	animeservice "myanimevault/internal/services/anime_service"
 	genreservice "myanimevault/internal/services/genre_service"
 	imageservice "myanimevault/internal/services/image_service"
+	studioservice "myanimevault/internal/services/studio_service"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +25,7 @@ func InitRouter(server *gin.Engine) {
 	//initialize dependencies
 	animeRepo := animerepo.NewAnimeRepository()
 	genreRepo := genrerepository.NewGenreRepository()
+	studioRepo := studiorepository.NewStudioRepository()
 
 	imageService, err := imageservice.NewImageService(os.Getenv("AWS_S3_REGION"), os.Getenv("AWS_S3_BUCKET_NAME"))
 	if err != nil {
@@ -29,10 +33,12 @@ func InitRouter(server *gin.Engine) {
 	}
 	animeService := animeservice.NewAnimeService(animeRepo, imageService)
 	genreService := genreservice.NewGenreService(genreRepo)
+	studioService := studioservice.NewStudioService(studioRepo)
 
 	animeHandler := animehandler.NewAnimeHandler(animeService)
 	imageHandler := imagehandler.NewImageHandler(imageService)
 	genreHandler := genrehandler.NewGenreHandler(genreService)
+	studioHandler := studiohandler.NewStudioHandler(studioService)
 
 
 	api := server.Group("/api")
@@ -57,4 +63,7 @@ func InitRouter(server *gin.Engine) {
 
 	//genre routes
 	api.GET("/genres", genreHandler.GetAllGenreHandler)
+
+	//studio routes
+	api.GET("/studios", studioHandler.GetAll)
 }

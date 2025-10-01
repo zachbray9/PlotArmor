@@ -13,7 +13,7 @@ func (s *GenreService) GetAll(ctx context.Context) ([]entities.Genre, error) {
 	var genres []entities.Genre
 
 	err := database.Db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		res, err := s.GenreRepo.GetAll(ctx, tx)
+		res, err := s.genreRepo.GetAll(ctx, tx)
 
 		if err != nil {
 			return fmt.Errorf("genre service failed to get genres from db: %w", err)
