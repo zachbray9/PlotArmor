@@ -12,6 +12,7 @@ import { store } from "../stores/store";
 import { toaster } from "../components/ui/toaster";
 import ApiResponse from "../models/responses/apiResponse";
 import Genre from "../models/genre";
+import Studio from "../models/studio";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -62,8 +63,13 @@ const Genres = {
     getAll: () => requests.get<ApiResponse<Genre[]>>("/genres")
 }
 
+const Studios = {
+    getAll: () => requests.get<ApiResponse<Studio[]>>("/studios")
+}
+
 export const myApiAgent = {
     Auth,
     List,
-    Genres
+    Genres,
+    Studios
 }

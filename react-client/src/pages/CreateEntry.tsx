@@ -12,6 +12,7 @@ import { toaster } from "../components/ui/toaster";
 import FormCheckBox from "../components/common/form/formCheckBox";
 import { useMemo } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
+import Studio from "../models/studio";
 
 interface FormFields {
     englishTitle: string
@@ -45,11 +46,11 @@ export default function CreateEntry() {
 
     const fetchGenres = async (): Promise<Genre[]> => {
         const res: ApiResponse<Genre[]> = await myApiAgent.Genres.getAll()
-        console.log("Fetching genres")
+
         if (!res.success) {
             toaster.create({
                 title: "Failed to fetch genres",
-                description: "There was a problem fetching the genres from the database.",
+                description: "There was a problem fetching genres from the database.",
                 type: "error",
                 closable: true,
                 duration: 7000,
@@ -60,19 +61,51 @@ export default function CreateEntry() {
         return res.data ?? []
     }
 
-    const { data, isPending } = useQuery({
+    const fetchStudios = async () => {
+        const res: ApiResponse<Studio[]> = await myApiAgent.Studios.getAll()
+
+        if (!res.success) {
+            toaster.create({
+                title: "Failed to fetch studios",
+                description: "There was a problem fetching studios from the database.",
+                type: "error",
+                closable: true,
+                duration: 7000,
+            })
+
+            return []
+        }
+
+        return res.data ?? []
+    }
+
+    const { data: genres, isPending: pendingGenres } = useQuery({
         queryKey: ["genres"],
         queryFn: fetchGenres,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
     })
 
+    const { data: studios, isPending: pendingStudios } = useQuery({
+        queryKey: ["studios"],
+        queryFn: fetchStudios,
+        refetchOnWindowFocus: false,
+        staleTime: Infinity
+    })
+
     const genreCollection = useMemo(() => createListCollection({
-        items: data?.map((genre) => ({
+        items: genres?.map((genre) => ({
             label: genre.name,
             value: genre.id.toString()
         })) ?? []
-    }), [data])
+    }), [genres])
+
+    const studioCollection = useMemo(() => createListCollection({
+        items: studios?.map((studio) => ({
+            label: studio.name,
+            value: studio.id.toString()
+        })) ?? []
+    }), [studios])
 
     const onSubmit: SubmitHandler<FormFields> = (data) => {
         //upload images and return s3 keys
@@ -99,7 +132,8 @@ export default function CreateEntry() {
 
                             <FormTextArea name="synopsis" label="Synopsis" required />
                             <FormSelect name="format" label="Format" collection={formatCollection} required />
-                            <FormSelect name="genre" label="Genre" multiple required collection={genreCollection} loading={isPending} />
+                            <FormSelect name="genre" label="Genre" multiple required collection={genreCollection} loading={pendingGenres} />
+                            <FormSelect name="studio" label="Studio" required collection={studioCollection} loading={pendingStudios} />
                             <FormNumberInput name="episodes" label="Episodes" min={0} max={undefined} required />
                             <FormNumberInput name="duration" label="Episode duration" min={0} max={undefined} required />
 
