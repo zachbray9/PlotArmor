@@ -59,7 +59,7 @@ func InitRouter(server *gin.Engine) {
 	api.POST("/anime", animeHandler.AddAnimeHandler)
 
 	//image routes
-	api.POST("/image/upload", imageHandler.UploadImageHandler)
+	api.POST("/images/upload", imageHandler.UploadImageHandler)
 
 	//genre routes
 	api.GET("/genres", genreHandler.GetAllGenreHandler)

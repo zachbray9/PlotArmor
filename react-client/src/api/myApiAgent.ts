@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { myApi } from "./axios";
 import { LoginRequest } from "../models/requests/loginRequest";
 import { LoginResponse } from "../models/responses/loginResponse";
@@ -37,7 +37,7 @@ myApi.interceptors.response.use(
 
 const requests = {
     get: <T>(url: string) => myApi.get<T>(url).then(ResponseBody),
-    post: <T>(url: string, body: object) => myApi.post<T>(url, body).then(ResponseBody),
+    post: <T>(url: string, body: object, config?: AxiosRequestConfig) => myApi.post<T>(url, body, config).then(ResponseBody),
     put: <T>(url: string, body: object) => myApi.put<T>(url, body).then(ResponseBody),
     patch: <T>(url: string, body: object) => myApi.patch<T>(url, body).then(ResponseBody),
     delete: <T>(url: string) => myApi.delete<T>(url).then(ResponseBody)
@@ -67,9 +67,14 @@ const Studios = {
     getAll: () => requests.get<ApiResponse<Studio[]>>("/studios")
 }
 
+const Images = {
+    upload: (formData: FormData) => requests.post<ApiResponse<string>>("/images/upload", formData)
+}
+
 export const myApiAgent = {
     Auth,
     List,
     Genres,
-    Studios
+    Studios,
+    Images
 }

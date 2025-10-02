@@ -36,9 +36,6 @@ func (s *AnimeService)Create(context context.Context, req requests.CreateAnimeRe
 		anime.TrailerUrl = req.TrailerUrl
 		anime.IsAdult = req.IsAdult
 		anime.AgeRating = req.AgeRating
-		anime.AgeRatingGuide = req.AgeRatingGuide
-		anime.MalId = req.MalId
-		anime.AnilistId = req.AnilistId
 		anime.StudioId = &req.StudioId
 
 		//Add anime to database

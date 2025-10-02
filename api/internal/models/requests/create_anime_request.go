@@ -35,6 +35,4 @@ type CreateAnimeRequest struct {
 	StartDate      *time.Time `json:"startDate,omitempty"`
 	EndDate        *time.Time `json:"endDate,omitempty"`
 	AgeRatingGuide string     `json:"ageRatingGuide,omitempty"`
-	MalId          *int       `json:"malId,omitempty"`
-	AnilistId      *int       `json:"anilistId,omitempty"`
 }

@@ -13,22 +13,30 @@ import FormCheckBox from "../components/common/form/formCheckBox";
 import { useMemo } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import Studio from "../models/studio";
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-interface FormFields {
-    englishTitle: string
-    romajiTitle: string
-    synopsis: string
-    format: string
-    genre: string[]
-    episodes: string
-    duration: string
-    startDate: Date
-    endDate: Date
-    trailerUrl: string
-    isAdult: boolean
-    poster: File
-    banner: File
-}
+const validationSchema = z.object({
+    englishTitle: z.string().min(3),
+    romajiTitle: z.string(),
+    synopsis: z.string(),
+    format: z.array(z.string()),
+    genre: z.array(z.string()),
+    episodes: z.number(),
+    duration: z.number(),
+    startDate: z.string(),
+    endDate: z.string(),
+    trailerUrl: z.string(),
+    isAdult: z.boolean(),
+    poster: z.instanceof(File)
+        .refine((file) => file.size <= 5000000, "File must be less than 5MB")
+        .refine((file) => ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type), "File must be a JPG, PNG, or WebP"),
+    banner: z.instanceof(File)
+        .refine((file) => file.size <= 5000000, "File must be less than 5MB")
+        .refine((file) => ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type), "File must be a JPG, PNG, or WebP"),
+})
+
+type FormFields = z.infer<typeof validationSchema>
 
 const formatCollection = createListCollection({
     items: [
@@ -41,8 +49,33 @@ const formatCollection = createListCollection({
     ]
 })
 
+const seasonCollection = createListCollection({
+    items: [
+        { label: "Fall", value: "FALL" },
+        { label: "Winter", value: "WINTER" },
+        { label: "Spring", value: "SPRING" },
+        { label: "Summer", value: "SUMMER" }
+    ]
+})
+
+const ageRatingCollection = createListCollection({
+    items: [
+        { label: "G", value: "G" },
+        { label: "PG", value: "PG" },
+        { label: "PG-13", value: "PG-13" },
+        { label: "TV-14", value: "TV-14" },
+        { label: "TV-MA", value: "TV-MA" },
+        { label: "R", value: "R" },
+    ]
+})
+
 export default function CreateEntry() {
-    const methods = useForm<FormFields>()
+    const methods = useForm<FormFields>({
+        defaultValues: {
+            isAdult: false
+        },
+        resolver: zodResolver(validationSchema)
+    })
 
     const fetchGenres = async (): Promise<Genre[]> => {
         const res: ApiResponse<Genre[]> = await myApiAgent.Genres.getAll()
@@ -107,13 +140,37 @@ export default function CreateEntry() {
         })) ?? []
     }), [studios])
 
-    const onSubmit: SubmitHandler<FormFields> = (data) => {
-        //upload images and return s3 keys
-
-        //send create anime request using form data and s3 image keys
-
-        //if create anime fails, catch and clean up created images in s3
+    const onSubmit: SubmitHandler<FormFields> = async(data) => {
         console.log(data)
+
+        try {
+            //upload images and return s3 keys
+            const posterFormData = new FormData()
+            posterFormData.append("title", data.englishTitle)
+            posterFormData.append("type", "poster")
+            posterFormData.append("image", data.poster)
+            const posterRes = await myApiAgent.Images.upload(posterFormData)
+
+            const bannerFormData = new FormData()
+            bannerFormData.append("title", data.englishTitle)
+            bannerFormData.append("type", "banner")
+            bannerFormData.append("image", data.banner)
+            const bannerRes = await myApiAgent.Images.upload(bannerFormData)
+
+
+            //send create anime request using form data and s3 image keys
+
+            //if create anime fails, catch and clean up created images in s3
+        } catch {
+            toaster.create({
+                title: "Failed to create anime",
+                description: "There was a problem adding the anime to our database.",
+                type: "error",
+                closable: true,
+                duration: 7000,
+            })
+            methods.setError("root", { message: "Something went wrong. Please try again." })
+        }
     }
 
     return (
@@ -131,6 +188,9 @@ export default function CreateEntry() {
                             <FormInput name="romajiTitle" label="Romaji title" required={true} />
 
                             <FormTextArea name="synopsis" label="Synopsis" required />
+                            <FormSelect name="ageRating" label="Age rating" collection={ageRatingCollection} required />
+                            <FormSelect name="season" label="Season" collection={seasonCollection} required />
+                            <FormNumberInput name="seasonYear" label="Season year" required min={0} max={undefined} />
                             <FormSelect name="format" label="Format" collection={formatCollection} required />
                             <FormSelect name="genre" label="Genre" multiple required collection={genreCollection} loading={pendingGenres} />
                             <FormSelect name="studio" label="Studio" required collection={studioCollection} loading={pendingStudios} />
@@ -147,7 +207,10 @@ export default function CreateEntry() {
                             <FormPhotoUpload name="banner" label="Banner" />
 
                             <Button type="submit">Submit</Button>
+                            <Button onClick={() => console.log(methods.formState.errors)}/>
                         </Fieldset.Content>
+
+                        <Fieldset.ErrorText>{methods.formState.errors.root?.message}</Fieldset.ErrorText>
                     </Fieldset.Root>
                 </form>
             </FormProvider>

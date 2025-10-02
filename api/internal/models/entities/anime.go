@@ -40,11 +40,6 @@ type Anime struct {
 	// Content Ratings
 	IsAdult        bool   `json:"is_adult" gorm:"default:false"`
 	AgeRating      string `json:"age_rating,omitempty"`       // G, PG, PG-13, R, etc.
-	AgeRatingGuide string `json:"age_rating_guide,omitempty"` // Reason for rating
-
-	// External IDs
-	MalId     *int `json:"mal_id,omitempty" gorm:"unique"`     // MyAnimeList ID
-	AnilistId *int `json:"anilist_id,omitempty" gorm:"unique"` // AniList ID
 
 	//metadata
 	UpdatedAt time.Time `json:"updated_at"`

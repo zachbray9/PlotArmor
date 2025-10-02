@@ -2,6 +2,7 @@ package imagehandler
 
 import (
 	"io"
+	"myanimevault/internal/models/responses"
 	"myanimevault/internal/utils"
 	"net/http"
 
@@ -90,5 +91,9 @@ func (h *ImageHandler) UploadImageHandler(context *gin.Context) {
 	}
 
 	// Return the S3 URL
-	context.JSON(http.StatusOK, gin.H{"s3key":  s3key})
+	context.JSON(http.StatusOK, responses.ApiResponse{
+		Success: true,
+		Message: "Successfully uploaded image",
+		Data: s3key,
+	})
 }
