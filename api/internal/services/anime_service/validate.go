@@ -25,10 +25,6 @@ func (s *AnimeService) ValidateAnimeData(req requests.CreateAnimeRequest) error 
 		return fmt.Errorf("format is required")
 	}
 
-	if req.Status == "" {
-		return fmt.Errorf("status is required")
-	}
-
 	if req.Duration == nil {
 		return fmt.Errorf("duration is required")
 	}

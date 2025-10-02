@@ -15,18 +15,23 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import Studio from "../models/studio";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import CreateAnimeRequest from "../models/requests/createAnimeRequest";
 
 const validationSchema = z.object({
     englishTitle: z.string().min(3),
     romajiTitle: z.string(),
     synopsis: z.string(),
     format: z.array(z.string()),
-    genre: z.array(z.string()),
+    genres: z.array(z.string()),
     episodes: z.number(),
     duration: z.number(),
+    studio: z.array(z.string()),
     startDate: z.string(),
     endDate: z.string(),
+    season: z.array(z.string()),
+    seasonYear: z.number(),
     trailerUrl: z.string(),
+    ageRating: z.array(z.string()),
     isAdult: z.boolean(),
     poster: z.instanceof(File)
         .refine((file) => file.size <= 5000000, "File must be less than 5MB")
@@ -159,6 +164,35 @@ export default function CreateEntry() {
 
 
             //send create anime request using form data and s3 image keys
+            const createAnimeRequest: CreateAnimeRequest = {
+                englishTitle: data.englishTitle,
+                romajiTitle: data.romajiTitle,
+                synopsis: data.synopsis,
+                ageRating: data.ageRating[0],
+                season: data.season[0],
+                seasonYear: data.seasonYear,
+                format: data.format[0],
+                genres: data.genres.map((id) => Number(id)),
+                studioId: Number(data.studio[0]),
+                episodes: data.episodes,
+                duration: data.duration,
+                startDate: new Date(data.startDate),
+                endDate: new Date(data.endDate),
+                trailerUrl: data.trailerUrl,
+                isAdult: data.isAdult,
+                poster: posterRes.data ?? "",
+                banner: bannerRes.data ?? ""
+            } 
+            await myApiAgent.Anime.create(createAnimeRequest)
+
+            toaster.create({
+                title: "Success!",
+                description: "Successfully added new anime to the database.",
+                type: "success",
+                closable: true,
+                duration: 7000,
+            })
+            methods.reset()
 
             //if create anime fails, catch and clean up created images in s3
         } catch {
@@ -192,7 +226,7 @@ export default function CreateEntry() {
                             <FormSelect name="season" label="Season" collection={seasonCollection} required />
                             <FormNumberInput name="seasonYear" label="Season year" required min={0} max={undefined} />
                             <FormSelect name="format" label="Format" collection={formatCollection} required />
-                            <FormSelect name="genre" label="Genre" multiple required collection={genreCollection} loading={pendingGenres} />
+                            <FormSelect name="genres" label="Genres" multiple required collection={genreCollection} loading={pendingGenres} />
                             <FormSelect name="studio" label="Studio" required collection={studioCollection} loading={pendingStudios} />
                             <FormNumberInput name="episodes" label="Episodes" min={0} max={undefined} required />
                             <FormNumberInput name="duration" label="Episode duration" min={0} max={undefined} required />
@@ -206,8 +240,7 @@ export default function CreateEntry() {
                             <FormPhotoUpload name="poster" label="Poster" required />
                             <FormPhotoUpload name="banner" label="Banner" />
 
-                            <Button type="submit">Submit</Button>
-                            <Button onClick={() => console.log(methods.formState.errors)}/>
+                            <Button disabled={methods.formState.isSubmitting} loading={methods.formState.isSubmitting} type="submit">Submit</Button>
                         </Fieldset.Content>
 
                         <Fieldset.ErrorText>{methods.formState.errors.root?.message}</Fieldset.ErrorText>

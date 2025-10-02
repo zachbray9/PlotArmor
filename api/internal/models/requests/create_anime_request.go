@@ -8,7 +8,6 @@ type CreateAnimeRequest struct {
 	RomajiTitle  string `json:"romajiTitle" binding:"required"`
 	Synopsis     string `json:"synopsis" binding:"required"`
 	Format       string `json:"format" binding:"required"`
-	Status       string `json:"status" binding:"required"`
 
 	//episode info
 	Episodes *int `json:"episodes,omitempty" binding:"required"`
@@ -20,7 +19,7 @@ type CreateAnimeRequest struct {
 
 	//content ratings
 	AgeRating string `json:"ageRating" binding:"required"`
-	IsAdult   bool   `json:"isAdult" binding:"required"`
+	IsAdult   bool   `json:"isAdult"`
 
 	//images
 	Poster string `json:"poster" binding:"required"`
@@ -34,5 +33,4 @@ type CreateAnimeRequest struct {
 	TrailerUrl     string     `json:"trailerUrl,omitempty"`
 	StartDate      *time.Time `json:"startDate,omitempty"`
 	EndDate        *time.Time `json:"endDate,omitempty"`
-	AgeRatingGuide string     `json:"ageRatingGuide,omitempty"`
 }

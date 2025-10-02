@@ -6,6 +6,7 @@ import (
 	"myanimevault/internal/database"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/requests"
+	"myanimevault/internal/utils"
 
 	"gorm.io/gorm"
 )
@@ -24,9 +25,16 @@ func (s *AnimeService)Create(context context.Context, req requests.CreateAnimeRe
 		anime.RomajiTitle = req.RomajiTitle
 		anime.Synopsis = req.Synopsis
 		anime.Format = req.Format
-		anime.Status = req.Status
+		anime.Status = utils.CalculateAiringStatus(req.StartDate, req.EndDate)
 		anime.Episodes = req.Episodes
 		anime.Duration = req.Duration
+		//calculate total duration
+		var totalDuration *int
+		if req.Episodes != nil && req.Duration != nil {
+			result := *req.Episodes * *req.Duration
+			totalDuration = &result
+		}
+		anime.TotalDuration = totalDuration
 		anime.StartDate = req.StartDate
 		anime.EndDate = req.EndDate
 		anime.Season = req.Season

@@ -13,6 +13,7 @@ import { toaster } from "../components/ui/toaster";
 import ApiResponse from "../models/responses/apiResponse";
 import Genre from "../models/genre";
 import Studio from "../models/studio";
+import CreateAnimeRequest from "../models/requests/createAnimeRequest";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -59,6 +60,10 @@ const List = {
     remove: (animeId: number) => requests.delete(`/user/anime/${animeId}`)
 }
 
+const Anime = {
+    create: (request: CreateAnimeRequest) => requests.post("/anime", request)
+}
+
 const Genres = {
     getAll: () => requests.get<ApiResponse<Genre[]>>("/genres")
 }
@@ -74,6 +79,7 @@ const Images = {
 export const myApiAgent = {
     Auth,
     List,
+    Anime,
     Genres,
     Studios,
     Images

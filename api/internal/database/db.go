@@ -56,11 +56,18 @@ func RunMigrationsAndSeedData() {
 
 	log.Println("Database migrations completed successfully")
 
-	err = SeedInitialData(Db)
-
-	if err != nil {
-		log.Fatal("Failed to seed initial data: %w", err)
+	//conditionally seed data only if database is empty
+	var genreCount int64
+	Db.Model(&entities.Genre{}).Count(&genreCount)
+	if genreCount == 0 {
+		log.Println("Database is empty. Seeding data...")
+		err = SeedInitialData(Db)
+		if err != nil {
+			log.Fatal("Failed to seed initial data: %w", err)
+		}
+		log.Println("Seeding complete!")
+	} else {
+		log.Println("Database already has data. Skipping seed.")
 	}
 
-	log.Println("Seeded initial data successfully")
 }
