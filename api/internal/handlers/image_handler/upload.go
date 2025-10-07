@@ -10,11 +10,22 @@ import (
 )
 
 func (h *ImageHandler) UploadImageHandler(context *gin.Context) {
-	file, header, err := context.Request.FormFile("image")
+	header, err := context.FormFile("image")
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error":   "file_required",
-			"message": "No image file provided",
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false,
+			Message: "No image file provided",
+			Data: nil,
+		})
+		return
+	}
+
+	file, err := header.Open()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false,
+			Message: "Failed to read uploaded file",
+			Data: nil,
 		})
 		return
 	}
@@ -24,15 +35,20 @@ func (h *ImageHandler) UploadImageHandler(context *gin.Context) {
 	contentType := header.Header.Get("Content-Type")
 	fileType := utils.GetExtensionFromContentType(contentType)
 	if !utils.IsValidImageType(fileType) {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid_file_type", "message": "File must be an image (JPEG, PNG, or WebP)"})
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false, 
+			Message: "File must be an image (JPEG, PNG, or WebP)",
+			Data: nil,
+		})
 		return
 	}
 
 	//validate image size
 	if !utils.IsValidImageSize(header.Size) {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error":   "file_too_large",
-			"message": "Image must be smaller than 10MB",
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success:   false,
+			Message: "Image must be smaller than 10MB",
+			Data: nil,
 		})
 		return
 	}
@@ -42,17 +58,17 @@ func (h *ImageHandler) UploadImageHandler(context *gin.Context) {
 	animeTitle := context.PostForm("title") // anime title for filename
 
 	if imageType == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error":   "type_required",
-			"message": "Image type (poster or banner) is required",
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success:   false,
+			Message: "Image type (poster or banner) is required",
 		})
 		return
 	}
 
 	if animeTitle == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error":   "title_required",
-			"message": "Anime title is required for filename",
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success:   false,
+			Message: "Anime title is required for filename",
 		})
 		return
 	}
@@ -60,9 +76,10 @@ func (h *ImageHandler) UploadImageHandler(context *gin.Context) {
 	// Read file data into bytes
 	fileData, err := io.ReadAll(file)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "file_read_error",
-			"message": "Failed to read uploaded file",
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success:   false,
+			Message: "Failed to read uploaded file",
+			Data: nil,
 		})
 		return
 	}
@@ -75,17 +92,19 @@ func (h *ImageHandler) UploadImageHandler(context *gin.Context) {
 	case "banner":
 		s3key, err = h.ImageService.UploadBanner(context, fileData, animeTitle, fileType)
 	default:
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error":   "invalid_type",
-			"message": "Image type must be 'poster' or 'banner'",
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success:   false,
+			Message: "Image type must be 'poster' or 'banner'",
+			Data: nil,
 		})
 		return
 	}
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "upload_failed",
-			"message": "Failed to upload image to storage",
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success:   false,
+			Message: "Failed to upload image to storage",
+			Data: nil,
 		})
 		return
 	}

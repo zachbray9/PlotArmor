@@ -7,7 +7,7 @@ interface Props {
     required?: boolean
 }
 
-export default function FormPhotoUpload({ name, label, required }: Props) {
+export default function FormPhotoUpload({ name, label }: Props) {
     const { control, formState: { touchedFields, errors, } } = useFormContext()
     const { field: { value, onChange, onBlur } } = useController({ name, control })
 
@@ -16,7 +16,7 @@ export default function FormPhotoUpload({ name, label, required }: Props) {
     const isTouched = touchedFields[name]
 
     return (
-        <Field.Root invalid={isTouched && !!fieldError} required={required} w="100%">
+        <Field.Root invalid={isTouched && !!fieldError} w="100%">
             <Field.Label>
                 {label}
                 <Field.RequiredIndicator color="status.error" />

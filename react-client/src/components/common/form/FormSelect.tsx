@@ -13,7 +13,7 @@ interface Props {
     loading?: boolean
 }
 
-export default function FormSelect({ name, label, collection, isSubmitting, multiple, required, loading }: Props) {
+export default function FormSelect({ name, label, collection, isSubmitting, multiple, loading }: Props) {
     const { control, formState: {touchedFields, errors} } = useFormContext()
     const {field: {onChange, onBlur, value, ref}} = useController({name, control})
 
@@ -22,7 +22,7 @@ export default function FormSelect({ name, label, collection, isSubmitting, mult
     const isTouched = touchedFields[name]
 
     return (
-        <Field.Root invalid={isTouched && !!fieldError} required={required}>
+        <Field.Root invalid={isTouched && !!fieldError} >
             <Field.Label>
                 {label}
                 <Field.RequiredIndicator color="status.error" />

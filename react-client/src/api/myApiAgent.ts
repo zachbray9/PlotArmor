@@ -1,4 +1,4 @@
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { myApi } from "./axios";
 import { LoginRequest } from "../models/requests/loginRequest";
 import { LoginResponse } from "../models/responses/loginResponse";
@@ -38,7 +38,8 @@ myApi.interceptors.response.use(
 
 const requests = {
     get: <T>(url: string) => myApi.get<T>(url).then(ResponseBody),
-    post: <T>(url: string, body: object, config?: AxiosRequestConfig) => myApi.post<T>(url, body, config).then(ResponseBody),
+    post: <T>(url: string, body: object) => myApi.post<T>(url, body).then(ResponseBody),
+    postFormData: <T>(url: string, body: FormData) => myApi.post<T>(url, body).then(ResponseBody),
     put: <T>(url: string, body: object) => myApi.put<T>(url, body).then(ResponseBody),
     patch: <T>(url: string, body: object) => myApi.patch<T>(url, body).then(ResponseBody),
     delete: <T>(url: string) => myApi.delete<T>(url).then(ResponseBody)
@@ -61,7 +62,7 @@ const List = {
 }
 
 const Anime = {
-    create: (request: CreateAnimeRequest) => requests.post("/anime", request)
+    create: (request: CreateAnimeRequest) => requests.post<ApiResponse<AniListAnime>>("/anime", request) //will change return type to Anime once it is created
 }
 
 const Genres = {
@@ -73,7 +74,7 @@ const Studios = {
 }
 
 const Images = {
-    upload: (formData: FormData) => requests.post<ApiResponse<string>>("/images/upload", formData)
+    upload: (formData: FormData) => requests.postFormData<ApiResponse<string>>("/images/upload", formData)
 }
 
 export const myApiAgent = {

@@ -5,6 +5,7 @@ import (
 	"myanimevault/internal/database"
 	"myanimevault/internal/routes"
 	"os"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -26,8 +27,11 @@ func main() {
 	//cors policy
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:5173", "https://plotarmor.site", "https://www.plotarmor.site"}
-	config.AllowHeaders = []string{"Authorization", "Content-Type"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+	config.ExposeHeaders = []string{"Content-Length"}
 	config.AllowCredentials = true
+	config.MaxAge = 12 * time.Hour
 
 	server.Use(cors.New(config))
 

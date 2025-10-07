@@ -7,7 +7,7 @@ interface Props extends TextareaProps {
     required?: boolean
 }
 
-export default function FormTextArea({ name, label, required, ...props }: Props) {
+export default function FormTextArea({ name, label, ...props }: Props) {
     const {register, formState: {errors, touchedFields}} = useFormContext()
 
     const fieldError = errors[name]
@@ -15,15 +15,16 @@ export default function FormTextArea({ name, label, required, ...props }: Props)
     const isTouched = touchedFields[name]
 
     return (
-        <Field.Root invalid={isTouched && !!fieldError} required={required}>
+        <Field.Root invalid={isTouched && !!fieldError} >
             <Field.Label>
                 {label}
-                <Field.RequiredIndicator color="status.error" />
+                {/* <Field.RequiredIndicator color="status.error" /> */}
             </Field.Label>
 
             <Textarea
                 {...register(name)}
                 {...props}
+                required={false}
             />
 
 
