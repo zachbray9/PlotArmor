@@ -4,7 +4,7 @@ import { useFormContext } from "react-hook-form";
 
 interface Props extends InputProps {
     name: string
-    label: string
+    label?: string
     hideable?: boolean
     required?: boolean
 }
@@ -35,6 +35,7 @@ export default function FormInput({ name, label, hideable, ...props }: Props) {
                 <Input
                     {...register(name)}
                     type={props.type ?? (hideable ? (show ? 'text' : 'password') : 'text')}
+                    {...props}
                 />
             </InputGroup>
 

@@ -41,11 +41,11 @@ export default observer(function Register() {
                             </Card.Header>
 
                             <Card.Body as={Stack} gap={4}>
-                                <FormInput name="email" label="Email" placeholder="Email" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} />
+                                <FormInput name="email" placeholder="Email" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} />
 
-                                <FormInput name="password" label="Password" placeholder="Password" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} hideable />
+                                <FormInput name="password" placeholder="Password" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} hideable />
 
-                                <FormInput name="confirmPassword" label="Confirm password" placeholder="Confirm Password" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} hideable />
+                                <FormInput name="confirmPassword" placeholder="Confirm Password" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} hideable />
                             </Card.Body>
 
                             <Card.Footer display='flex' flexDirection='column' justifyContent='start' alignItems='center' gap={['1.25rem', '1.75', '2rem']}>

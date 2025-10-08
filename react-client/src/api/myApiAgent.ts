@@ -1,6 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { myApi } from "./axios";
-import { LoginRequest } from "../models/requests/loginRequest";
 import { LoginResponse } from "../models/responses/loginResponse";
 import { AniListAnime } from "../models/aniListAnime";
 import { GetUserAnimeDetailsResponse } from "../models/responses/getUserAnimeDetailsResponse";
@@ -14,6 +13,7 @@ import Genre from "../models/genre";
 import Studio from "../models/studio";
 import CreateAnimeRequest from "../models/requests/createAnimeRequest";
 import { RegisterFormFields } from "../schemas/registerSchema";
+import { LoginFormFields } from "../schemas/loginSchema";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -46,7 +46,7 @@ const requests = {
 }
 
 const Auth = {
-    login: (request: LoginRequest) => requests.post<LoginResponse>('/users/login', request),
+    login: (request: LoginFormFields) => requests.post<LoginResponse>('/users/login', request),
     register: (request: RegisterFormFields) => requests.post<LoginResponse>('/users/register', request),
     getCurrentUser: () => requests.get<LoginResponse>('/users/getCurrentUser'),
     refresh: () => requests.get<RefreshResponse>('/users/refresh'),

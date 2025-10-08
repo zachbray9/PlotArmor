@@ -1,12 +1,12 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { User } from "../models/user";
-import { LoginRequest } from "../models/requests/loginRequest";
 import { myApiAgent } from "../api/myApiAgent";
 import { store } from "./store";
 import { AniListAnime } from "../models/aniListAnime";
 import router from "../router/routes";
 import { toaster } from "../components/ui/toaster";
 import { RegisterFormFields } from "../schemas/registerSchema";
+import { LoginFormFields } from "../schemas/loginSchema";
 
 export default class UserStore {
     user: User | null = null
@@ -21,7 +21,7 @@ export default class UserStore {
         return !!this.user
     }
 
-    login = async (values: LoginRequest) => {
+    login = async (values: LoginFormFields) => {
         const response = await myApiAgent.Auth.login(values)
         runInAction(() => this.user = response.user)
         router.navigate('/')
