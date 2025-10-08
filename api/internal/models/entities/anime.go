@@ -1,16 +1,22 @@
 package entities
 
-import "time"
+import (
+	"time"
+
+	"github.com/pgvector/pgvector-go"
+)
 
 type Anime struct {
 	Id uint `json:"id" gorm:"primaryKey"`
 
 	//titles
 	EnglishTitle string `json:"english_title"`
+	EnglishTitleEmbedding pgvector.Vector `gorm:"type:vector(1536)"`
 	RomajiTitle  string `json:"romaji_title"`
 
 	//content info
 	Synopsis string `json:"synopsis,omitempty"`
+	SynopsisEmbedding pgvector.Vector `gorm:"type:vector(1536)"`
 	Format   string `json:"format,omitempty"` //TV, Movie, OVA, etc.
 	Status   string `json:"status" gorm:"not null;default:'unknown'"`
 

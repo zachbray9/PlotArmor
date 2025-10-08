@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"myanimevault/internal/database"
+	"myanimevault/internal/embedding"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/requests"
 	"myanimevault/internal/utils"
+	"os"
 
+	"github.com/pgvector/pgvector-go"
 	"gorm.io/gorm"
 )
 
@@ -20,10 +23,25 @@ func (s *AnimeService)Create(context context.Context, req requests.CreateAnimeRe
 			return fmt.Errorf("invalid create anime request: %w", err)
 		}
 
+		//create vector embedding for english title
+		apiKey := os.Getenv("OPENAI_API_KEY")
+		englishTitleVec, err := embedding.GenerateEmbedding(context, apiKey, req.EnglishTitle)
+		if err != nil {
+			return fmt.Errorf("failed to create embedding for english title: %w", err)
+		}
+
+		//create vector embedding for synopsis
+		synopsisVec, err := embedding.GenerateEmbedding(context, apiKey, req.Synopsis)
+		if err != nil {
+			return fmt.Errorf("failed to create embedding for synopsis: %w", err)
+		}
+
 		//map CreateAnimeRequest to Anime
 		anime.EnglishTitle = req.EnglishTitle
+		anime.EnglishTitleEmbedding = pgvector.NewVector(englishTitleVec)
 		anime.RomajiTitle = req.RomajiTitle
 		anime.Synopsis = req.Synopsis
+		anime.SynopsisEmbedding = pgvector.NewVector(synopsisVec)
 		anime.Format = req.Format
 		anime.Status = utils.CalculateAiringStatus(req.StartDate, req.EndDate)
 		anime.Episodes = req.Episodes
