@@ -5,6 +5,7 @@ import (
 	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/requests"
+	"myanimevault/internal/models/responses"
 	authservice "myanimevault/internal/services/auth_service"
 	sessionservice "myanimevault/internal/services/session_service"
 	useranimeservice "myanimevault/internal/services/useranime_service"
@@ -21,7 +22,11 @@ func LoginHandler(context *gin.Context) {
 	err := context.ShouldBindJSON(&loginRequest)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "bad_request", "message": "One or more input fields are invalid. Please try again."})
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false,
+			Message: "Please provide a valid email and password.",
+			Data:    nil,
+		})
 		return
 	}
 
@@ -30,10 +35,24 @@ func LoginHandler(context *gin.Context) {
 
 	if err != nil {
 		switch err {
-		case customErrors.ErrNotFound, customErrors.ErrIncorrectPassword:
-			context.JSON(http.StatusUnauthorized, gin.H{"error": "invalid_credentials", "message": "Invalid email or password."})
+		case customErrors.ErrNotFound:
+			context.JSON(http.StatusOK, responses.ApiResponse{
+				Success: false, 
+				Message: "Incorrect email or password.",
+				Data: nil,
+			})
+		case customErrors.ErrIncorrectPassword:
+			context.JSON(http.StatusOK, responses.ApiResponse{
+				Success: false, 
+				Message: "Incorrect email or password.",
+				Data: nil,
+			})
 		default:
-			context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error", "message": "Something went wrong. Please try again later."})
+			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+				Success: false, 
+				Message: "Something went wrong. Please try again later.",
+				Data: nil,
+			})
 		}
 
 		return
@@ -43,7 +62,11 @@ func LoginHandler(context *gin.Context) {
 	animeIdList, err := useranimeservice.GetIdList(user.Id.String())
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error", "message": "Something went wrong. Please try again later."})
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false, 
+			Message: "Something went wrong. Please try again later.",
+			Data: nil,
+		})
 		return
 	}
 
@@ -60,7 +83,11 @@ func LoginHandler(context *gin.Context) {
 
 		if err != nil {
 			log.Printf("failed to delete existing sessions: %v", err)
-			context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error", "message": "Something went wrong. Please try again later."})
+			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+				Success: false, 
+				Message: "Something went wrong. Please try again later.",
+				Data: nil,
+			})
 			return
 		}
 
@@ -70,7 +97,11 @@ func LoginHandler(context *gin.Context) {
 	session, err := sessionservice.Create(context.Request.Context(), user.Id, deviceId, 24*time.Hour*30)
 	if err != nil {
 		log.Printf("failed to create a session for user %s: %v", user.Id, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error", "message": "Something went wrong. Please try again later."})
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false, 
+			Message: "Something went wrong. Please try again later.",
+			Data: nil,
+		})
 		return
 	}
 
@@ -91,5 +122,9 @@ func LoginHandler(context *gin.Context) {
 	http.SetCookie(context.Writer, sessionIdCookie)
 	http.SetCookie(context.Writer, deviceIdCookie)
 
-	context.JSON(http.StatusOK, gin.H{"message": "Successfully logged in.", "user": userDto})
+	context.JSON(http.StatusOK, responses.ApiResponse{
+		Success: true, 
+		Message: "Successfully logged in.",
+		Data: userDto,
+	})
 }

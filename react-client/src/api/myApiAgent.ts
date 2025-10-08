@@ -14,6 +14,7 @@ import Studio from "../models/studio";
 import CreateAnimeRequest from "../models/requests/createAnimeRequest";
 import { RegisterFormFields } from "../schemas/registerSchema";
 import { LoginFormFields } from "../schemas/loginSchema";
+import { User } from "../models/user";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -46,7 +47,7 @@ const requests = {
 }
 
 const Auth = {
-    login: (request: LoginFormFields) => requests.post<LoginResponse>('/users/login', request),
+    login: (request: LoginFormFields) => requests.post<ApiResponse<User>>('/users/login', request),
     register: (request: RegisterFormFields) => requests.post<LoginResponse>('/users/register', request),
     getCurrentUser: () => requests.get<LoginResponse>('/users/getCurrentUser'),
     refresh: () => requests.get<RefreshResponse>('/users/refresh'),

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite"
-import { Box, Button, Card, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Card, Flex, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react"
 import FormInput from "../components/common/form/FormInput"
 import { useStore } from "../stores/store"
 import { NavLink } from "react-router-dom"
@@ -8,6 +8,7 @@ import Logo from "../assets/PlotArmorLogo.png"
 import { FormProvider, useForm } from "react-hook-form"
 import { LoginFormFields, loginValidationSchema } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { TriangleAlert } from "lucide-react"
 
 export default observer(function Login() {
     const { userStore } = useStore()
@@ -20,6 +21,14 @@ export default observer(function Login() {
         mode: "onSubmit"
     })
 
+    const onSubmit = async(fields: LoginFormFields) => {
+        try {
+            await userStore.login(fields)
+        } catch (error) {
+            methods.setError("root", {message: (error as Error).message ?? "Something went wrong. Please try again later."})
+        }
+    }
+
     return (
         <>
             <Helmet>
@@ -29,7 +38,7 @@ export default observer(function Login() {
             <Stack width='100%' height='85svh' display='flex' justifyContent='center' alignItems='center' padding={['1.5rem', '1.75rem', '4rem']}>
                 <Card.Root bg='transparent' border="none" maxWidth='31rem' width='100%' padding={['1.25rem', '1.75rem', '2rem']}>
                     <FormProvider {...methods}>
-                        <form onSubmit={methods.handleSubmit(userStore.login)} >
+                        <form onSubmit={methods.handleSubmit(onSubmit)} >
                             <Card.Header as={Stack} alignItems="center" textAlign="center" gap={2}>
                                 <Image src={Logo} boxSize="75px" alt="PlotArmor Logo" />
                                 <Stack gap={1}>
@@ -46,7 +55,14 @@ export default observer(function Login() {
 
                             <Card.Footer display='flex' flexDirection='column' justifyContent='start' alignItems='center' gap={['1.25rem', '1.75', '2rem']}>
                                 <Box width='100%' >
-                                    {methods.formState.errors.root && <Text color='status.error'>{methods.formState.errors.root.message}</Text>}
+                                    {methods.formState.errors.root && 
+                                    <Flex gap={1} alignItems="center">
+                                        <Icon color="status.error" size="sm">
+                                            <TriangleAlert />
+                                        </Icon>
+                                        <Text color='status.error'fontSize="sm" >{methods.formState.errors.root.message}</Text>
+                                    </Flex>
+                                    }
                                 </Box>
 
                                 <Button type="submit" bg="interactive.primary" color="text" w="100%" rounded="lg" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Log In</Button>

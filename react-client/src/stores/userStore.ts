@@ -22,9 +22,14 @@ export default class UserStore {
     }
 
     login = async (values: LoginFormFields) => {
-        const response = await myApiAgent.Auth.login(values)
-        runInAction(() => this.user = response.user)
-        router.navigate('/')
+            const response = await myApiAgent.Auth.login(values)
+
+            if(!response.success || !response.data){
+                throw new Error(response.message)
+            }
+
+            runInAction(() => this.user = response.data!)
+            router.navigate('/')
     }
 
     register = async (values: RegisterFormFields) => {
