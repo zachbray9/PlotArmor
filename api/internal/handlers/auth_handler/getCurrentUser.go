@@ -4,6 +4,7 @@ import (
 	"log"
 	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/dtos"
+	"myanimevault/internal/models/responses"
 	userservice "myanimevault/internal/services/user_service"
 	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
@@ -17,7 +18,11 @@ func GetCurrentUserHandler(context *gin.Context) {
 	parsedUserId, err := uuid.Parse(userId)
 	if err != nil {
 		log.Printf("failed to parse userId from context: %v", err)
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized", "message": "Session invalid or expired."})
+		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
+			Success: false, 
+			Message: "Session invalid or expired.",
+			Data: nil,
+		})
 		return
 	}
 
@@ -26,10 +31,18 @@ func GetCurrentUserHandler(context *gin.Context) {
 	if err != nil {
 		switch err {
 		case customErrors.ErrNotFound:
-			context.JSON(http.StatusNotFound, gin.H{"error": "user_not_found"})
+			context.JSON(http.StatusNotFound, responses.ApiResponse{
+				Success: false,
+				Message: "User not found.",
+				Data: nil,
+			})
 			return
 		default:
-			context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error"})
+			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+				Success: false,
+				Message: "Something went wrong. Please try again later.",
+				Data: nil,
+			})
 			return
 		}
 	}
@@ -37,7 +50,11 @@ func GetCurrentUserHandler(context *gin.Context) {
 	animeIdList, err := useranimeservice.GetIdList(userId)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "There was a problem getting the users anime id list."})
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false,
+			Message: "Something went wrong. Please try again later.",
+			Data: nil,
+		})
 		return
 	}
 
@@ -47,5 +64,9 @@ func GetCurrentUserHandler(context *gin.Context) {
 	userDto.Email = user.Email
 	userDto.AnimeIds = animeIdList
 
-	context.JSON(http.StatusOK, gin.H{"message": "Current user was successfully returned.", "user": userDto})
+	context.JSON(http.StatusOK, responses.ApiResponse{
+		Success: true,
+		Message: "Current user was successfully returned.", 
+		Data: userDto,
+	})
 }

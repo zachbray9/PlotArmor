@@ -13,8 +13,8 @@ export default function usePersistentLogin() {
     })
 
     useEffect(() => {
-        if(isSuccess && data?.user) {
-            store.userStore.setUser(data.user ?? null)
+        if(isSuccess && data?.data) {
+            store.userStore.setUser(data.data ?? null)
             store.commonStore.setAppLoaded(true)
         }
     }, [isSuccess, data])
