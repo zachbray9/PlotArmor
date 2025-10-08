@@ -3,10 +3,10 @@ import { User } from "../models/user";
 import { LoginRequest } from "../models/requests/loginRequest";
 import { myApiAgent } from "../api/myApiAgent";
 import { store } from "./store";
-import { RegisterRequest } from "../models/requests/registerRequest";
 import { AniListAnime } from "../models/aniListAnime";
 import router from "../router/routes";
 import { toaster } from "../components/ui/toaster";
+import { RegisterFormFields } from "../schemas/registerSchema";
 
 export default class UserStore {
     user: User | null = null
@@ -27,7 +27,7 @@ export default class UserStore {
         router.navigate('/')
     }
 
-    register = async (values: RegisterRequest) => {
+    register = async (values: RegisterFormFields) => {
         const response = await myApiAgent.Auth.register(values)
         runInAction(() => this.user = response.user)
         router.navigate('/')
