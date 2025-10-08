@@ -36,13 +36,13 @@ func LoginHandler(context *gin.Context) {
 	if err != nil {
 		switch err {
 		case customErrors.ErrNotFound:
-			context.JSON(http.StatusOK, responses.ApiResponse{
+			context.JSON(http.StatusUnauthorized, responses.ApiResponse{
 				Success: false, 
 				Message: "Incorrect email or password.",
 				Data: nil,
 			})
 		case customErrors.ErrIncorrectPassword:
-			context.JSON(http.StatusOK, responses.ApiResponse{
+			context.JSON(http.StatusUnauthorized, responses.ApiResponse{
 				Success: false, 
 				Message: "Incorrect email or password.",
 				Data: nil,

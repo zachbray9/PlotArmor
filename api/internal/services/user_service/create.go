@@ -1,15 +1,27 @@
 package userservice
 
 import (
+	"errors"
 	"fmt"
 	"myanimevault/internal/database"
+	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/utils"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 func Create(email string, password string) (entities.User, error) {
 	var newUser entities.User
+
+	// Check if email already exists
+	var existingUser entities.User
+	if err := database.Db.Where("email = ?", email).First(&existingUser).Error; err == nil {
+		return newUser, customErrors.ErrEmailAlreadyExists
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return newUser, fmt.Errorf("failed to check existing user: %w", err)
+	}
 
 	// Hash the password
 	hashedPassword, err := utils.HashPassword(password)

@@ -5,6 +5,7 @@ import (
 	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/requests"
+	"myanimevault/internal/models/responses"
 	sessionservice "myanimevault/internal/services/session_service"
 	userservice "myanimevault/internal/services/user_service"
 	"myanimevault/internal/utils/cookieutil"
@@ -20,12 +21,20 @@ func RegisterHandler(context *gin.Context) {
 	err := context.ShouldBindJSON(&registerRequest)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "bad_request", "message": "One or more input fields are invalid. Please try again."})
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false,
+			Message: "Please enter a valid username and password.",
+			Data:    nil,
+		})
 		return
 	}
 
 	if registerRequest.Password != registerRequest.ConfirmPassword {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "bad_request", "message": "Passwords do not match. Please try again."})
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false,
+			Message: "Passwords do not match.",
+			Data:    false,
+		})
 		return
 	}
 
@@ -36,9 +45,17 @@ func RegisterHandler(context *gin.Context) {
 
 		switch err {
 		case customErrors.ErrEmailAlreadyExists:
-			context.JSON(http.StatusConflict, gin.H{"error": "email_exists", "message": "An account with this email already exists."})
+			context.JSON(http.StatusConflict, responses.ApiResponse{
+				Success: false,
+				Message: "An account with this email already exists.",
+				Data:    nil,
+			})
 		default:
-			context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error", "message": "Something went wrong. Please try again."})
+			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+				Success: false,
+				Message: "Something went wrong. Please try again later.",
+				Data:    nil,
+			})
 		}
 
 		return
@@ -51,7 +68,11 @@ func RegisterHandler(context *gin.Context) {
 	session, err := sessionservice.Create(context.Request.Context(), user.Id, deviceId, 24*time.Hour*30)
 	if err != nil {
 		log.Printf("sessionService.Create: failed to create a session for user %s: %v", user.Id, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error", "message": "Something went wrong. Please try again later."})
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false,
+			Message: "Something went wrong. Please try again later.",
+			Data:    nil,
+		})
 		return
 	}
 
@@ -71,5 +92,9 @@ func RegisterHandler(context *gin.Context) {
 	http.SetCookie(context.Writer, sessionIdCookie)
 	http.SetCookie(context.Writer, deviceIdCookie)
 
-	context.JSON(http.StatusOK, gin.H{"message": "Successfully registered.", "user": userDto})
+	context.JSON(http.StatusOK, responses.ApiResponse{
+		Success: true,
+		Message: "Successfully registered.",
+		Data:    userDto,
+	})
 }

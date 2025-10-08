@@ -1,4 +1,4 @@
-import { Box, Button, Card, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Card, Flex, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import FormInput from "../components/common/form/FormInput";
 import { useStore } from "../stores/store";
@@ -8,6 +8,8 @@ import Logo from "../assets/PlotArmorLogo.png"
 import { FormProvider, useForm } from "react-hook-form";
 import { RegisterFormFields, registerValidationSchema } from "../schemas/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TriangleAlert } from "lucide-react";
+import { ConflictError } from "../api/errors/httpErrors";
 
 export default observer(function Register() {
     const { userStore } = useStore()
@@ -21,6 +23,19 @@ export default observer(function Register() {
         mode: "onSubmit"
     })
 
+    const onSubmit = async (fields: RegisterFormFields) => {
+        try {
+            await userStore.register(fields)
+        } catch (error) {
+                if(error instanceof ConflictError) {
+                    methods.setError("root", {message: "An account with this email already exists."})
+                }
+                else {
+                    methods.setError("root", {message: "Something went wrong. Please try again later."})
+                }
+        }
+    }
+
     return (
         <>
             <Helmet>
@@ -30,7 +45,7 @@ export default observer(function Register() {
             <Box width='100%' height='85svh' display='flex' justifyContent='center' alignItems='center' padding={['1.5rem', '1.75rem', '4rem']} position='relative'>
                 <Card.Root bg="transparent" border="none" maxWidth='31rem' width='100%' padding={['1.25rem', '1.75rem', '2rem']}>
                     <FormProvider {...methods}>
-                        <form onSubmit={methods.handleSubmit(userStore.register)} >
+                        <form onSubmit={methods.handleSubmit(onSubmit)} >
                             <Card.Header as={Stack} alignItems="center" textAlign="center" gap={2}>
                                 <Image src={Logo} alt="PlotArmor Logo" boxSize="75px" />
 
@@ -50,7 +65,14 @@ export default observer(function Register() {
 
                             <Card.Footer display='flex' flexDirection='column' justifyContent='start' alignItems='center' gap={['1.25rem', '1.75', '2rem']}>
                                 <Box width='100%' >
-                                    {methods.formState.errors.root && <Text color='status.error'>{methods.formState.errors.root.message}</Text>}
+                                    {methods.formState.errors.root &&
+                                        <Flex gap={1} alignItems="center">
+                                            <Icon color="status.error" size="sm">
+                                                <TriangleAlert />
+                                            </Icon>
+                                            <Text color='status.error' fontSize="sm">{methods.formState.errors.root.message}</Text>
+                                        </Flex>
+                                    }
                                 </Box>
 
                                 <Button type="submit" bg="interactive.primary" color="text" w="100%" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Create Account</Button>

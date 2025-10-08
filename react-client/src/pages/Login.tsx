@@ -9,6 +9,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { LoginFormFields, loginValidationSchema } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { TriangleAlert } from "lucide-react"
+import { UnauthorizedError } from "../api/errors/httpErrors"
 
 export default observer(function Login() {
     const { userStore } = useStore()
@@ -21,11 +22,16 @@ export default observer(function Login() {
         mode: "onSubmit"
     })
 
-    const onSubmit = async(fields: LoginFormFields) => {
+    const onSubmit = async (fields: LoginFormFields) => {
         try {
             await userStore.login(fields)
         } catch (error) {
-            methods.setError("root", {message: (error as Error).message ?? "Something went wrong. Please try again later."})
+            if (error instanceof UnauthorizedError) {
+                methods.setError("root", { message: "Incorrect email or password." })
+            }
+            else {
+                methods.setError("root", { message: "Something went wrong. Please try again later." })
+            }
         }
     }
 
@@ -55,13 +61,13 @@ export default observer(function Login() {
 
                             <Card.Footer display='flex' flexDirection='column' justifyContent='start' alignItems='center' gap={['1.25rem', '1.75', '2rem']}>
                                 <Box width='100%' >
-                                    {methods.formState.errors.root && 
-                                    <Flex gap={1} alignItems="center">
-                                        <Icon color="status.error" size="sm">
-                                            <TriangleAlert />
-                                        </Icon>
-                                        <Text color='status.error'fontSize="sm" >{methods.formState.errors.root.message}</Text>
-                                    </Flex>
+                                    {methods.formState.errors.root &&
+                                        <Flex gap={1} alignItems="center">
+                                            <Icon color="status.error" size="sm">
+                                                <TriangleAlert />
+                                            </Icon>
+                                            <Text color='status.error' fontSize="sm" >{methods.formState.errors.root.message}</Text>
+                                        </Flex>
                                     }
                                 </Box>
 
