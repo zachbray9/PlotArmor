@@ -2,6 +2,8 @@ package useranimehandler
 
 import (
 	"myanimevault/internal/models/dtos"
+	"myanimevault/internal/models/entities"
+	"myanimevault/internal/models/responses"
 	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 
@@ -18,9 +20,27 @@ func AddToListHandler(context *gin.Context) {
 		return
 	}
 
-	userId := context.GetString("userId")
+	userInterface, exists := context.Get("user")
+	if !exists {
+		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
+			Success: false, 
+			Message: "User not authenticated.",
+			Data: nil,
+		})
+		return
+	}
 
-	_, err = useranimeservice.Create(userId, userAnime)
+	user, ok := userInterface.(entities.User)
+	if !ok {
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false,
+			Message: "Invalid user type.",
+			Data: nil,
+		})
+		return
+	}
+
+	_, err = useranimeservice.Create(user.Id.String(), userAnime)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "There was a problem adding the new userAnime to the database"})

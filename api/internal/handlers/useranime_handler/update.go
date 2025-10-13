@@ -2,7 +2,9 @@ package useranimehandler
 
 import (
 	"myanimevault/internal/models/customErrors"
+	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/requests"
+	"myanimevault/internal/models/responses"
 	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 	"strconv"
@@ -11,7 +13,25 @@ import (
 )
 
 func UpdateUserAnimeHandler(context *gin.Context) {
-	userId := context.GetString("userId")
+	userInterface, exists := context.Get("user")
+	if !exists {
+		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
+			Success: false,
+			Message: "User not authenticated.",
+			Data:    nil,
+		})
+		return
+	}
+
+	user, ok := userInterface.(entities.User)
+	if !ok {
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false,
+			Message: "Invalid user type.",
+			Data:    nil,
+		})
+		return
+	}
 	animeId, err := strconv.ParseUint(context.Param("animeId"), 10, 64)
 
 	if err != nil {
@@ -27,7 +47,7 @@ func UpdateUserAnimeHandler(context *gin.Context) {
 		return
 	}
 
-	err = useranimeservice.Update(userId, uint(animeId), patchRequest)
+	err = useranimeservice.Update(user.Id.String(), uint(animeId), patchRequest)
 
 	if err != nil {
 		switch err {

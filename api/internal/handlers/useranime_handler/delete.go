@@ -2,6 +2,8 @@ package useranimehandler
 
 import (
 	"myanimevault/internal/models/customErrors"
+	"myanimevault/internal/models/entities"
+	"myanimevault/internal/models/responses"
 	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 	"strconv"
@@ -10,7 +12,25 @@ import (
 )
 
 func DeleteUserAnimeHandler(context *gin.Context) {
-	userId := context.GetString("userId")
+	userInterface, exists := context.Get("user")
+	if !exists {
+		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
+			Success: false, 
+			Message: "User not authenticated.",
+			Data: nil,
+		})
+		return
+	}
+
+	user, ok := userInterface.(entities.User)
+	if !ok {
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false,
+			Message: "Invalid user type.",
+			Data: nil,
+		})
+		return
+	}
 
 	animeId, err := strconv.ParseUint(context.Param("animeId"), 10, 64)
 
@@ -19,7 +39,7 @@ func DeleteUserAnimeHandler(context *gin.Context) {
 		return
 	}
 
-	err = useranimeservice.Delete(userId, uint(animeId))
+	err = useranimeservice.Delete(user.Id.String(), uint(animeId))
 
 	if err != nil {
 		switch err {

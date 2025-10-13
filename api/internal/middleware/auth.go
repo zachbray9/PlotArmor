@@ -37,6 +37,6 @@ func Authenticate(context *gin.Context) {
 		return
 	}
 
-	context.Set("userId", user.Id.String())
+	context.Set("user", user)
 	context.Next()
 }
