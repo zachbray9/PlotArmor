@@ -12,7 +12,7 @@ import (
 
 const (
 	openAIURL  = "https://api.openai.com/v1/embeddings"
-	embedModel = "text-embedding-3-large"
+	embedModel = "text-embedding-3-small"
 )
 
 type EmbeddingResponse struct {

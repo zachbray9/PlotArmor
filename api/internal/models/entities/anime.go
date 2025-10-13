@@ -11,14 +11,15 @@ type Anime struct {
 
 	//titles
 	EnglishTitle string `json:"english_title"`
-	EnglishTitleEmbedding pgvector.Vector `gorm:"type:vector(1536)"`
 	RomajiTitle  string `json:"romaji_title"`
 
 	//content info
 	Synopsis string `json:"synopsis,omitempty"`
-	SynopsisEmbedding pgvector.Vector `gorm:"type:vector(1536)"`
 	Format   string `json:"format,omitempty"` //TV, Movie, OVA, etc.
 	Status   string `json:"status" gorm:"not null;default:'unknown'"`
+	
+	//vector embedding
+	Embedding pgvector.Vector `gorm:"type:vector(1536)"`
 
 	//episode info
 	Episodes      *int `json:"episodes,omitempty"`       // Total episodes (null for unknown)
