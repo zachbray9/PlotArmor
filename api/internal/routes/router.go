@@ -56,7 +56,7 @@ func InitRouter(server *gin.Engine) {
 	api.DELETE("/user/anime/:animeId", middleware.Authenticate, useranimehandler.DeleteUserAnimeHandler)
 
 	//anime routes
-	api.POST("/anime", animeHandler.AddAnimeHandler)
+	api.POST("/anime", middleware.Authenticate, middleware.RequireAdmin, animeHandler.AddAnimeHandler)
 
 	//image routes
 	api.POST("/images/upload", imageHandler.UploadImageHandler)

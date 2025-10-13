@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RequireAuth(context *gin.Context) {
+func RequireAdmin(context *gin.Context) {
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
