@@ -17,7 +17,6 @@ func Get(context context.Context, id uuid.UUID) (entities.User, error) {
 
 	// Query using GORM to get user by ID
 	err := database.Db.WithContext(context).
-		Select("id, email, password_hash, created_at").
 		Where("id = ?", id).
 		First(&user).Error
 
