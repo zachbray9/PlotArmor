@@ -42,11 +42,12 @@ func GetCurrentUserHandler(context *gin.Context) {
 		return
 	}
 
-	userDto := dtos.UserDto{}
-
-	userDto.Id = user.Id.String()
-	userDto.Email = user.Email
-	userDto.AnimeIds = animeIdList
+	userDto := dtos.UserDto{
+		Id: user.Id.String(),
+		Email: user.Email,
+		Role: user.Role,
+		AnimeIds: animeIdList,
+	}
 
 	context.JSON(http.StatusOK, responses.ApiResponse{
 		Success: true,
