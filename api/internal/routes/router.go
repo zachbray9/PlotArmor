@@ -31,7 +31,7 @@ func InitRouter(server *gin.Engine) {
 	if err != nil {
 		panic(fmt.Sprintf("failed to create new image service: %v", err))
 	}
-	animeService := animeservice.NewAnimeService(animeRepo, imageService)
+	animeService := animeservice.NewAnimeService(animeRepo, genreRepo, imageService)
 	genreService := genreservice.NewGenreService(genreRepo)
 	studioService := studioservice.NewStudioService(studioRepo)
 
@@ -39,7 +39,6 @@ func InitRouter(server *gin.Engine) {
 	imageHandler := imagehandler.NewImageHandler(imageService)
 	genreHandler := genrehandler.NewGenreHandler(genreService)
 	studioHandler := studiohandler.NewStudioHandler(studioService)
-
 
 	api := server.Group("/api")
 	//auth routes
@@ -54,6 +53,9 @@ func InitRouter(server *gin.Engine) {
 	api.POST("/user/anime", middleware.Authenticate, useranimehandler.AddToListHandler)
 	api.PATCH("/user/anime/:animeId", middleware.Authenticate, useranimehandler.UpdateUserAnimeHandler)
 	api.DELETE("/user/anime/:animeId", middleware.Authenticate, useranimehandler.DeleteUserAnimeHandler)
+
+	//home page data
+	api.GET("/home", animeHandler.GetHomePageDataHandler)
 
 	//anime routes
 	api.POST("/anime", middleware.Authenticate, middleware.RequireAdmin, animeHandler.AddAnimeHandler)

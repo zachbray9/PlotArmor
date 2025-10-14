@@ -15,13 +15,27 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *AnimeService)Create(context context.Context, req requests.CreateAnimeRequest) (*entities.Anime, error) {
+func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeRequest) (*entities.Anime, error) {
 	anime := entities.Anime{}
 
 	err := database.Db.WithContext(context).Transaction(func(tx *gorm.DB) error {
 		err := s.ValidateAnimeData(req)
 		if err != nil {
 			return fmt.Errorf("invalid create anime request: %w", err)
+		}
+
+		// Fetch genres by IDs
+		var genres []entities.Genre
+		if len(req.Genres) > 0 {
+			genres, err = s.genreRepo.GetByIds(context, tx, req.Genres)
+			if err != nil {
+				return fmt.Errorf("failed to fetch genres: %w", err)
+			}
+
+			// Validate all genres were found
+			if len(genres) != len(req.Genres) {
+				return fmt.Errorf("one or more genre IDs are invalid")
+			}
 		}
 
 		//format text to be vector embedded
@@ -38,6 +52,7 @@ func (s *AnimeService)Create(context context.Context, req requests.CreateAnimeRe
 		anime.EnglishTitle = req.EnglishTitle
 		anime.RomajiTitle = req.RomajiTitle
 		anime.Synopsis = req.Synopsis
+		anime.Genres = genres
 		anime.Embedding = pgvector.NewVector(vector)
 		anime.Format = req.Format
 		anime.Status = utils.CalculateAiringStatus(req.StartDate, req.EndDate)

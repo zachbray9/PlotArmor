@@ -8,13 +8,16 @@ import (
 )
 
 type AnimeRepository interface {
+	GetFeatured(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
+	GetTopAiring(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
+	GetPopular(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
+	GetUpcoming(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
 	Create(ctx context.Context, tx *gorm.DB, anime *entities.Anime) error
 }
 
 type animeRepository struct {
-
 }
 
-func NewAnimeRepository() AnimeRepository{
+func NewAnimeRepository() AnimeRepository {
 	return &animeRepository{}
 }

@@ -6,7 +6,7 @@ export const createAnimeValidationSchema = z.object({
     synopsis: z.string().min(1, "Synopsis is required."),
     format: z.array(z.string()).min(1, "Format is required"),
     genres: z.array(z.string()).min(1, "Genre(s) is required"),
-    episodes: z.number().positive("Episodes must be a positive number"),
+    episodes: z.number().min(0, "Episodes must be a positive number"),
     duration: z.number().positive("Duration must be a positive number"),
     studio: z.array(z.string()).min(1, "Studio is required"),
     startDate: z.string().min(1, "Start date is required"),
