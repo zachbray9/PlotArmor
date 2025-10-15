@@ -11,7 +11,7 @@ type AnimeCharacter struct {
 	AnimeId      uint      `json:"anime_id" gorm:"not null"`
 	CharacterId  uint      `json:"character_id" gorm:"not null"`
 	VoiceActorId *uint     `json:"voice_actor_id,omitempty" gorm:"default:null"`
-	Role         string    `json:"role" gorm:"not null;default:'supporting'"` // "main", "supporting", "background"
+	Role         string    `json:"role" gorm:"not null;default:'SUPPORTING'"` // "main", "supporting", "background"
 	CreatedAt    time.Time `json:"created_at"`
 
 	// Relationships

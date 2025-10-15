@@ -9,6 +9,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 func (s *ImageService) UploadPoster(ctx context.Context, imageData []byte, animeTitle string, imageExt string) (string, error) {
@@ -16,9 +17,10 @@ func (s *ImageService) UploadPoster(ctx context.Context, imageData []byte, anime
 
 	// Upload to S3
 	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:      aws.String(s.bucket),
-		Key:         aws.String(filename),
-		Body:        bytes.NewReader(imageData),
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(filename),
+		Body:   bytes.NewReader(imageData),
+		ACL:    types.ObjectCannedACLPublicRead,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to upload poster to S3: %w", err)
@@ -34,9 +36,10 @@ func (s *ImageService) UploadBanner(ctx context.Context, imageData []byte, anime
 
 	// Upload to S3
 	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:      aws.String(s.bucket),
-		Key:         aws.String(filename),
-		Body:        bytes.NewReader(imageData),
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(filename),
+		Body:   bytes.NewReader(imageData),
+		ACL:    types.ObjectCannedACLPublicRead,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to upload banner to S3: %w", err)
