@@ -64,7 +64,7 @@ const List = {
 
 const Animes = {
     homePage: () => requests.get<ApiResponse<HomePageData>>("/home"),
-    create: (request: CreateAnimeRequest) => requests.post<ApiResponse<Anime>>("/anime", request) //will change return type to Anime once it is created
+    create: (request: CreateAnimeRequest) => requests.post<ApiResponse<Anime>>("/anime", request)
 }
 
 const Genres = {

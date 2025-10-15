@@ -1,5 +1,4 @@
 import { Badge, Box, Button, Flex, Heading, Stack, Text, Wrap } from "@chakra-ui/react";
-import { AniListAnime } from "../../models/aniListAnime";
 import { NavLink } from "react-router-dom";
 import { useStore } from "../../stores/store";
 import { observer } from "mobx-react-lite";
@@ -11,9 +10,10 @@ import useAutoPlay from "./autoplay";
 import { useState } from "react";
 import { MoveRight } from "lucide-react";
 import AddRemoveListIconButton from "../animeList/addRemoveListIconButton";
+import Anime from "../../models/anime";
 
 interface Props {
-    data: AniListAnime[]
+    data: Anime[]
 }
 
 const DELAY: number = 10000 //in milliseconds
@@ -53,7 +53,7 @@ export default observer(function FeaturedCarousel({ data }: Props) {
                             flexBasis="100%"
                             minW={0}
                             maxW="100%"
-                            bgImage={[`url(${anime.coverImage.extraLarge ?? anime.coverImage.large})`, `url(${anime.bannerImage})`]}
+                            bgImage={[`url(${anime.posterImage})`, `url(${anime.bannerImage})`]}
                             position='relative'
                             height={['60vh', null, '70vh']}
                             backgroundPosition='center'
@@ -67,18 +67,18 @@ export default observer(function FeaturedCarousel({ data }: Props) {
 
                             <Stack id="featured-slide-content" zIndex={2} marginTop={[null, '10%']} width='100%' paddingX={[4, null, 40]} paddingY={[4, null, 0]}>
                                 <Stack maxW={["100%", null, "70%", null, "50%"]} w={"100%"} gap={4} alignItems={["center", null, "start"]} onMouseEnter={onHover} onMouseLeave={onUnhover}>
-                                    <Heading size={['xl', null, "2xl", '4xl']} textAlign={['center', null, 'left']}>{anime.title.english ?? anime.title.romaji}</Heading>
+                                    <Heading size={['xl', null, "2xl", '4xl']} textAlign={['center', null, 'left']}>{anime.englishTitle ?? anime.romajiTitle}</Heading>
 
                                     {/* {anime.genres &&
                                         <Text color="text.subtle" textAlign="center">{anime.genres.join(', ')}</Text>
                                     } */}
                                     <Wrap gap={1} justifyContent="center">
                                         {anime.genres?.map((genre) => (
-                                            <Badge key={genre} bg="blackAlpha.400" borderRadius="full" px={2}>{genre}</Badge>
+                                            <Badge key={genre.id} bg="blackAlpha.400" borderRadius="full" px={2}>{genre.name}</Badge>
                                         ))}
                                     </Wrap>
 
-                                    <Text display={{ base: 'none', md: '-webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4' }} overflow='hidden' textOverflow='ellipsis'>{stripHtml(anime.description!)}</Text>
+                                    <Text display={{ base: 'none', md: '-webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4' }} overflow='hidden' textOverflow='ellipsis'>{stripHtml(anime.synopsis!)}</Text>
 
                                     <Flex width={['100%', 'auto']} gap={2} justifyContent="center">
                                         <NavLink to={`/anime/${anime.id}/details`}>

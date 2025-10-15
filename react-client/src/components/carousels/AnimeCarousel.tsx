@@ -1,11 +1,11 @@
 import { Box, Heading, Stack, useBreakpointValue } from "@chakra-ui/react";
 import { CustomNextCarouselArrow, CustomPrevCarouselArrow, usePrevNextButtons } from "./customCarouselArrowButtons";
-import { AniListAnime } from "../../models/aniListAnime";
 import CarouselCard from "./CarouselCard";
 import useEmblaCarousel from "embla-carousel-react";
+import Anime from "../../models/anime";
 
 interface Props {
-    data: AniListAnime[],
+    data: Anime[],
     heading: string
 }
 

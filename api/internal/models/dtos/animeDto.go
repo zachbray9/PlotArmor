@@ -10,8 +10,8 @@ type AnimeDto struct {
 	Id uint `json:"id"`
 
 	//titles
-	EnglishTitle string `json:"english_title"`
-	RomajiTitle  string `json:"romaji_title"`
+	EnglishTitle string `json:"englishTitle"`
+	RomajiTitle  string `json:"romajiTitle"`
 
 	//content info
 	Synopsis string        `json:"synopsis,omitempty"`
@@ -35,7 +35,7 @@ type AnimeDto struct {
 	TrailerUrl  string `json:"trailerUrl,omitempty"`
 
 	//ratings and popularity
-	AverageScore *float64 `json:"average_score,omitempty"`
+	AverageScore *float64 `json:"averageScore,omitempty"`
 	MeanScore    *float64 `json:"meanScore,omitempty"`
 	Popularity   *int     `json:"popularity,omitempty"` // Popularity rank
 	Trending     *int     `json:"trending,omitempty"`   // Trending rank

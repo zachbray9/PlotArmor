@@ -9,7 +9,7 @@ interface Props extends InputProps {
     required?: boolean
 }
 
-export default function FormInput({ name, label, hideable, ...props }: Props) {
+export default function FormInput({ name, label, hideable, required, ...props }: Props) {
     const [show, setShow] = useState(false)
     const {register, formState: {errors, touchedFields}} = useFormContext()
 
@@ -25,7 +25,7 @@ export default function FormInput({ name, label, hideable, ...props }: Props) {
         <Field.Root invalid={isTouched && !!fieldError}>
             <Field.Label>
                 {label}
-                <Field.RequiredIndicator color="status.error" />
+                {required && <Field.RequiredIndicator color="status.error" />}
             </Field.Label>
             <InputGroup
                 endElement={hideable &&

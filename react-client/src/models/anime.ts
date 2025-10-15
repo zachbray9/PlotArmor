@@ -23,4 +23,5 @@ export default interface Anime {
     ageRating: string
     studio: Studio
     genres: Genre[]
+    averageScore: number
 }
