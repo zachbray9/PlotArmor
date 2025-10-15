@@ -23,6 +23,8 @@ export default function CreateEntry() {
             studio: [],
             format: [],
             season: [],
+            startDate: undefined,
+            endDate: undefined,
             ageRating: [],
             seasonYear: 0,
             episodes: 0,

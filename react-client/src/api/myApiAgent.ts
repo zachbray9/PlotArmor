@@ -13,6 +13,8 @@ import { RegisterFormFields } from "../schemas/registerSchema";
 import { LoginFormFields } from "../schemas/loginSchema";
 import { User } from "../models/user";
 import { BadRequestError, ConflictError, NotFoundError, TooManyRequestsError, UnauthorizedError } from "./errors/httpErrors";
+import Anime from "../models/anime";
+import HomePageData from "../models/homePageData";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -60,8 +62,9 @@ const List = {
     remove: (animeId: number) => requests.delete(`/user/anime/${animeId}`)
 }
 
-const Anime = {
-    create: (request: CreateAnimeRequest) => requests.post<ApiResponse<AniListAnime>>("/anime", request) //will change return type to Anime once it is created
+const Animes = {
+    homePage: () => requests.get<ApiResponse<HomePageData>>("/home"),
+    create: (request: CreateAnimeRequest) => requests.post<ApiResponse<Anime>>("/anime", request) //will change return type to Anime once it is created
 }
 
 const Genres = {
@@ -79,7 +82,7 @@ const Images = {
 export const myApiAgent = {
     Auth,
     List,
-    Anime,
+    Animes,
     Genres,
     Studios,
     Images

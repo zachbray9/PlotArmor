@@ -3,8 +3,8 @@ package animerepository
 import (
 	"context"
 	"fmt"
+	"myanimevault/internal/models"
 	"myanimevault/internal/models/entities"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -13,7 +13,7 @@ func (r *animeRepository) GetFeatured(ctx context.Context, tx *gorm.DB, limit in
 	var animes []entities.Anime
 
 	err := tx.WithContext(ctx).
-		Where("status = ?", "RELEASING").
+		Where("status = ?", models.StatusCurrentlyAiring).
 		// Where("average_score IS NOT NULL").
 		// Where("average_score > ?", 75.0).
 		// Order("average_score DESC, popularity ASC").
@@ -34,7 +34,7 @@ func (r *animeRepository) GetTopAiring(ctx context.Context, tx *gorm.DB, limit i
 	var animes []entities.Anime
 
 	err := tx.WithContext(ctx).
-		Where("status = ?", "RELEASING").
+		Where("status = ?", models.StatusCurrentlyAiring).
 		// Where("trending IS NOT NULL").
 		// Order("trending ASC").
 		Order("created_at DESC").
@@ -71,10 +71,9 @@ func (r *animeRepository) GetPopular(ctx context.Context, tx *gorm.DB, limit int
 
 func (r *animeRepository) GetUpcoming(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error) {
 	var animes []entities.Anime
-	now := time.Now()
 
 	err := tx.WithContext(ctx).
-		Where("start_date > ?", now).
+		Where("status = ?", models.StatusNotYetReleased).
 		Order("start_date ASC").
 		Limit(limit).
 		Preload("Studio").

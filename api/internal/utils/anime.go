@@ -1,25 +1,31 @@
 package utils
 
-import "time"
+import (
+	"myanimevault/internal/models"
+	"time"
+)
 
-func CalculateAiringStatus(startDate *time.Time, endDate *time.Time) (string) {
+func CalculateAiringStatus(startDate *time.Time, endDate *time.Time) models.Status {
 	now := time.Now()
-    
-    // If no start date, we can't determine status - treat as not yet aired
-    if startDate == nil {
-        return "NOT_YET_AIRED"
-    }
-    
-    // Not yet aired - start date is in the future
-    if now.Before(*startDate) {
-        return "NOT_YET_AIRED"
-    }
-    
-    // Currently airing - started but no end date or end date is in the future
-    if endDate == nil || now.Before(*endDate) {
-        return "AIRING"
-    }
-    
-    // Finished - end date has passed
-    return "FINISHED"
+
+	// Has a start date
+	if startDate != nil {
+		// Not yet released
+		if startDate.After(now) {
+			return models.StatusNotYetReleased
+		}
+
+		// Currently airing (started but no end date OR end date is in future)
+		if endDate == nil || endDate.After(now) {
+			return models.StatusCurrentlyAiring
+		}
+
+		// Finished airing
+		if endDate.Before(now) {
+			return models.StatusFinished
+		}
+	}
+
+	// No start date - assume not yet released
+	return models.StatusNotYetReleased
 }

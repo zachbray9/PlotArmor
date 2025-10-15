@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"myanimevault/internal/models"
 	"time"
 
 	"github.com/pgvector/pgvector-go"
@@ -14,10 +15,10 @@ type Anime struct {
 	RomajiTitle  string `json:"romaji_title"`
 
 	//content info
-	Synopsis string `json:"synopsis,omitempty"`
-	Format   string `json:"format,omitempty"` //TV, Movie, OVA, etc.
-	Status   string `json:"status" gorm:"not null;default:'unknown'"`
-	
+	Synopsis string        `json:"synopsis,omitempty"`
+	Format   string        `json:"format,omitempty"` //TV, Movie, OVA, etc.
+	Status   models.Status `json:"status" gorm:"not null;default:'NOT_YET_RELEASED'"`
+
 	//vector embedding
 	Embedding pgvector.Vector `gorm:"type:vector(1536)"`
 
@@ -33,9 +34,9 @@ type Anime struct {
 	SeasonYear *int       `json:"season_year,omitempty"`
 
 	//media urls
-	PosterS3Key  string `json:"poster_s3_key,omitempty"`
-	BannerS3Key  string `json:"banner_s3_key,omitempty"`
-	TrailerUrl string `json:"trailer_url,omitempty"`
+	PosterS3Key string `json:"poster_s3_key,omitempty"`
+	BannerS3Key string `json:"banner_s3_key,omitempty"`
+	TrailerUrl  string `json:"trailer_url,omitempty"`
 
 	//ratings and popularity
 	AverageScore *float64 `json:"average_score,omitempty" gorm:"check:average_score >= 0 AND average_score <= 100"`
@@ -45,8 +46,8 @@ type Anime struct {
 	Favorites    int      `json:"favorites" gorm:"default:0"` // Number of users who favorited
 
 	// Content Ratings
-	IsAdult        bool   `json:"is_adult" gorm:"default:false"`
-	AgeRating      string `json:"age_rating,omitempty"`       // G, PG, PG-13, R, etc.
+	IsAdult   bool   `json:"is_adult" gorm:"default:false"`
+	AgeRating string `json:"age_rating,omitempty"` // G, PG, PG-13, R, etc.
 
 	//metadata
 	UpdatedAt time.Time `json:"updated_at"`

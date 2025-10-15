@@ -56,7 +56,7 @@ export default function useCreateAnime() {
                 banner: bannerS3Key ?? ""
             }
             console.log("creating anime...")
-            const animeRes = await myApiAgent.Anime.create(createAnimeRequest)
+            const animeRes = await myApiAgent.Animes.create(createAnimeRequest)
             console.log("finished creating anime!")
 
             if (!animeRes.success) {
