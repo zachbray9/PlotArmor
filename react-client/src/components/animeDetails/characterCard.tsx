@@ -1,8 +1,8 @@
 import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react";
-import { CharacterEdge } from "../../models/characterEdge";
+import Character from "../../models/character";
 
 interface Props {
-    character: CharacterEdge
+    character: Character
 }
 
 export default function CharacterCard({ character }: Props) {
@@ -12,11 +12,11 @@ export default function CharacterCard({ character }: Props) {
                 <GridItem display='flex'>
                     <Grid templateColumns='60px auto'>
                         <GridItem>
-                            <Image src={character.node.image.large} objectFit='cover' height='90px' aspectRatio={2/3}/>
+                            <Image src={character.imageUrl} objectFit='cover' height='90px' aspectRatio={2/3}/>
                         </GridItem>
 
                         <GridItem display='flex' flexDirection='column' justifyContent='space-between' padding={2}>
-                            <Text fontSize='sm'>{character.node.name.full}</Text>
+                            <Text fontSize='sm'>{character.name}</Text>
                             <Text fontSize='xs'>{character.role}</Text>
                         </GridItem>
                     </Grid>
@@ -25,12 +25,12 @@ export default function CharacterCard({ character }: Props) {
                 <GridItem display='flex' justifyContent='end'>
                     <Grid templateColumns='auto 60px'>
                         <GridItem display='flex' flexDirection='column' alignItems='end' justifyContent='space-between' padding={2}>
-                            <Text fontSize='sm' textAlign='right'>{character.voiceActors[0]?.name.full}</Text>
+                            <Text fontSize='sm' textAlign='right'>{character.voiceActors[0]?.name}</Text>
                             <Text fontSize='xs'>{character.voiceActors[0]?.language}</Text>
                         </GridItem>
 
                         <GridItem>
-                            <Image src={character.voiceActors[0]?.image.large} objectFit='cover' height='90px' aspectRatio={2/3}/>
+                            <Image src={character.voiceActors[0]?.imageUrl} objectFit='cover' height='90px' aspectRatio={2/3}/>
                         </GridItem>
                     </Grid>
                 </GridItem>

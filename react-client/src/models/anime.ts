@@ -1,3 +1,4 @@
+import Character from "./character"
 import Genre from "./genre"
 import Studio from "./studio"
 
@@ -23,5 +24,6 @@ export default interface Anime {
     ageRating: string
     studio: Studio
     genres: Genre[]
+    characters: Character[]
     averageScore: number
 }

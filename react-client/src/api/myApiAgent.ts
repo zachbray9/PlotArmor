@@ -62,6 +62,7 @@ const List = {
 }
 
 const Animes = {
+    getById: (animeId: number) => requests.get<ApiResponse<Anime>>(`/anime/${animeId}`),
     homePage: () => requests.get<ApiResponse<HomePageData>>("/home"),
     create: (request: CreateAnimeRequest) => requests.post<ApiResponse<Anime>>("/anime", request)
 }

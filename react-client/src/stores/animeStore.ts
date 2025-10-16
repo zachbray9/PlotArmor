@@ -1,30 +1,15 @@
-import { makeAutoObservable, runInAction } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { aniListAgent } from "../api/aniListAgent"
 import { AniListAnime } from "../models/aniListAnime"
-import { LoadAnimeDetailsQuery } from "../api/queries/animeDetailsQuery"
 import { CategoryQuery } from "../api/queries/categoryQuery"
+import Anime from "../models/anime"
 
 export default class AnimeStore {
-    selectedAnime: AniListAnime | null = null
+    selectedAnime: Anime | null = null
     isLoadingSelectedAnime: boolean = false
 
     constructor() {
         makeAutoObservable(this)
-    }
-
-    loadAnimeDetails = async (animeId: number) => {
-        this.setIsLoadingSelectedAnime(true)
-
-        const query = LoadAnimeDetailsQuery(animeId)
-
-        try {
-            const response = await aniListAgent.AnimeData.getAnimeDetails(query)
-            runInAction(() => this.selectedAnime = response.data.Media)
-            this.setIsLoadingSelectedAnime(false)
-        } catch (error) {
-            console.log("Couldn't load selected anime: " + error)
-            this.setIsLoadingSelectedAnime(false)
-        }
     }
 
     loadAnimeCategory = async (genre: string | undefined, sortBy: string): Promise<AniListAnime[]> => {
@@ -37,13 +22,5 @@ export default class AnimeStore {
             console.log(error)
             return []
         }
-    }
-
-    clearSelectedAnime = () => {
-        this.selectedAnime = null
-    }
-
-    setIsLoadingSelectedAnime = (value: boolean) => {
-        this.isLoadingSelectedAnime = value
     }
 }

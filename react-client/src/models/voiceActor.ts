@@ -1,9 +1,5 @@
 export interface VoiceActor {
-    name: {
-        full: string
-    }
+    name: string
     language: string
-    image: {
-        large: string
-    }
+    imageUrl: string
 }

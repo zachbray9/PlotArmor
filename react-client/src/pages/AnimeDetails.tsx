@@ -3,41 +3,26 @@ import { useStore } from "../stores/store";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import DOMPurify from "dompurify";
 import LoadingComponent from "../components/common/loading/LoadingComponent";
 import RatingInputForm from "../components/forms/ratingInputForm";
 import WatchStatusInputForm from "../components/forms/watchStatusInputForm";
 import NumEpisodesWatchedInputForm from "../components/forms/numEpisodesWatchedInputForm";
 import { Helmet } from "react-helmet-async";
-import { CharacterEdge } from "../models/characterEdge";
 import CharacterCard from "../components/animeDetails/characterCard";
 import { Plus, Star, Trash } from "lucide-react";
+import useAnime from "../hooks/useAnime";
 
 export default observer(function AnimeDetails() {
-    const { animeStore, listStore, userStore } = useStore()
-    const { animeId } = useParams()
-    const { selectedAnime } = animeStore
+    const { listStore, userStore } = useStore()
+    const { animeId = "0" } = useParams()
     const { userAnimeDetails } = listStore
 
-    useEffect(() => {
-        const loadAnime = async () => {
-            if (animeId) {
-                await animeStore.loadAnimeDetails(parseInt(animeId, 10))
-            }
-        }
-
-        loadAnime()
-        console.log(animeStore.selectedAnime)
-
-        return () => {
-            animeStore.clearSelectedAnime()
-        }
-    }, [animeId, animeStore])
+    const {anime, isPending} = useAnime(Number.parseInt(animeId, 10))
 
     useEffect(() => {
         const loadUserAnime = async () => {
-            if (userStore.user && selectedAnime) {
-                await listStore.loadUserAnimeDetails(selectedAnime.id)
+            if (userStore.user && anime) {
+                await listStore.loadUserAnimeDetails(anime.id)
             }
         }
 
@@ -46,40 +31,40 @@ export default observer(function AnimeDetails() {
         return () => {
             listStore.clearUserAnimeDetails()
         }
-    }, [listStore, selectedAnime, userStore.user])
+    }, [anime, listStore, userStore.user])
 
-    const averageScore = selectedAnime?.averageScore ? parseFloat((selectedAnime.averageScore * 0.1).toFixed(1)) : null
+    const averageScore = anime?.averageScore ? parseFloat((anime.averageScore * 0.1).toFixed(1)) : null
 
-    if (animeStore.isLoadingSelectedAnime) {
+    if (isPending) {
         return (
             <LoadingComponent text="Loading anime..." />
         )
     }
 
-    if (animeStore.selectedAnime) {
+    if (anime) {
         return (
             <>
                 <Helmet>
-                    <title>{`${selectedAnime?.title.english || selectedAnime?.title.romaji} - PlotArmor`}</title>
+                    <title>{`${anime?.englishTitle || anime?.romajiTitle} - PlotArmor`}</title>
                 </Helmet>
 
                 <Box padding={['1.25rem', null, '4rem']} display='flex' alignItems='start' justifyContent='center' width='100%' >
                     <Stack maxWidth='1200px' width='100%' justifyContent='center' alignItems='center' gap='8rem'>
                         <Flex justify='center' wrap='wrap' gap='2rem' >
-                            <Image src={selectedAnime?.coverImage.large} aspectRatio='2/3' />
+                            <Image src={anime?.posterImage} aspectRatio='2/3' maxHeight="md"/>
                             <Stack gap={4}>
                                 {/* Title */}
-                                <Heading size='3xl'>{selectedAnime?.title.english || selectedAnime?.title.romaji}</Heading>
+                                <Heading size='3xl'>{anime?.englishTitle || anime?.romajiTitle}</Heading>
 
                                 {/* Genres */}
                                 <Wrap>
-                                    {selectedAnime?.genres && selectedAnime.genres.map(genre => (
-                                        <Badge key={genre} variant='subtle' borderRadius={14} width='fit-content' paddingX={2} color='gray.500' fontSize='xs'>{genre}</Badge>
+                                    {anime?.genres && anime.genres.map(genre => (
+                                        <Badge key={genre.id} variant='subtle' borderRadius={14} width='fit-content' paddingX={2} color='gray.500' fontSize='xs'>{genre.name}</Badge>
                                     ))}
                                 </Wrap>
 
                                 {/* Media Type and season */}
-                                <Text fontSize='xs' color='text.subtle'>{`${selectedAnime?.format} | ${selectedAnime?.season} ${selectedAnime?.seasonYear}`}</Text>
+                                <Text fontSize='xs' color='text.subtle'>{`${anime?.format} | ${anime?.season} ${anime?.seasonYear}`}</Text>
 
                                 {/* Score */}
                                 <Flex align='center' justify='start' gap={1}>
@@ -94,10 +79,10 @@ export default observer(function AnimeDetails() {
                                             <RatingInputForm />
                                             <WatchStatusInputForm />
                                             <NumEpisodesWatchedInputForm />
-                                            <Button variant='outline' loading={userStore.isRemovingAnimeFromList} width='fit-content' onClick={() => userStore.removeAnimeFromList(animeStore.selectedAnime!.id)}>Remove from list <Trash /></Button>
+                                            <Button variant='outline' loading={userStore.isRemovingAnimeFromList} width='fit-content' onClick={() => userStore.removeAnimeFromList(anime!.id)}>Remove from list <Trash /></Button>
                                         </Stack>
                                     ) : (
-                                        <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={userStore.isAddingAnimeToList} width='fit-content' onClick={() => userStore.addAnimeToList(animeStore.selectedAnime!)}>Add to list <Plus /></Button>
+                                        <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={userStore.isAddingAnimeToList} width='fit-content' onClick={() => userStore.addAnimeToList(anime!.id)}>Add to list <Plus /></Button>
                                     )}
                                 </Skeleton>
                             </Stack>
@@ -107,8 +92,8 @@ export default observer(function AnimeDetails() {
                         {/* Synopsis */}
                         <Stack gap='1rem' width='100%'>
                             <Heading size='md'>Synopsis</Heading>
-                            {selectedAnime?.description ? (
-                                <Text dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedAnime?.description) }} />
+                            {anime?.synopsis ? (
+                                <Text whiteSpace="pre-line">{anime.synopsis.replace(/\\n/g, '\n')}</Text>
                             ) : (
                                 <Text>No synopsis</Text>
                             )}
@@ -117,10 +102,10 @@ export default observer(function AnimeDetails() {
                         {/* trailer */}
                         <Stack gap='1rem' width='100%'>
                             <Heading size='md'>Trailer</Heading>
-                            {selectedAnime?.trailer ? (
+                            {anime?.trailerUrl ? (
                                 <AspectRatio ratio={4 / 3} maxWidth={560}>
                                     <iframe
-                                        src={`https://www.youtube.com/embed/${selectedAnime.trailer.id}`}
+                                        src={`https://www.youtube.com/embed/${anime.trailerUrl}`}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
                                     />
@@ -134,9 +119,9 @@ export default observer(function AnimeDetails() {
                         <Stack gap='1rem' width='100%'>
                             <Heading size='md'>Characters</Heading>
                             <Grid templateColumns={['1fr', null, '1fr 1fr', '1fr 1fr 1fr']} rowGap='1rem' columnGap='2rem'>
-                                {selectedAnime?.characters ? (
-                                    selectedAnime.characters.edges.map((character: CharacterEdge) => (
-                                        <CharacterCard character={character} key={character.node.name.full} />
+                                {anime?.characters ? (
+                                    anime.characters.map((character) => (
+                                        <CharacterCard character={character} key={character.name} />
                                     ))
                                 ) : (
                                     <Text>No characters</Text>

@@ -1,8 +1,9 @@
-export interface Character {
-    name: {
-        full: string
-    }
-    image: {
-        large: string
-    }
+import { VoiceActor } from "./voiceActor"
+
+export default interface Character {
+    id: number
+    name: string
+    role: string
+    imageUrl: string
+    voiceActors: VoiceActor[]
 }
