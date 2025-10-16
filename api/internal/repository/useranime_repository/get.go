@@ -3,7 +3,6 @@ package useranimerepository
 import (
 	"context"
 	"fmt"
-	"myanimevault/internal/database"
 	"myanimevault/internal/models/entities"
 
 	"gorm.io/gorm"
@@ -11,7 +10,7 @@ import (
 
 func (r *userAnimeRepository) GetByUserId(ctx context.Context, tx *gorm.DB, userId string) ([]entities.UserAnime, error) {
 	var userAnimes []entities.UserAnime
-	
+
 	err := tx.WithContext(ctx).
 		Where("user_id = ?", userId).
 		Find(&userAnimes).Error
@@ -23,9 +22,9 @@ func (r *userAnimeRepository) GetByUserId(ctx context.Context, tx *gorm.DB, user
 	return userAnimes, nil
 }
 
-func (r *userAnimeRepository) GetByUserAndAnime(context context.Context, userId string, animeId uint) (*entities.UserAnime, error) {
+func (r *userAnimeRepository) GetByUserAndAnime(context context.Context, tx *gorm.DB, userId string, animeId uint) (*entities.UserAnime, error) {
 	var userAnime entities.UserAnime
-	err := database.Db.WithContext(context).
+	err := tx.WithContext(context).
 		Where("user_id = ? AND anime_id = ?", userId, animeId).
 		First(&userAnime).Error
 

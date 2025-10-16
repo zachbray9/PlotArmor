@@ -1,89 +1,67 @@
 package useranimeservice
 
 import (
+	"context"
 	"fmt"
 	"myanimevault/internal/database"
+	"myanimevault/internal/models"
 	"myanimevault/internal/models/customErrors"
-	"myanimevault/internal/models/dtos"
-	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/requests"
 
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func (s *UserAnimeService)Update(userId string, animeId uint, patchRequest requests.UserAnimePatchRequest) error {
-	var userAnimeDetails dtos.UserAnimeDetailsDto
-	err := GetUserAnime(userId, animeId, &userAnimeDetails)
-
-	if err != nil {
-		return err
-	}
-
-	if patchRequest.Rating != nil {
-		if *patchRequest.Rating < 1 || *patchRequest.Rating > 10 {
-			return customErrors.ErrInvalidField
+func (s *UserAnimeService)Update(context context.Context, userId string, animeId uint, patchRequest requests.UserAnimePatchRequest) error {
+	err := database.Db.WithContext(context).Transaction(func(tx *gorm.DB) error {
+		// Get existing user anime
+		userAnime, err := s.userAnimeRepo.GetByUserAndAnime(context, tx, userId, animeId)
+		if err != nil {
+			return err
+		}
+		if userAnime == nil {
+			return customErrors.ErrNotFound
 		}
 
-		userAnimeDetails.Rating = *patchRequest.Rating
-	}
-
-	if patchRequest.WatchStatus != nil {
-		allowedWatchStatuses := map[string]bool{
-			"watching":      true,
-			"completed":     true,
-			"on hold":       true,
-			"dropped":       true,
-			"plan to watch": true,
+		// Validate and update rating
+		if patchRequest.Rating != nil {
+			if *patchRequest.Rating < 1 || *patchRequest.Rating > 10 {
+				return customErrors.ErrInvalidField
+			}
+			userAnime.Rating = patchRequest.Rating
 		}
 
-		validWatchStatus := allowedWatchStatuses[*patchRequest.WatchStatus]
+		// Validate and update watch status
+		if patchRequest.WatchStatus != nil {
+			allowedWatchStatuses := map[models.WatchStatus]bool{
+				models.WatchStatusWatching:      true,
+				models.WatchStatusCompleted:     true,
+				models.WatchStatusOnHold:       true,
+				models.WatchStatusDropped:       true,
+				models.WatchStatusPlanToWatch: true,
+			}
 
-		if !validWatchStatus {
-			return customErrors.ErrInvalidField
+			if !allowedWatchStatuses[*patchRequest.WatchStatus] {
+				return customErrors.ErrInvalidField
+			}
+			userAnime.WatchStatus = *patchRequest.WatchStatus
 		}
-		userAnimeDetails.WatchStatus = *patchRequest.WatchStatus
-	}
 
-	if patchRequest.NumEpisodesWatched != nil {
-		if *patchRequest.NumEpisodesWatched < 0 {
-			return customErrors.ErrInvalidField
+		// Validate and update episodes watched
+		if patchRequest.NumEpisodesWatched != nil {
+			if *patchRequest.NumEpisodesWatched < 0 {
+				return customErrors.ErrInvalidField
+			}
+			userAnime.NumEpisodesWatched = *patchRequest.NumEpisodesWatched
 		}
 
-		userAnimeDetails.NumEpisodesWatched = *patchRequest.NumEpisodesWatched
-	}
+		// Update in repository
+		err = s.userAnimeRepo.Update(context, tx, userAnime)
+		if err != nil {
+			return fmt.Errorf("failed to update user anime: %w", err)
+		}
 
-	// Parse the userId string to UUID
-	userUUID, err := uuid.Parse(userId)
-	if err != nil {
-		return fmt.Errorf("invalid user ID format: %w", err)
-	}
+		return nil
+	})
 
-	// Prepare update data - handle rating pointer conversion
-	updateData := map[string]interface{}{
-		"watch_status":         userAnimeDetails.WatchStatus,
-		"num_episodes_watched": userAnimeDetails.NumEpisodesWatched,
-	}
-
-	// Handle rating conversion (int to *int)
-	if userAnimeDetails.Rating == 0 {
-		updateData["rating"] = nil
-	} else {
-		updateData["rating"] = &userAnimeDetails.Rating
-	}
-
-	// Update using GORM
-	result := database.Db.Model(&entities.UserAnime{}).
-		Where("user_id = ? AND anime_id = ?", userUUID, animeId).
-		Updates(updateData)
-
-	if result.Error != nil {
-		return fmt.Errorf("there was a problem updating the record: %w", result.Error)
-	}
-
-	// Check if any rows were affected (record existed)
-	if result.RowsAffected == 0 {
-		return customErrors.ErrNotFound
-	}
-
-	return nil
+	return err
 }

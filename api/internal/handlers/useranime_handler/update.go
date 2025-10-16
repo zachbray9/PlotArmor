@@ -5,14 +5,13 @@ import (
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/requests"
 	"myanimevault/internal/models/responses"
-	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func UpdateUserAnimeHandler(context *gin.Context) {
+func (h *UserAnimeHandler) UpdateUserAnimeHandler(context *gin.Context) {
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
@@ -47,7 +46,7 @@ func UpdateUserAnimeHandler(context *gin.Context) {
 		return
 	}
 
-	err = useranimeservice.Update(user.Id.String(), uint(animeId), patchRequest)
+	err = h.UserAnimeService.Update(context.Request.Context(), user.Id.String(), uint(animeId), patchRequest)
 
 	if err != nil {
 		switch err {

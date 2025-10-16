@@ -23,7 +23,7 @@ func (s *UserAnimeService) AddToList(context context.Context, userId uuid.UUID, 
 		}
 
 		// Check if already in list
-		existingUserAnime, _ := s.userAnimeRepo.GetByUserAndAnime(context, userId.String(), animeId)
+		existingUserAnime, _ := s.userAnimeRepo.GetByUserAndAnime(context, tx, userId.String(), animeId)
 		if existingUserAnime != nil {
 			return fmt.Errorf("anime already in your list")
 		}
