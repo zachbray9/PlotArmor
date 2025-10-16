@@ -2,7 +2,6 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { User } from "../models/user";
 import { myApiAgent } from "../api/myApiAgent";
 import { store } from "./store";
-import { AniListAnime } from "../models/aniListAnime";
 import router from "../router/routes";
 import { toaster } from "../components/ui/toaster";
 import { RegisterFormFields } from "../schemas/registerSchema";
@@ -60,7 +59,7 @@ export default class UserStore {
         this.user = null
     }
 
-    addAnimeToList = async (anime: AniListAnime) => {
+    addAnimeToList = async (animeId: number) => {
         if (!this.user) {
             router.navigate('/login')
             return
@@ -69,8 +68,8 @@ export default class UserStore {
         this.setIsAddingAnimeToList(true)
 
         try {
-            await myApiAgent.List.add(anime)
-            runInAction(() => this.user?.animeIds.push(anime.id))
+            await myApiAgent.List.add(animeId)
+            runInAction(() => this.user?.animeIds.push(animeId))
             store.listStore.setUserAnimeDetails({
                 rating: 5,
                 watchStatus: 'watching',

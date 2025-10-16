@@ -1,15 +1,17 @@
 package useranimehandler
 
 import (
+	"myanimevault/internal/database"
+	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/responses"
-	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func GetUserListHandler(context *gin.Context) {
+func (h *UserAnimeHandler) GetUserListHandler(context *gin.Context) {
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
@@ -30,12 +32,29 @@ func GetUserListHandler(context *gin.Context) {
 		return
 	}
 
-	animeList, err := useranimeservice.GetList(user.Id.String())
+	var animeList []dtos.UserAnimeDto
+
+	err := database.Db.WithContext(context.Request.Context()).Transaction(func(tx *gorm.DB) error {
+		var err error
+		animeList, err = h.UserAnimeService.GetList(context.Request.Context(), tx, user.Id.String())
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "There was a problem retrieving the users list"})
+		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+			Success: false,
+			Message: "Failed to retrieve user anime list.",
+			Data:    nil,
+		})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message": "List successfully retrieved.", "animeList": animeList})
+	context.JSON(http.StatusOK, responses.ApiResponse{
+		Success: true,
+		Message: "Successfully retrieved user anime list.",
+		Data:    animeList,
+	})
 }

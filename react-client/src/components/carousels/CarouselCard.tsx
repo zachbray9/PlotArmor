@@ -23,7 +23,7 @@ export default observer(function CarouselCard({ anime }: Props) {
     const cleanDescription = stripHtmlTags(anime.synopsis ?? "")
 
     const handleAddToList = () => {
-        userStore.addAnimeToList(anime)
+        userStore.addAnimeToList(anime.id)
     }
 
     const handleRemoveFromList = () => {

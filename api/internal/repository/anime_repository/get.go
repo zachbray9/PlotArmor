@@ -9,6 +9,26 @@ import (
 	"gorm.io/gorm"
 )
 
+func (r *animeRepository) GetById(ctx context.Context, tx *gorm.DB, animeId uint) (*entities.Anime, error) {
+	var anime entities.Anime
+
+	err := tx.WithContext(ctx).
+		Preload("Studio").
+		Preload("Genres").
+		Preload("Characters").
+		Where("id = ?", animeId).
+		First(&anime).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("anime not found")
+		}
+		return nil, err
+	}
+
+	return &anime, nil
+}
+
 func (r *animeRepository) GetFeatured(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error) {
 	var animes []entities.Anime
 
@@ -86,5 +106,3 @@ func (r *animeRepository) GetUpcoming(ctx context.Context, tx *gorm.DB, limit in
 
 	return animes, nil
 }
-
-

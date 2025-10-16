@@ -1,31 +1,23 @@
 package useranimehandler
 
 import (
-	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/entities"
+	"myanimevault/internal/models/requests"
 	"myanimevault/internal/models/responses"
-	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func AddToListHandler(context *gin.Context) {
-	var userAnime dtos.UserAnimeDto
-
-	err := context.ShouldBindJSON(&userAnime)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "There was an issue with one or more of the fields in the userAnime"})
-		return
-	}
-
+func (h *UserAnimeHandler) AddToListHandler(context *gin.Context) {
+	//get user from context (auth middleware)
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
-			Success: false, 
+			Success: false,
 			Message: "User not authenticated.",
-			Data: nil,
+			Data:    nil,
 		})
 		return
 	}
@@ -35,17 +27,54 @@ func AddToListHandler(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
 			Success: false,
 			Message: "Invalid user type.",
-			Data: nil,
+			Data:    nil,
 		})
 		return
 	}
 
-	_, err = useranimeservice.Create(user.Id.String(), userAnime)
+	// Parse request
+    var req requests.AddToListRequest
+    if err := context.ShouldBindJSON(&req); err != nil {
+        context.JSON(http.StatusBadRequest, responses.ApiResponse{
+            Success: false,
+            Message: "Invalid request body",
+            Data:    nil,
+        })
+        return
+    }
 
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "There was a problem adding the new userAnime to the database"})
-		return
-	}
-
-	context.JSON(http.StatusOK, gin.H{"message": "New userAnime was successfully added to the database"})
+	// Add to list
+    userAnime, err := h.UserAnimeService.AddToList(context.Request.Context(), user.Id, req.AnimeId)
+    if err != nil {
+        if strings.Contains(err.Error(), "already in your list") {
+            context.JSON(http.StatusConflict, responses.ApiResponse{
+                Success: false,
+                Message: err.Error(),
+                Data:    nil,
+            })
+            return
+        }
+        
+        if strings.Contains(err.Error(), "not found") {
+            context.JSON(http.StatusNotFound, responses.ApiResponse{
+                Success: false,
+                Message: "Anime not found",
+                Data:    nil,
+            })
+            return
+        }
+        
+        context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+            Success: false,
+            Message: "Failed to add anime to list",
+            Data:    nil,
+        })
+        return
+    }
+	
+	context.JSON(http.StatusCreated, responses.ApiResponse{
+        Success: true,
+        Message: "Anime added to your list successfully",
+        Data:    userAnime,
+    })
 }

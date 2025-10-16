@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { myApi } from "./axios";
-import { AniListAnime } from "../models/aniListAnime";
 import { GetUserAnimeDetailsResponse } from "../models/responses/getUserAnimeDetailsResponse";
 import { UserAnimePatchRequest } from "../models/requests/userAnimePatchRequest";
 import { GetListResponse } from "../models/responses/getListResponse";
@@ -21,10 +20,10 @@ const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 myApi.interceptors.response.use(
     (res) => res,
     (err) => {
-        if(axios.isAxiosError(err)){
+        if (axios.isAxiosError(err)) {
             const errorMessage = err.response?.data.error
 
-            switch(err.response?.status) {
+            switch (err.response?.status) {
                 case 400: throw new BadRequestError(errorMessage)
                 case 401: throw new UnauthorizedError(errorMessage)
                 case 404: throw new NotFoundError(errorMessage)
@@ -32,7 +31,7 @@ myApi.interceptors.response.use(
                 case 429: throw new TooManyRequestsError(errorMessage)
             }
         }
-        
+
         throw err
     }
 )
@@ -55,7 +54,7 @@ const Auth = {
 }
 
 const List = {
-    add: (anime: AniListAnime) => requests.post('/user/anime', anime),
+    add: (animeId: number) => requests.post('/user/anime', { animeId: animeId }),
     getList: () => requests.get<GetListResponse>('/user/anime'),
     getUserAnimeDetails: (animeId: number) => requests.get<GetUserAnimeDetailsResponse>(`/user/anime/${animeId}`),
     updateUserAnime: (animeId: number, patchRequest: UserAnimePatchRequest) => requests.patch(`/user/anime/${animeId}`, patchRequest),

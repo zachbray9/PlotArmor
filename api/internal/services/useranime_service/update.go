@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func Update(userId string, animeId uint, patchRequest requests.UserAnimePatchRequest) error {
+func (s *UserAnimeService)Update(userId string, animeId uint, patchRequest requests.UserAnimePatchRequest) error {
 	var userAnimeDetails dtos.UserAnimeDetailsDto
 	err := GetUserAnime(userId, animeId, &userAnimeDetails)
 
