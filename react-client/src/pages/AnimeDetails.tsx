@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet-async";
 import CharacterCard from "../components/animeDetails/characterCard";
 import { Plus, Star, Trash } from "lucide-react";
 import useAnime from "../hooks/useAnime";
+import { extractYoutubeId } from "../utils/youtube";
 
 export default observer(function AnimeDetails() {
     const { listStore, userStore } = useStore()
@@ -105,7 +106,7 @@ export default observer(function AnimeDetails() {
                             {anime?.trailerUrl ? (
                                 <AspectRatio ratio={4 / 3} maxWidth={560}>
                                     <iframe
-                                        src={`https://www.youtube.com/embed/${anime.trailerUrl}`}
+                                        src={`https://www.youtube.com/embed/${extractYoutubeId(anime.trailerUrl)}`}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
                                     />
