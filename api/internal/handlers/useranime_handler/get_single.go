@@ -5,7 +5,6 @@ import (
 	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/responses"
-	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 	"strconv"
 
@@ -13,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetUserAnimeHandler(context *gin.Context) {
+func (h *UserAnimeHandler) GetUserAnimeHandler(context *gin.Context) {
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
@@ -47,7 +46,7 @@ func GetUserAnimeHandler(context *gin.Context) {
 	var userAnime *entities.UserAnime
 
 	err = database.Db.WithContext(context.Request.Context()).Transaction(func(tx *gorm.DB) error {
-		userAnime, err = useranimeservice.GetByUserAndAnime(context.Request.Context(), tx, user.Id.String(), uint(animeId))
+		userAnime, err = h.UserAnimeService.GetByUserAndAnime(context.Request.Context(), tx, user.Id.String(), uint(animeId))
 		if err != nil {
 			return err
 		}

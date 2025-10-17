@@ -6,6 +6,7 @@ import (
 	"myanimevault/internal/database"
 	"myanimevault/internal/models"
 
+	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/entities"
 
 	"github.com/google/uuid"
@@ -19,13 +20,13 @@ func (s *UserAnimeService) AddToList(context context.Context, userId uuid.UUID, 
 		// Check if anime exists
 		_, err := s.animeRepo.GetById(context, tx, animeId)
 		if err != nil {
-			return fmt.Errorf("anime not found: %w", err)
+			return customErrors.ErrNotFound
 		}
 
 		// Check if already in list
 		existingUserAnime, _ := s.userAnimeRepo.GetByUserAndAnime(context, tx, userId.String(), animeId)
 		if existingUserAnime != nil {
-			return fmt.Errorf("anime already in your list")
+			return customErrors.ErrAnimeAlreadyExists
 		}
 
 		// Create user anime entry

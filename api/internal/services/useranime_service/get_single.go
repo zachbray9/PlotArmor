@@ -2,23 +2,19 @@ package useranimeservice
 
 import (
 	"context"
+	"fmt"
 	"myanimevault/internal/models/entities"
 
 	"gorm.io/gorm"
 )
 
-func GetByUserAndAnime(context context.Context, tx *gorm.DB, userId string, animeId uint) (*entities.UserAnime, error) {
-	var userAnime entities.UserAnime
-    err := tx.WithContext(context).
-        Where("user_id = ? AND anime_id = ?", userId, animeId).
-        First(&userAnime).Error
-    
+func (s *UserAnimeService)GetByUserAndAnime(context context.Context, tx *gorm.DB, userId string, animeId uint) (*entities.UserAnime, error) {
+    userAnime, err := s.userAnimeRepo.GetByUserAndAnime(context, tx, userId, animeId)
+
     if err != nil {
-        if err == gorm.ErrRecordNotFound {
-            return nil, nil // Return nil, nil when not found (not an error)
-        }
-        return nil, err
+        return nil, fmt.Errorf("failed to fetch user anime: %w", err)
     }
     
-    return &userAnime, nil
+    fmt.Printf("Successfully got user anime: %+v\n", userAnime)
+    return userAnime, nil
 }

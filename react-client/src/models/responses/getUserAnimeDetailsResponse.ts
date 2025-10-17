@@ -1,4 +1,4 @@
-import { UserAnimeDetails } from "../userAnimeDetails"
+import { UserAnimeDetails } from "../userAnime"
 
 export interface GetUserAnimeDetailsResponse{
     message: string

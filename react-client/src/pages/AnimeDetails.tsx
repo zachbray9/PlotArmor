@@ -1,6 +1,5 @@
 import { AspectRatio, Badge, Box, Button, Flex, Grid, Heading, Image, Skeleton, Stack, Text, Wrap } from "@chakra-ui/react";
 import { useStore } from "../stores/store";
-import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import LoadingComponent from "../components/common/loading/LoadingComponent";
@@ -12,31 +11,19 @@ import CharacterCard from "../components/animeDetails/characterCard";
 import { Plus, Star, Trash } from "lucide-react";
 import useAnime from "../hooks/useAnime";
 import { extractYoutubeId } from "../utils/youtube";
+import useUserAnime from "../hooks/useUserAnime";
 
 export default observer(function AnimeDetails() {
-    const { listStore, userStore } = useStore()
+    const { userStore } = useStore()
     const { animeId = "0" } = useParams()
-    const { userAnimeDetails } = listStore
+    const {anime, isPending: isAnimePending} = useAnime(Number.parseInt(animeId, 10))
+    const {userAnime, isPending: isUserAnimePending} = useUserAnime(Number.parseInt(animeId, 10))
 
-    const {anime, isPending} = useAnime(Number.parseInt(animeId, 10))
-
-    useEffect(() => {
-        const loadUserAnime = async () => {
-            if (userStore.user && anime) {
-                await listStore.loadUserAnimeDetails(anime.id)
-            }
-        }
-
-        loadUserAnime()
-
-        return () => {
-            listStore.clearUserAnimeDetails()
-        }
-    }, [anime, listStore, userStore.user])
+    
 
     const averageScore = anime?.averageScore ? parseFloat((anime.averageScore * 0.1).toFixed(1)) : null
 
-    if (isPending) {
+    if (isAnimePending) {
         return (
             <LoadingComponent text="Loading anime..." />
         )
@@ -74,16 +61,16 @@ export default observer(function AnimeDetails() {
                                 </Flex>
 
                                 {/* List controls */}
-                                <Skeleton loading={listStore.isLoadingUserAnimeDetails}>
-                                    {userAnimeDetails ? (
+                                <Skeleton loading={isUserAnimePending}>
+                                    {userAnime ? (
                                         <Stack gap='1rem'>
                                             <RatingInputForm />
                                             <WatchStatusInputForm />
                                             <NumEpisodesWatchedInputForm />
-                                            <Button variant='outline' loading={userStore.isRemovingAnimeFromList} width='fit-content' onClick={() => userStore.removeAnimeFromList(anime!.id)}>Remove from list <Trash /></Button>
+                                            <Button variant='outline' loading={userStore.isRemovingAnimeFromList} width='fit-content' onClick={() => userStore.removeAnimeFromList(anime.id)}>Remove from list <Trash /></Button>
                                         </Stack>
                                     ) : (
-                                        <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={userStore.isAddingAnimeToList} width='fit-content' onClick={() => userStore.addAnimeToList(anime!.id)}>Add to list <Plus /></Button>
+                                        <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={userStore.isAddingAnimeToList} width='fit-content' onClick={() => userStore.addAnimeToList(anime.id)}>Add to list <Plus /></Button>
                                     )}
                                 </Skeleton>
                             </Stack>

@@ -1,11 +1,11 @@
 package useranimehandler
 
 import (
+	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/requests"
 	"myanimevault/internal/models/responses"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,48 +33,48 @@ func (h *UserAnimeHandler) AddToListHandler(context *gin.Context) {
 	}
 
 	// Parse request
-    var req requests.AddToListRequest
-    if err := context.ShouldBindJSON(&req); err != nil {
-        context.JSON(http.StatusBadRequest, responses.ApiResponse{
-            Success: false,
-            Message: "Invalid request body",
-            Data:    nil,
-        })
-        return
-    }
+	var req requests.AddToListRequest
+	if err := context.ShouldBindJSON(&req); err != nil {
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false,
+			Message: "Invalid request body",
+			Data:    nil,
+		})
+		return
+	}
 
 	// Add to list
-    userAnime, err := h.UserAnimeService.AddToList(context.Request.Context(), user.Id, req.AnimeId)
-    if err != nil {
-        if strings.Contains(err.Error(), "already in your list") {
-            context.JSON(http.StatusConflict, responses.ApiResponse{
-                Success: false,
-                Message: err.Error(),
-                Data:    nil,
-            })
-            return
-        }
-        
-        if strings.Contains(err.Error(), "not found") {
-            context.JSON(http.StatusNotFound, responses.ApiResponse{
-                Success: false,
-                Message: "Anime not found",
-                Data:    nil,
-            })
-            return
-        }
-        
-        context.JSON(http.StatusInternalServerError, responses.ApiResponse{
-            Success: false,
-            Message: "Failed to add anime to list",
-            Data:    nil,
-        })
-        return
-    }
-	
+	userAnime, err := h.UserAnimeService.AddToList(context.Request.Context(), user.Id, req.AnimeId)
+	if err != nil {
+		switch err {
+		case customErrors.ErrNotFound:
+			context.JSON(http.StatusNotFound, responses.ApiResponse{
+				Success: false,
+				Message: "Anime not found",
+				Data:    nil,
+			})
+			return
+		case customErrors.ErrAnimeAlreadyExists:
+			context.JSON(http.StatusConflict, responses.ApiResponse{
+				Success: false,
+				Message: err.Error(),
+				Data:    nil,
+			})
+			return
+		default:
+			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+				Success: false,
+				Message: "Failed to add anime to list",
+				Data:    nil,
+			})
+			return
+
+		}
+	}
+
 	context.JSON(http.StatusCreated, responses.ApiResponse{
-        Success: true,
-        Message: "Anime added to your list successfully",
-        Data:    userAnime,
-    })
+		Success: true,
+		Message: "Anime added to your list successfully",
+		Data:    userAnime,
+	})
 }

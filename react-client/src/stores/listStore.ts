@@ -1,13 +1,11 @@
-import { makeAutoObservable, runInAction } from "mobx";
-import { UserAnimeDetails } from "../models/userAnimeDetails";
+import { makeAutoObservable } from "mobx";
+import { UserAnime } from "../models/userAnime";
 import { myApiAgent } from "../api/myApiAgent";
 import { UserAnimePatchRequest } from "../models/requests/userAnimePatchRequest";
 import { store } from "./store";
 
 export default class ListStore {
-    list: UserAnimeDetails[] = []
-    userAnimeDetails: UserAnimeDetails | null = null
-    isLoadingUserAnimeDetails: boolean = false
+    list: UserAnime[] = []
     isLoadingList: boolean = false
     searchQuery: string = ''
     watchStatusFilter: string | null = null
@@ -19,14 +17,14 @@ export default class ListStore {
     }
 
     get filteredList() {
-        let filteredList: UserAnimeDetails[] = this.list
+        let filteredList: UserAnime[] = this.list
 
-        if(this.searchQuery) filteredList = filteredList.filter(userAnime => userAnime.title?.romaji?.toLowerCase().includes(this.searchQuery.toLowerCase()) || userAnime.title?.english?.toLowerCase().includes(this.searchQuery.toLowerCase()))
+        if(this.searchQuery) filteredList = filteredList.filter(userAnime => userAnime.anime.romajiTitle.toLowerCase().includes(this.searchQuery.toLowerCase()) || userAnime.anime.englishTitle.toLowerCase().includes(this.searchQuery.toLowerCase()))
 
         if (this.watchStatusFilter) filteredList = filteredList.filter(userAnime => userAnime.watchStatus === this.watchStatusFilter)
         
-        let sortedList: UserAnimeDetails[] = []
-        if (this.sortPreference === 'title') sortedList = filteredList.slice().sort((a, b) => a.title!.romaji!.localeCompare(b.title!.romaji!))
+        let sortedList: UserAnime[] = []
+        if (this.sortPreference === 'title') sortedList = filteredList.slice().sort((a, b) => a.anime.romajiTitle.localeCompare(b.anime.romajiTitle))
         if (this.sortPreference === 'rating') sortedList = filteredList.slice().sort((a, b) => b.rating - a.rating)
         if (this.sortPreference === 'progress') sortedList = filteredList.slice().sort((a, b) => b.numEpisodesWatched - a.numEpisodesWatched)
 
@@ -45,23 +43,6 @@ export default class ListStore {
             console.log(error)
             this.setIsLoadingList(false)
         }
-    }
-
-    loadUserAnimeDetails = async (animeId: number) => {
-        this.setIsLoadingUserAnimeDetails(true)
-
-        try {
-            const response = await myApiAgent.List.getUserAnimeDetails(animeId)
-            runInAction(() => this.userAnimeDetails = response.userAnime)
-            this.setIsLoadingUserAnimeDetails(false)
-        } catch (error) {
-            console.log('There was a problem getting the user anime details: ' + error)
-            this.setIsLoadingUserAnimeDetails(false)
-        }
-    }
-
-    setUserAnimeDetails = (userAnimeDetails: UserAnimeDetails) => {
-        this.userAnimeDetails = userAnimeDetails
     }
 
     updateUserAnime = async (rating?: number, watchStatus?: string, numEpisodesWatched?: number) => {
@@ -83,9 +64,6 @@ export default class ListStore {
         this.isLoadingList = value
     }
 
-    setIsLoadingUserAnimeDetails = (value: boolean) => {
-        this.isLoadingUserAnimeDetails = value
-    }
 
     setSearchQuery = (query: string) => {
         this.searchQuery = query
@@ -107,7 +85,4 @@ export default class ListStore {
         this.list = []
     }
 
-    clearUserAnimeDetails = () => {
-        this.userAnimeDetails = null
-    }
 }

@@ -1,6 +1,6 @@
 import { Badge, Flex, Grid, GridItem, Heading, Image, Progress, Stack, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import { UserAnimeDetails } from "../../models/userAnimeDetails";
+import { UserAnimeDetails } from "../../models/userAnime";
 import { Calendar, Play, Star } from "lucide-react";
 
 interface Props {
