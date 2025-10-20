@@ -20,9 +20,9 @@ export default function EditEntryDrawer({ userAnime }: Props) {
 
     const methods = useForm({
         defaultValues: {
-            watchStatus: [userAnime.watchStatus],
+            watchStatus: userAnime.watchStatus ?? "PLAN_TO_WATCH",
             numEpisodesWatched: userAnime.numEpisodesWatched ?? 0,
-            rating: userAnime.rating ? [userAnime.rating.toString()] : ["0"],
+            rating: userAnime.rating ? userAnime.rating.toString() : "0",
         },
         resolver: zodResolver(CreateUpdateUserAnimeValidationSchema(userAnime.anime.episodes))
     })
@@ -58,7 +58,7 @@ export default function EditEntryDrawer({ userAnime }: Props) {
                                     <Drawer.Title>Update list</Drawer.Title>
                                 </Drawer.Header>
 
-                                <Drawer.Body>
+                                <Drawer.Body display={"flex"} flexDir={"column"} gap={4} h={"full"}>
                                     <FormSelect name="watchStatus" label="Watch status" collection={watchStatusCollection} />
                                     <FormNumberInput name="numEpisodesWatched" label="Episodes watched" min={0} max={userAnime.anime.episodes || Infinity} />
                                     <FormSelect name="rating" label="Rating" collection={ratingCollection} />

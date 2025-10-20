@@ -1,4 +1,4 @@
-import { Field, ListCollection, Portal, Select, Spinner } from '@chakra-ui/react';
+import { Field, ListCollection, Select, Spinner } from '@chakra-ui/react';
 import { SelectOption } from "../../../models/selectOption";
 import { useController, useFormContext } from "react-hook-form";
 
@@ -30,9 +30,11 @@ export default function FormSelect({ name, label, collection, isSubmitting, mult
 
             <Select.Root
                 collection={collection}
-                value={value}
+                value={value ? (multiple ? value : [value]) : []}
                 disabled={isSubmitting}
-                onValueChange={({value}) => onChange(value)}
+                onValueChange={({value: selectedValues}) => {
+                    onChange(multiple ? selectedValues : selectedValues[0])
+                }}
                 onBlur={onBlur}
                 multiple={multiple}
                 ref={ref}
@@ -50,7 +52,6 @@ export default function FormSelect({ name, label, collection, isSubmitting, mult
                     </Select.IndicatorGroup>
                 </Select.Control>
 
-                <Portal>
                     <Select.Positioner>
                         <Select.Content>
                             {collection.items.map((item) => (
@@ -61,7 +62,6 @@ export default function FormSelect({ name, label, collection, isSubmitting, mult
                             ))}
                         </Select.Content>
                     </Select.Positioner>
-                </Portal>
             </Select.Root>
 
             {isTouched && fieldError && (

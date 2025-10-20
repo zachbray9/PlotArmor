@@ -24,7 +24,7 @@ func (s *UserAnimeService)Update(context context.Context, userId string, animeId
 
 		// Validate and update rating
 		if patchRequest.Rating != nil {
-			if *patchRequest.Rating < 1 || *patchRequest.Rating > 10 {
+			if *patchRequest.Rating < 0 || *patchRequest.Rating > 10 {
 				return customErrors.ErrInvalidField
 			}
 			userAnime.Rating = patchRequest.Rating
