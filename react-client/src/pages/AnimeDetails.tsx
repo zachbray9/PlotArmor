@@ -3,15 +3,13 @@ import { useStore } from "../stores/store";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import LoadingComponent from "../components/common/loading/LoadingComponent";
-import RatingInputForm from "../components/forms/ratingInputForm";
-import WatchStatusInputForm from "../components/forms/watchStatusInputForm";
-import NumEpisodesWatchedInputForm from "../components/forms/numEpisodesWatchedInputForm";
 import { Helmet } from "react-helmet-async";
 import CharacterCard from "../components/animeDetails/characterCard";
-import { Plus, Star, Trash } from "lucide-react";
+import { Plus, Star } from "lucide-react";
 import useAnime from "../hooks/useAnime";
 import { extractYoutubeId } from "../utils/youtube";
 import useUserAnime from "../hooks/useUserAnime";
+import EditEntryDrawer from "../components/animeList/editEntryDrawer";
 
 export default observer(function AnimeDetails() {
     const { userStore } = useStore()
@@ -63,12 +61,7 @@ export default observer(function AnimeDetails() {
                                 {/* List controls */}
                                 <Skeleton loading={isUserAnimePending}>
                                     {userAnime ? (
-                                        <Stack gap='1rem'>
-                                            <RatingInputForm />
-                                            <WatchStatusInputForm />
-                                            <NumEpisodesWatchedInputForm />
-                                            <Button variant='outline' loading={userStore.isRemovingAnimeFromList} width='fit-content' onClick={() => userStore.removeAnimeFromList(anime.id)}>Remove from list <Trash /></Button>
-                                        </Stack>
+                                        <EditEntryDrawer userAnime={userAnime}/>
                                     ) : (
                                         <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={userStore.isAddingAnimeToList} width='fit-content' onClick={() => userStore.addAnimeToList(anime.id)}>Add to list <Plus /></Button>
                                     )}

@@ -43,7 +43,7 @@ func InitRouter(server *gin.Engine) {
 	imageHandler := imagehandler.NewImageHandler(imageService)
 	genreHandler := genrehandler.NewGenreHandler(genreService)
 	studioHandler := studiohandler.NewStudioHandler(studioService)
-	userAnimeHandler := useranimehandler.NewUserAnimeHandler(userAnimeService)
+	userAnimeHandler := useranimehandler.NewUserAnimeHandler(userAnimeService, imageService)
 
 	api := server.Group("/api")
 	//auth routes

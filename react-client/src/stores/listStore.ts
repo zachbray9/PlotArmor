@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { UserAnime } from "../models/userAnime";
 import { myApiAgent } from "../api/myApiAgent";
-import { UserAnimePatchRequest } from "../models/requests/userAnimePatchRequest";
-import { store } from "./store";
+import { UpdateUserAnimeFormFields } from "../schemas/updateUserAnimeSchema";
+
 
 export default class ListStore {
     list: UserAnime[] = []
@@ -45,19 +45,9 @@ export default class ListStore {
         }
     }
 
-    updateUserAnime = async (rating?: number, watchStatus?: string, numEpisodesWatched?: number) => {
-        const animeId = store.animeStore.selectedAnime!.id
-        console.log(typeof (rating))
-
-        const patchRequest: Partial<UserAnimePatchRequest> = {
-            ...(rating != undefined && { rating }),
-            ...(watchStatus != undefined && { watchStatus }),
-            ...(numEpisodesWatched != undefined && { numEpisodesWatched })
-        }
-
-        console.log(patchRequest)
-        await myApiAgent.List.updateUserAnime(animeId, patchRequest)
-        console.log("successfully updated useranime")
+    updateUserAnime = async (animeId: number, formFields: UpdateUserAnimeFormFields) => {
+        console.log(formFields)
+        await myApiAgent.List.updateUserAnime(animeId, formFields)
     }
 
     setIsLoadingList = (value: boolean) => {

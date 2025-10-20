@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { myApi } from "./axios";
-import { UserAnimePatchRequest } from "../models/requests/userAnimePatchRequest";
 import { GetListResponse } from "../models/responses/getListResponse";
 import { RefreshResponse } from "../models/responses/refreshResponse";
 import ApiResponse from "../models/responses/apiResponse";
@@ -14,6 +13,7 @@ import { BadRequestError, ConflictError, NotFoundError, TooManyRequestsError, Un
 import Anime from "../models/anime";
 import HomePageData from "../models/homePageData";
 import { UserAnime } from "../models/userAnime";
+import { UpdateUserAnimeFormFields } from "../schemas/updateUserAnimeSchema";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -57,7 +57,7 @@ const List = {
     add: (animeId: number) => requests.post('/user/anime', { animeId: animeId }),
     getList: () => requests.get<GetListResponse>('/user/anime'),
     getUserAnimeDetails: (animeId: number) => requests.get<ApiResponse<UserAnime>>(`/user/anime/${animeId}`),
-    updateUserAnime: (animeId: number, patchRequest: UserAnimePatchRequest) => requests.patch(`/user/anime/${animeId}`, patchRequest),
+    updateUserAnime: (animeId: number, patchRequest: UpdateUserAnimeFormFields) => requests.patch(`/user/anime/${animeId}`, patchRequest),
     remove: (animeId: number) => requests.delete(`/user/anime/${animeId}`)
 }
 

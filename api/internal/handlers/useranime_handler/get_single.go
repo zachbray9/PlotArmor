@@ -3,6 +3,7 @@ package useranimehandler
 import (
 	"myanimevault/internal/database"
 	"myanimevault/internal/models/customErrors"
+	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/responses"
 	"net/http"
@@ -72,9 +73,14 @@ func (h *UserAnimeHandler) GetUserAnimeHandler(context *gin.Context) {
 		}
 	}
 
+	//convert to dto
+	posterUrl := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key)
+	bannerUrl := h.imageService.GetPublicUrl(userAnime.Anime.BannerS3Key)
+	userAnimeDto := dtos.ToUserAnimeDTO(userAnime, posterUrl, bannerUrl)
+
 	context.JSON(http.StatusOK, responses.ApiResponse{
 		Success: true,
 		Message: "Successfully retrieved user anime details.",
-		Data:    userAnime,
+		Data:    userAnimeDto,
 	})
 }

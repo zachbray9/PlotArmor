@@ -13,6 +13,7 @@ func (r *userAnimeRepository) GetByUserId(ctx context.Context, tx *gorm.DB, user
 
 	err := tx.WithContext(ctx).
 		Where("user_id = ?", userId).
+		Preload("Anime").
 		Find(&userAnimes).Error
 
 	if err != nil {
@@ -26,6 +27,7 @@ func (r *userAnimeRepository) GetByUserAndAnime(context context.Context, tx *gor
 	var userAnime entities.UserAnime
 	err := tx.WithContext(context).
 		Where("user_id = ? AND anime_id = ?", userId, animeId).
+		Preload("Anime").
 		First(&userAnime).Error
 
 	if err == gorm.ErrRecordNotFound {

@@ -1,38 +1,56 @@
-import { Form, Formik } from "formik";
 import FormNumberInput from "../common/form/formNumberInput";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores/store";
 import { Flex, Text } from "@chakra-ui/react";
-import * as Yup from 'yup'
-import { toaster } from "../ui/toaster";
+import { FormProvider, useForm } from "react-hook-form";
+import { UserAnime } from "../../models/userAnime";
+import z from "zod";
+import useUpdateUserAnime from "../../hooks/useUpdateUserAnime";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useDebounce from "../../hooks/useDebounce";
 
-export default observer(function NumEpisodesWatchedInputForm() {
-    const { listStore, animeStore } = useStore()
-    const { userAnimeDetails } = listStore
-    const { selectedAnime } = animeStore
+interface Props {
+    userAnime: UserAnime
+}
 
-    const validationSchema = Yup.object({
-        numEpisodesWatched: Yup.number().min(0, 'Episodes watched cannot be less than 0.').max(selectedAnime?.episodes || Infinity, 'Episodes watched cannot exceed the total number of episodes.').required("Value cannot be empty.").integer("Value cannot be a decimal.")
+
+export default function NumEpisodesWatchedInputForm({ userAnime }: Props) {
+    const { mutate, isPending } = useUpdateUserAnime()
+
+    const validationSchema = z.object({
+        numEpisodesWatched: z.number().min(0, 'Episodes watched cannot be less than 0.').max(userAnime.anime.episodes || Infinity, 'Episodes watched cannot exceed the total number of episodes.').int("Value cannot be a decimal.")
     })
 
+    type FormFields = z.infer<typeof validationSchema>
+
+    const methods = useForm<FormFields>({
+        defaultValues: {
+            numEpisodesWatched: userAnime.numEpisodesWatched
+        },
+        resolver: zodResolver(validationSchema)
+    })
+
+    const numEpisodesWatched: number = methods.watch("numEpisodesWatched") as number
+
+    const handleAutoSubmit = () => {
+        if (numEpisodesWatched !== userAnime.numEpisodesWatched && methods.formState.isValid) {
+            mutate({
+                animeId: userAnime.anime.id,
+                numEpisodesWatched: numEpisodesWatched
+            })
+        }
+    }
+
+
+
+
     return (
-        <Formik
-            initialValues={{ numEpisodesWatched: userAnimeDetails!.numEpisodesWatched }}
-            onSubmit={(values) => listStore.updateUserAnime(undefined, undefined, values.numEpisodesWatched)
-                .catch(() => toaster.create({ title: 'Error', description: 'There was a problem updating your episodes watched.', type: 'error', duration: 5000, closable: true }))
-            }
-            validationSchema={validationSchema}
-        >
-            {({ isSubmitting, handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                    <Flex align='center' gap='1rem'>
-                        <Text>Episodes:</Text>
-                        <FormNumberInput name="numEpisodesWatched" min={0} max={selectedAnime?.episodes || Infinity} isSubmtting={isSubmitting} autoSubmit />
-                        <Text>/</Text>
-                        <Text>{selectedAnime?.episodes || '?'}</Text>
-                    </Flex>
-                </Form>
-            )}
-        </Formik>
+        <FormProvider {...methods}>
+            <Flex align='center' gap='1rem'>
+                <Text>Episodes:</Text>
+                <FormNumberInput name="numEpisodesWatched" min={0} max={userAnime.anime.episodes || Infinity} isSubmitting={isPending} />
+                <Text>/</Text>
+                <Text>{userAnime.anime.episodes || '?'}</Text>
+            </Flex>
+        </FormProvider>
+
     )
-})
+}

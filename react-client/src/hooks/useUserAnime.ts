@@ -9,6 +9,7 @@ export default function useUserAnime(animeId: number) {
             throw new Error("Failed to fetch user anime")
         }
 
+        console.log(res.data)
         return res.data
     }
 

@@ -15,9 +15,9 @@ func (h *UserAnimeHandler) GetUserListHandler(context *gin.Context) {
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
-			Success: false, 
+			Success: false,
 			Message: "User not authenticated.",
-			Data: nil,
+			Data:    nil,
 		})
 		return
 	}
@@ -27,12 +27,12 @@ func (h *UserAnimeHandler) GetUserListHandler(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
 			Success: false,
 			Message: "Invalid user type.",
-			Data: nil,
+			Data:    nil,
 		})
 		return
 	}
 
-	var animeList []dtos.UserAnimeDto
+	var animeList []entities.UserAnime
 
 	err := database.Db.WithContext(context.Request.Context()).Transaction(func(tx *gorm.DB) error {
 		var err error
@@ -52,9 +52,19 @@ func (h *UserAnimeHandler) GetUserListHandler(context *gin.Context) {
 		return
 	}
 
+	//convert to dtos
+	userAnimeDtos := make([]dtos.UserAnimeDto, 0, len(animeList))
+
+	for _, userAnime := range animeList {
+		posterURL := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key)
+		bannerURL := h.imageService.GetPublicUrl(userAnime.Anime.BannerS3Key)
+		dto := dtos.ToUserAnimeDTO(&userAnime, posterURL, bannerURL)
+		userAnimeDtos = append(userAnimeDtos, dto)
+	}
+
 	context.JSON(http.StatusOK, responses.ApiResponse{
 		Success: true,
 		Message: "Successfully retrieved user anime list.",
-		Data:    animeList,
+		Data:    userAnimeDtos,
 	})
 }
