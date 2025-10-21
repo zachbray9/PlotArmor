@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { User } from "../models/user";
 import { myApiAgent } from "../api/myApiAgent";
-import { store } from "./store";
 import router from "../router/routes";
 import { toaster } from "../components/ui/toaster";
 import { RegisterFormFields } from "../schemas/registerSchema";
@@ -70,11 +69,6 @@ export default class UserStore {
         try {
             await myApiAgent.List.add(animeId)
             runInAction(() => this.user?.animeIds.push(animeId))
-            store.listStore.setUserAnimeDetails({
-                rating: 5,
-                watchStatus: 'watching',
-                numEpisodesWatched: 0
-            })
 
             this.setIsAddingAnimeToList(false)
         } catch (error) {
@@ -97,7 +91,6 @@ export default class UserStore {
         try {
             await myApiAgent.List.remove(animeId)
             runInAction(() => this.user!.animeIds = this.user!.animeIds.filter(id => id !== animeId))
-            store.listStore.clearUserAnimeDetails()
             this.setIsRemovingAnimeFromList(false)
         } catch (error) {
             console.log(error)

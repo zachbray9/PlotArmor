@@ -3,6 +3,7 @@ package useranimerepository
 import (
 	"context"
 	"fmt"
+	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/entities"
 
 	"gorm.io/gorm"
@@ -31,7 +32,7 @@ func (r *userAnimeRepository) GetByUserAndAnime(context context.Context, tx *gor
 		First(&userAnime).Error
 
 	if err == gorm.ErrRecordNotFound {
-		return nil, nil
+		return nil, customErrors.ErrNotFound
 	}
 
 	return &userAnime, err

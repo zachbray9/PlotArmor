@@ -14,7 +14,7 @@ export default observer(function FilterSection() {
 
     return (
         <Stack gap='1rem'>
-            <InputGroup startElement={<SearchIcon color='text.subtle' />}>
+            {/* <InputGroup startElement={<SearchIcon color='text.subtle' />}>
                 <Input placeholder="Search" variant='outline' value={listStore.searchQuery} onChange={e => listStore.setSearchQuery(e.target.value)}/>
             </InputGroup>
 
@@ -38,7 +38,7 @@ export default observer(function FilterSection() {
                     value={SortOptions.find(option => option.value === listStore.sortPreference)}
                     onChange={selectedValue => listStore.setSortPreference(selectedValue?.value as string)}
                 />
-            </Stack>
+            </Stack> */}
         </Stack>
     )
 })

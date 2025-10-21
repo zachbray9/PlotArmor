@@ -8,7 +8,7 @@ import (
 type UserAnimeDto struct {
 	Anime              AnimeDto           `json:"anime"`
 	WatchStatus        models.WatchStatus `json:"watchStatus"`
-	Rating             *int               `json:"rating"`
+	Rating             int                `json:"rating"`
 	NumEpisodesWatched int                `json:"numEpisodesWatched"`
 }
 
