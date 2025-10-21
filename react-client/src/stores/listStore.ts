@@ -1,8 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { UserAnime } from "../models/userAnime";
 import { myApiAgent } from "../api/myApiAgent";
-import { UpdateUserAnimeFormFields } from "../schemas/updateUserAnimeSchema";
-
 
 export default class ListStore {
     list: UserAnime[] = []
@@ -43,11 +41,6 @@ export default class ListStore {
             console.log(error)
             this.setIsLoadingList(false)
         }
-    }
-
-    updateUserAnime = async (animeId: number, formFields: UpdateUserAnimeFormFields) => {
-        console.log(formFields)
-        await myApiAgent.List.updateUserAnime(animeId, formFields)
     }
 
     setIsLoadingList = (value: boolean) => {

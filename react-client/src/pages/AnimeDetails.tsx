@@ -1,7 +1,5 @@
 import { AspectRatio, Badge, Box, Button, Flex, Grid, Heading, Image, Skeleton, Stack, Text, Wrap } from "@chakra-ui/react";
-import { useStore } from "../stores/store";
 import { useParams } from "react-router-dom";
-import { observer } from "mobx-react-lite";
 import LoadingComponent from "../components/common/loading/LoadingComponent";
 import { Helmet } from "react-helmet-async";
 import CharacterCard from "../components/animeDetails/characterCard";
@@ -10,12 +8,13 @@ import useAnime from "../hooks/useAnime";
 import { extractYoutubeId } from "../utils/youtube";
 import useUserAnime from "../hooks/useUserAnime";
 import EditEntryDrawer from "../components/animeList/editEntryDrawer";
+import useAddAnimeToList from "../hooks/useAddAnimeToList";
 
-export default observer(function AnimeDetails() {
-    const { userStore } = useStore()
+export default function AnimeDetails() {
     const { animeId = "0" } = useParams()
     const {anime, isPending: isAnimePending} = useAnime(Number.parseInt(animeId, 10))
     const {userAnime, isPending: isUserAnimePending} = useUserAnime(Number.parseInt(animeId, 10))
+    const {mutate: addAnimeToList, isPending: isAddingAnimeToList} = useAddAnimeToList()
 
     
 
@@ -63,7 +62,7 @@ export default observer(function AnimeDetails() {
                                     {userAnime ? (
                                         <EditEntryDrawer userAnime={userAnime}/>
                                     ) : (
-                                        <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={userStore.isAddingAnimeToList} width='fit-content' onClick={() => userStore.addAnimeToList(anime.id)}>Add to list <Plus /></Button>
+                                        <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={isAddingAnimeToList} width='fit-content' onClick={() => addAnimeToList(parseInt(animeId))}>Add to list <Plus /></Button>
                                     )}
                                 </Skeleton>
                             </Stack>
@@ -116,4 +115,4 @@ export default observer(function AnimeDetails() {
             </>
         )
     }
-})
+}

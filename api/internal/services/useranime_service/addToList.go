@@ -34,6 +34,8 @@ func (s *UserAnimeService) AddToList(context context.Context, userId uuid.UUID, 
 			UserId:      userId,
 			AnimeId:     animeId,
 			WatchStatus: models.WatchStatusPlanToWatch, // Default status
+			Rating: 0,
+			NumEpisodesWatched: 0,
 		}
 
 		err = s.userAnimeRepo.Create(context, tx, userAnime)
