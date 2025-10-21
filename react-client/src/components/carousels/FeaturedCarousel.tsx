@@ -1,7 +1,5 @@
 import { Badge, Box, Button, Flex, Heading, Stack, Text, Wrap } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import { useStore } from "../../stores/store";
-import { observer } from "mobx-react-lite";
 import { CustomFeaturedNextArrow, CustomFeaturedPrevArrow, usePrevNextButtons } from "./customCarouselArrowButtons";
 import CustomDot, { useDotButton } from "./customDot";
 import useEmblaCarousel from 'embla-carousel-react'
@@ -11,6 +9,9 @@ import { useState } from "react";
 import { MoveRight } from "lucide-react";
 import AddRemoveListIconButton from "../animeList/addRemoveListIconButton";
 import Anime from "../../models/anime";
+import useUserAnimeList from "../../hooks/useUserAnimeList";
+import useAddAnimeToList from "../../hooks/useAddAnimeToList";
+import useRemoveAnimeFromList from "../../hooks/useRemoveAnimeFromList";
 
 interface Props {
     data: Anime[]
@@ -18,8 +19,10 @@ interface Props {
 
 const DELAY: number = 10000 //in milliseconds
 
-export default observer(function FeaturedCarousel({ data }: Props) {
-    const { userStore } = useStore()
+export default function FeaturedCarousel({ data }: Props) {
+    const {animeIds, isPending: isLoadingList} = useUserAnimeList()
+    const {mutate: addToList, isPending: isAddingAnime} = useAddAnimeToList()
+    const {mutate: removeFromList, isPending: isRemovingAnime} = useRemoveAnimeFromList()
     const [isHovered, setIsHovered] = useState(false)
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Fade()])
     const { onStart, onPause } = useAutoPlay(emblaApi, DELAY)
@@ -69,9 +72,6 @@ export default observer(function FeaturedCarousel({ data }: Props) {
                                 <Stack maxW={["100%", null, "70%", null, "50%"]} w={"100%"} gap={4} alignItems={["center", null, "start"]} onMouseEnter={onHover} onMouseLeave={onUnhover}>
                                     <Heading size={['xl', null, "2xl", '4xl']} textAlign={['center', null, 'left']}>{anime.englishTitle ?? anime.romajiTitle}</Heading>
 
-                                    {/* {anime.genres &&
-                                        <Text color="text.subtle" textAlign="center">{anime.genres.join(', ')}</Text>
-                                    } */}
                                     <Wrap gap={1} justifyContent="center">
                                         {anime.genres?.map((genre) => (
                                             <Badge key={genre.id} bg="blackAlpha.400" borderRadius="full" px={2}>{genre.name}</Badge>
@@ -88,10 +88,10 @@ export default observer(function FeaturedCarousel({ data }: Props) {
                                         </NavLink>
 
                                         <AddRemoveListIconButton
-                                            isInList={userStore.user?.animeIds.includes(anime.id) ?? false}
-                                            loading={userStore.isRemovingAnimeFromList || userStore.isAddingAnimeToList}
-                                            onAddToList={() => userStore.addAnimeToList(anime.id)}
-                                            onRemoveFromList={() => userStore.removeAnimeFromList(anime.id)}
+                                            isInList={animeIds.includes(anime.id)}
+                                            loading={isLoadingList || isRemovingAnime || isAddingAnime}
+                                            onAddToList={() => addToList(anime.id)}
+                                            onRemoveFromList={() => removeFromList(anime.id)}
                                             variant="ghost"
                                             color="text"
                                             
@@ -117,4 +117,4 @@ export default observer(function FeaturedCarousel({ data }: Props) {
             </Box>
         </Box>
     )
-})
+}

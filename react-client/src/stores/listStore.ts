@@ -1,10 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { UserAnime } from "../models/userAnime";
-import { myApiAgent } from "../api/myApiAgent";
 
 export default class ListStore {
-    list: UserAnime[] = []
-    isLoadingList: boolean = false
     searchQuery: string = ''
     watchStatusFilter: string | null = null
     genresFilter: string[] = []
@@ -28,25 +25,6 @@ export default class ListStore {
 
         return sortedList
     }
-
-    loadList = async () => {
-        this.setIsLoadingList(true)
-
-        try {
-            const response = await myApiAgent.List.getList()
-            this.list = response.animeList ?? []
-            console.log("Successfully loaded list.")
-            this.setIsLoadingList(false)
-        } catch (error) {
-            console.log(error)
-            this.setIsLoadingList(false)
-        }
-    }
-
-    setIsLoadingList = (value: boolean) => {
-        this.isLoadingList = value
-    }
-
 
     setSearchQuery = (query: string) => {
         this.searchQuery = query

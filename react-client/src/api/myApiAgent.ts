@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { myApi } from "./axios";
-import { GetListResponse } from "../models/responses/getListResponse";
 import { RefreshResponse } from "../models/responses/refreshResponse";
 import ApiResponse from "../models/responses/apiResponse";
 import Genre from "../models/genre";
@@ -55,7 +54,7 @@ const Auth = {
 
 const List = {
     add: (animeId: number) => requests.post('/user/anime', { animeId: animeId }),
-    getList: () => requests.get<GetListResponse>('/user/anime'),
+    getList: () => requests.get<ApiResponse<UserAnime[]>>('/user/anime'),
     getUserAnimeDetails: (animeId: number) => requests.get<ApiResponse<UserAnime>>(`/user/anime/${animeId}`),
     updateUserAnime: (animeId: number, patchRequest: UpdateUserAnimeFormFields) => requests.patch(`/user/anime/${animeId}`, patchRequest),
     remove: (animeId: number) => requests.delete(`/user/anime/${animeId}`)
