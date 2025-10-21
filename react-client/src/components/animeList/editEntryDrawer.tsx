@@ -65,6 +65,10 @@ export default function EditEntryDrawer({ userAnime }: Props) {
         });
     }, [userAnime, methods]);
 
+    useEffect(() => {
+        methods.reset()
+    }, [isOpen, methods])
+
     return (
         <Drawer.Root open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} placement={{ base: "bottom", md: "end" }} size={{ base: "xl", md: "xs" }} >
             <Drawer.Trigger pos={"fixed"} bottom={5} right={5} asChild>
