@@ -8,6 +8,8 @@ import { ratingCollection, watchStatusCollection } from "../../constants/formCol
 import { zodResolver } from "@hookform/resolvers/zod";
 import useUpdateUserAnime from "../../hooks/useUpdateUserAnime";
 import { CreateUpdateUserAnimeValidationSchema, UpdateUserAnimeFormFields } from "../../schemas/updateUserAnimeSchema";
+import { toaster } from "../ui/toaster";
+import { useEffect, useState } from "react";
 
 
 interface Props {
@@ -15,7 +17,7 @@ interface Props {
 }
 
 export default function EditEntryDrawer({ userAnime }: Props) {
-
+    const [isOpen, setIsOpen] = useState(false)
     const { mutate, isPending } = useUpdateUserAnime()
 
     const methods = useForm({
@@ -35,11 +37,36 @@ export default function EditEntryDrawer({ userAnime }: Props) {
                 numEpisodesWatched: fields.numEpisodesWatched,
                 rating: fields.rating
             }
-        })
+        }, {onSuccess: () => {
+            setIsOpen(false)
+            toaster.create({
+                title: "List updated",
+                description: "Your anime list has been updated successfully.",
+                type: "success",
+                duration: 3000,
+                closable: true
+            })
+        }, onError: (error) => {
+            toaster.create({
+                title: "Update failed",
+                description: error.message || "Failed to update your list. Please try again.",
+                type: "error",
+                duration: 3000,
+                closable: true,
+            })
+        }})
     }
 
+    useEffect(() => {
+        methods.reset({
+            watchStatus: userAnime.watchStatus ?? "PLAN_TO_WATCH",
+            numEpisodesWatched: userAnime.numEpisodesWatched ?? 0,
+            rating: userAnime.rating ? userAnime.rating.toString() : "0",
+        });
+    }, [userAnime, methods]);
+
     return (
-        <Drawer.Root placement={{ base: "bottom", md: "end" }} size={{ base: "xs", md: "xs" }}>
+        <Drawer.Root open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} placement={{ base: "bottom", md: "end" }} size={{ base: "xs", md: "xs" }}>
             <Drawer.Trigger pos={"fixed"} bottom={5} right={5} asChild>
                 <IconButton padding={2} borderRadius={"full"}>
                     <Text>{`${userAnime.numEpisodesWatched ?? "0"} / ${userAnime.anime.episodes ?? "?"}`}</Text>

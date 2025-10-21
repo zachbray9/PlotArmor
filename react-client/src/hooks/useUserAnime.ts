@@ -14,7 +14,7 @@ export default function useUserAnime(animeId: number) {
     }
 
     const {data, isPending, error} = useQuery({
-        queryKey: ["useranime", animeId],
+        queryKey: ["userAnime", animeId],
         queryFn: () => fetchUserAnime(animeId),
         refetchOnWindowFocus: false
     })
