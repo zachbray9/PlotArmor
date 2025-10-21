@@ -53,7 +53,7 @@ export default function FormSelect({ name, label, collection, isSubmitting, mult
                 </Select.Control>
 
                     <Select.Positioner>
-                        <Select.Content>
+                        <Select.Content overflowY={"auto"} maxH={"250px"}>
                             {collection.items.map((item) => (
                                 <Select.Item key={item.label} item={item.value}>
                                     {item.label}

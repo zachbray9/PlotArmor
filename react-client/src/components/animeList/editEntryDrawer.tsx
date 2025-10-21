@@ -66,10 +66,10 @@ export default function EditEntryDrawer({ userAnime }: Props) {
     }, [userAnime, methods]);
 
     return (
-        <Drawer.Root open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} placement={{ base: "bottom", md: "end" }} size={{ base: "xs", md: "xs" }}>
+        <Drawer.Root open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} placement={{ base: "bottom", md: "end" }} size={{ base: "xl", md: "xs" }} >
             <Drawer.Trigger pos={"fixed"} bottom={5} right={5} asChild>
-                <IconButton padding={2} borderRadius={"full"}>
-                    <Text>{`${userAnime.numEpisodesWatched ?? "0"} / ${userAnime.anime.episodes ?? "?"}`}</Text>
+                <IconButton padding={4} borderRadius={"full"} bg={"interactive.primary"} color={"text"}>
+                    <Text>{`${userAnime.numEpisodesWatched ?? "0"} / ${userAnime.anime.episodes || "?"}`}</Text>
                     <Pencil />
                 </IconButton>
             </Drawer.Trigger>
@@ -78,21 +78,21 @@ export default function EditEntryDrawer({ userAnime }: Props) {
                 <Drawer.Backdrop />
 
                 <Drawer.Positioner>
-                    <Drawer.Content>
+                    <Drawer.Content bg={"background.secondary"}>
                         <FormProvider {...methods}>
-                            <form onSubmit={methods.handleSubmit(handleSubmit)}>
+                            <form onSubmit={methods.handleSubmit(handleSubmit)} style={{height: "100%", display: "flex", flexDirection: "column"}}>
                                 <Drawer.Header>
                                     <Drawer.Title>Update list</Drawer.Title>
                                 </Drawer.Header>
 
-                                <Drawer.Body display={"flex"} flexDir={"column"} gap={4} h={"full"}>
+                                <Drawer.Body display={"flex"} flexDir={"column"} gap={4} flex={1} h={"full"}>
                                     <FormSelect name="watchStatus" label="Watch status" collection={watchStatusCollection} />
                                     <FormNumberInput name="numEpisodesWatched" label="Episodes watched" min={0} max={userAnime.anime.episodes || Infinity} />
                                     <FormSelect name="rating" label="Rating" collection={ratingCollection} />
                                 </Drawer.Body>
 
                                 <Drawer.Footer>
-                                    <Button type="submit" loading={isPending} disabled={!methods.formState.isDirty}>Save changes</Button>
+                                    <Button type="submit" loading={isPending} disabled={!methods.formState.isDirty} bg={"interactive.primary"} color={"text"}>Save changes</Button>
                                 </Drawer.Footer>
                             </form>
                         </FormProvider>
