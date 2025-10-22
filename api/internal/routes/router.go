@@ -64,6 +64,7 @@ func InitRouter(server *gin.Engine) {
 
 	//anime routes
 	api.GET("/anime/:animeId", animeHandler.GetById)
+	api.GET("/anime/search", animeHandler.Search)
 	api.POST("/anime", middleware.Authenticate, middleware.RequireAdmin, animeHandler.AddAnimeHandler)
 
 	//image routes

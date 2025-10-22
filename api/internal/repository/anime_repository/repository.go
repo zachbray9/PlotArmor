@@ -14,6 +14,7 @@ type AnimeRepository interface {
 	GetPopular(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
 	GetUpcoming(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
 	Create(ctx context.Context, tx *gorm.DB, anime *entities.Anime) error
+	Search(ctx context.Context, tx *gorm.DB, query string, page int, limit int, sort string) ([]entities.Anime, int64, error)
 }
 
 type animeRepository struct {

@@ -21,7 +21,7 @@ func (h *AnimeHandler) AddAnimeHandler(context *gin.Context) {
 		return
 	}
 
-	anime, err := h.AnimeService.Create(context, req)
+	anime, err := h.animeService.Create(context, req)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
 			Success: false,

@@ -9,7 +9,7 @@ import (
 )
 
 func (h *AnimeHandler) GetHomePageDataHandler(context *gin.Context) {
-	homePageData, err := h.AnimeService.GetHomePageData(context.Request.Context())
+	homePageData, err := h.animeService.GetHomePageData(context.Request.Context())
 
 	if err != nil {
 		log.Printf("Failed to get home page data: %v", err)

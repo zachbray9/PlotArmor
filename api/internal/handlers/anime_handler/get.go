@@ -23,7 +23,7 @@ func (h *AnimeHandler) GetById(c *gin.Context) {
 	}
 
 	// Get anime
-	anime, err := h.AnimeService.GetById(c.Request.Context(), uint(id))
+	anime, err := h.animeService.GetById(c.Request.Context(), uint(id))
 	if err != nil {
 		if err == customErrors.ErrNotFound {
 			c.JSON(http.StatusNotFound, responses.ApiResponse{
