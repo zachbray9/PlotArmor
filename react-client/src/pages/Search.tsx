@@ -4,13 +4,13 @@ import { CloseIcon } from "@chakra-ui/icons";
 import useAnimeSearch from "../hooks/useAnimeSearch";
 import CarouselCard from "../components/carousels/CarouselCard";
 import { Helmet } from "react-helmet-async";
+import { useState } from "react";
+import useUserAnimeList from "../hooks/useUserAnimeList";
 
 export default observer(function Search() {
-    const { query, setQuery, results } = useAnimeSearch()
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(event.target.value)
-    }
+    const [query, setQuery] = useState("")
+    const {animeIds, isPending: isPendingUserList} = useUserAnimeList()
+    const { results, pagination, isPending } = useAnimeSearch({ query })
 
     return (
         <>
@@ -38,7 +38,7 @@ export default observer(function Search() {
                             }}
                             paddingBottom='0.5rem'
                             value={query}
-                            onChange={handleInputChange}
+                            onChange={(e) => setQuery(e.target.value)}
 
                         />
                     </InputGroup>
@@ -50,7 +50,7 @@ export default observer(function Search() {
 
                         <SimpleGrid columns={[2, 3, 4]} gap={['1.25rem', '1.75rem', '2.125rem']}>
                             {results.map((anime) => (
-                                <CarouselCard key={anime.id} anime={anime} />
+                                <CarouselCard key={anime.id} anime={anime} isInList={animeIds.includes(anime.id)} isListLoading={isPendingUserList}/>
                             ))}
                         </SimpleGrid>
                     </Stack>
