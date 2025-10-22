@@ -45,6 +45,7 @@ export default class UserStore {
             console.log(error)
         }
         runInAction(() => this.user = null)
+        router.navigate('/')
     }
 
     setUser = (user: User) => {
