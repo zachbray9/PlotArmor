@@ -106,3 +106,31 @@ func (r *animeRepository) GetUpcoming(ctx context.Context, tx *gorm.DB, limit in
 
 	return animes, nil
 }
+
+func (r *animeRepository) GetByGenre(ctx context.Context, tx *gorm.DB, genreId uint, page int, limit int) ([]entities.Anime, int64, error) {
+	var animes []entities.Anime
+	var total int64
+
+	offset := (page - 1) * limit
+
+	// Join with anime_genres table
+	baseQuery := tx.Model(&entities.Anime{}).
+		Joins("JOIN anime_genres ON anime_genres.anime_id = animes.id").
+		Where("anime_genres.genre_id = ?", genreId)
+
+	// Get total count
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Get results ordered by title (since we don't have scores yet)
+	if err := baseQuery.
+		Order("english_title ASC").
+		Limit(limit).
+		Offset(offset).
+		Find(&animes).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return animes, total, nil
+}

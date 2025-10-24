@@ -10,7 +10,7 @@ interface Props {
     sort?: string
 }
 
-export default function useAnimeSearch({ query, page = 1, limit = 20, sort = "relevance" }: Props) {
+export default function useAnimeSearch({ query, limit = 20, sort = "relevance" }: Props) {
     const debouncedQuery = useDebounce(query, 300)
 
     const fetchSearch = async ({pageParam = 1}): Promise<SearchResponse> => {

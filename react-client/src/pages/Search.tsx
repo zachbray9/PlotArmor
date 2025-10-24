@@ -12,7 +12,6 @@ export default observer(function Search() {
     const [query, setQuery] = useState("")
     const { animeIds, isPending: isPendingUserList } = useUserAnimeList()
     const { results,
-        totalResults,
         isPending,
         isFetchingNextPage,
         fetchNextPage,

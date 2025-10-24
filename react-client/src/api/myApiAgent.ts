@@ -15,6 +15,7 @@ import { UserAnime } from "../models/userAnime";
 import { UpdateUserAnimeFormFields } from "../schemas/updateUserAnimeSchema";
 import SearchParams from "../models/searchParams";
 import { SearchResponse } from "../models/responses/searchResponse";
+import BrowseResponse from "../models/responses/browseResponse";
 
 const ResponseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -64,6 +65,7 @@ const List = {
 
 const Animes = {
     getById: (animeId: number) => requests.get<ApiResponse<Anime>>(`/anime/${animeId}`),
+    getbyGenre: (params: {genreId: number, page: number, limit: number}) => requests.get<ApiResponse<BrowseResponse>>(`/anime/genre/${params.genreId}?page=${params.page}&limit=${params.limit}`),
     homePage: () => requests.get<ApiResponse<HomePageData>>("/home"),
     create: (request: CreateAnimeRequest) => requests.post<ApiResponse<Anime>>("/anime", request),
     search: (params: SearchParams) => requests.get<ApiResponse<SearchResponse>>(`/anime/search?q=${params.query}&page=${params.page}&limit=${params.limit}&sort=${params.sort}`)

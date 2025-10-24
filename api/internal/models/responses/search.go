@@ -10,6 +10,12 @@ type SearchResponse struct {
 	Query      string          `json:"query"`
 }
 
+type BrowseResponse struct {
+	Results    []dtos.AnimeDto `json:"results"`
+	Pagination Pagination      `json:"pagination"`
+	Genre      dtos.GenreDto   `json:"genre"`
+}
+
 type Pagination struct {
 	CurrentPage  int  `json:"currentPage"`
 	TotalPages   int  `json:"totalPages"`

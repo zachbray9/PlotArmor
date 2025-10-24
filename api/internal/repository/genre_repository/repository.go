@@ -8,6 +8,7 @@ import (
 )
 
 type GenreRepository interface {
+	GetById(ctx context.Context, tx *gorm.DB, id uint) (*entities.Genre, error)
 	GetByIds(ctx context.Context, tx *gorm.DB, ids []uint) ([]entities.Genre, error)
 	GetAll(ctx context.Context, tx *gorm.DB) ([]entities.Genre, error)
 }

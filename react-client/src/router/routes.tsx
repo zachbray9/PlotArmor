@@ -33,7 +33,7 @@ const router = createBrowserRouter([
             { path: 'anime/search', element: <Search /> },
             { path: 'login', element: <Login /> },
             { path: 'register', element: <Register /> },
-            { path: 'anime/browse/:category?', element: <Browse /> },
+            { path: 'anime/browse', element: <Browse /> },
             { path: "unauthorized", element: <Unauthorized /> }
         ],
     },

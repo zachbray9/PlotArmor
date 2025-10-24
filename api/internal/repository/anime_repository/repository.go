@@ -13,6 +13,7 @@ type AnimeRepository interface {
 	GetTopAiring(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
 	GetPopular(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
 	GetUpcoming(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
+	GetByGenre(ctx context.Context, tx *gorm.DB, genreId uint, page int, limit int) ([]entities.Anime, int64, error)
 	Create(ctx context.Context, tx *gorm.DB, anime *entities.Anime) error
 	Search(ctx context.Context, tx *gorm.DB, query string, page int, limit int, sort string) ([]entities.Anime, int64, error)
 }
