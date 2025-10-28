@@ -69,7 +69,7 @@ export default function List() {
                                     ))
                                 ) : (
                                     filteredList?.map(userAnime => (
-                                        <AnimeListEntry userAnime={userAnime} key={userAnime.id} />
+                                        <AnimeListEntry key={userAnime.anime.id} userAnime={userAnime}  />
                                     ))
                                 )}
                             </Grid>
