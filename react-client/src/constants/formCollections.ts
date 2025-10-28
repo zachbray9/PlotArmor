@@ -56,3 +56,11 @@ export const ratingCollection = createListCollection({
         { label: "(10) Masterpiece", value: "10" },
     ]
 })
+
+export const sortCollection = createListCollection({
+    items: [
+        { label: "Title", value: 'TITLE' },
+        { label: "Rating", value: 'RATING' },
+        { label: "Progress", value: 'PROGRESS' },
+    ]
+})
