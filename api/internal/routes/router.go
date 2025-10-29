@@ -57,7 +57,7 @@ func InitRouter(server *gin.Engine) {
 	api.GET("/user/anime/:animeId", middleware.Authenticate, userAnimeHandler.GetUserAnimeHandler)
 	api.POST("/user/anime", middleware.Authenticate, userAnimeHandler.AddToListHandler)
 	api.PATCH("/user/anime/:animeId", middleware.Authenticate, userAnimeHandler.UpdateUserAnimeHandler)
-	api.DELETE("/user/anime/:animeId", middleware.Authenticate, useranimehandler.DeleteUserAnimeHandler)
+	api.DELETE("/user/anime/:animeId", middleware.Authenticate, userAnimeHandler.DeleteUserAnimeHandler)
 
 	//home page data
 	api.GET("/home", animeHandler.GetHomePageDataHandler)

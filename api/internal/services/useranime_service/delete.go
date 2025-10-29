@@ -1,28 +1,48 @@
 package useranimeservice
 
 import (
+	"context"
 	"fmt"
 	"myanimevault/internal/database"
 	"myanimevault/internal/models/customErrors"
-	"myanimevault/internal/models/entities"
 
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func Delete(userId string, animeId uint) error {
-	id, err := uuid.Parse(userId)
+func (s *UserAnimeService) Delete(ctx context.Context, userId string, animeId uint) error {
+
+	err := database.Db.Transaction(func(tx *gorm.DB) error {
+		//fetch useranime to make sure it exists
+		userAnime, err := s.userAnimeRepo.GetByUserAndAnime(ctx, tx, userId, animeId)
+		if err != nil {
+			switch err {
+			case customErrors.ErrNotFound:
+				return err
+			default:
+				return fmt.Errorf("failed to fetch useranime: %w", err)
+			}
+		}
+
+		//delete user anime
+		err = s.userAnimeRepo.Delete(ctx, tx, userId, animeId)
+		if err != nil {
+			return fmt.Errorf("failed to delete useranime: %w", err)
+		}
+
+		//update anime rating aggregates
+		if userAnime.Rating > 0 {
+			err = s.animeRepo.UpdateRatingAggregates(ctx, tx, animeId, userAnime.Rating, 0)
+		}
+
+		if err != nil {
+			return fmt.Errorf("failed to update anime rating aggregates: %w", err)
+		}
+
+		return nil
+	})
+
 	if err != nil {
-		return fmt.Errorf("invalid user id format: %w", err)
-	}
-
-	result := database.Db.Where("user_id = ? AND anime_id = ?", id, animeId).Delete(&entities.UserAnime{})
-
-	if result.Error != nil {
-		return fmt.Errorf("failed to delete useranime: %w", result.Error)
-	}
-
-	if result.RowsAffected == 0 {
-		return customErrors.ErrNotFound
+		return fmt.Errorf("failed to delete useranime: %w", err)
 	}
 
 	return nil

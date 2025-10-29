@@ -4,20 +4,19 @@ import (
 	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/responses"
-	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func DeleteUserAnimeHandler(context *gin.Context) {
+func (h *UserAnimeHandler) DeleteUserAnimeHandler(context *gin.Context) {
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
-			Success: false, 
+			Success: false,
 			Message: "User not authenticated.",
-			Data: nil,
+			Data:    nil,
 		})
 		return
 	}
@@ -27,7 +26,7 @@ func DeleteUserAnimeHandler(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
 			Success: false,
 			Message: "Invalid user type.",
-			Data: nil,
+			Data:    nil,
 		})
 		return
 	}
@@ -35,22 +34,38 @@ func DeleteUserAnimeHandler(context *gin.Context) {
 	animeId, err := strconv.ParseUint(context.Param("animeId"), 10, 64)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid_anime_id"})
+		context.JSON(http.StatusBadRequest, responses.ApiResponse{
+			Success: false,
+			Message: "Invalid anime id.",
+			Data: nil,
+		})
 		return
 	}
 
-	err = useranimeservice.Delete(user.Id.String(), uint(animeId))
+	err = h.UserAnimeService.Delete(context, user.Id.String(), uint(animeId))
 
 	if err != nil {
 		switch err {
 		case customErrors.ErrNotFound:
-			context.JSON(http.StatusNotFound, gin.H{"error": "anime_not_found"})
+			context.JSON(http.StatusNotFound, responses.ApiResponse{
+				Success: false,
+				Message: "Anime not found",
+				Data: nil,
+			})
 			return
 		default:
-			context.JSON(http.StatusInternalServerError, gin.H{"error": "internal_server_error"})
+			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
+				Success: false,
+				Message: "Something went wrong. Please try again.",
+				Data: nil,
+			})
 			return
 		}
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message": "Anime was successfully deleted from your list."})
+	context.JSON(http.StatusOK, responses.ApiResponse{
+		Success: true,
+		Message: "Successfully deleted anime from your list.",
+		Data: nil,
+	})
 }

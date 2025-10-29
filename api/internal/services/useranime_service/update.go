@@ -22,8 +22,10 @@ func (s *UserAnimeService) Update(context context.Context, userId string, animeI
 			return customErrors.ErrNotFound
 		}
 
-		// Validate and update rating
+		//store old rating before updating
+		oldRating := userAnime.Rating
 
+		// Validate and update rating
 		if patchRequest.Rating < 0 || patchRequest.Rating > 10 {
 			return customErrors.ErrInvalidField
 		}
@@ -54,6 +56,14 @@ func (s *UserAnimeService) Update(context context.Context, userId string, animeI
 		err = s.userAnimeRepo.Update(context, tx, userAnime)
 		if err != nil {
 			return fmt.Errorf("failed to update user anime: %w", err)
+		}
+
+		//update anime rating sum and score if rating changed
+		if oldRating != patchRequest.Rating{
+			err = s.animeRepo.UpdateRatingAggregates(context, tx, userAnime.AnimeId, oldRating, patchRequest.Rating)
+			if err != nil {
+				return fmt.Errorf("failed to update anime rating aggregates: %w", err)
+			}
 		}
 
 		return nil

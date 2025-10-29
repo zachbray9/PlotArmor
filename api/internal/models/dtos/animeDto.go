@@ -36,10 +36,9 @@ type AnimeDto struct {
 	TrailerUrl       string `json:"trailerUrl,omitempty"`
 
 	//ratings and popularity
-	AverageScore *float64 `json:"averageScore,omitempty"`
-	MeanScore    *float64 `json:"meanScore,omitempty"`
-	Popularity   *int     `json:"popularity,omitempty"` // Popularity rank
-	Trending     *int     `json:"trending,omitempty"`   // Trending rank
+	AverageScore float64 `json:"averageScore,omitempty"`
+	Popularity   int     `json:"popularity,omitempty"` // Popularity rank
+	Trending     int     `json:"trending,omitempty"`   // Trending rank
 	Favorites    int      `json:"favorites"`            // Number of users who favorited
 
 	// Content Ratings
@@ -67,7 +66,7 @@ func ToAnimeDTO(anime *entities.Anime, originalPosterUrl string, smallPosterUrl,
 		Season:       anime.Season,
 		SeasonYear:   anime.SeasonYear,
 		TrailerUrl:   anime.TrailerUrl,
-		AverageScore: anime.AverageScore,
+		AverageScore: anime.AverageScore(),
 		IsAdult:      anime.IsAdult,
 		AgeRating:    anime.AgeRating,
 		PosterImage:  originalPosterUrl,
@@ -121,3 +120,4 @@ func ToAnimeDTO(anime *entities.Anime, originalPosterUrl string, smallPosterUrl,
 
 	return dto
 }
+

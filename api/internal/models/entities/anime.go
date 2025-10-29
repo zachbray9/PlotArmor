@@ -39,11 +39,11 @@ type Anime struct {
 	TrailerUrl  string `json:"trailer_url,omitempty"`
 
 	//ratings and popularity
-	AverageScore *float64 `json:"average_score,omitempty" gorm:"check:average_score >= 0 AND average_score <= 100"`
-	MeanScore    *float64 `json:"mean_score,omitempty" gorm:"check:mean_score >= 0 AND mean_score <= 10"`
-	Popularity   *int     `json:"popularity,omitempty"`       // Popularity rank
-	Trending     *int     `json:"trending,omitempty"`         // Trending rank
-	Favorites    int      `json:"favorites" gorm:"default:0"` // Number of users who favorited
+	RatingSum   int `json:"ratingSum" gorm:"default:0"`
+	RatingCount int `json:"ratingCount" gorm:"default:0"`
+	Favorites   int `json:"favorites" gorm:"default:0"`        // Number of users who have it in their list
+	Popularity  int `json:"popularity" gorm:"default:0;index"` // Popularity rank
+	Trending    int `json:"trending" gorm:"default:0;index"`   // Trending rank
 
 	// Content Ratings
 	IsAdult   bool   `json:"is_adult" gorm:"default:false"`
@@ -61,4 +61,11 @@ type Anime struct {
 	Genres     []Genre          `json:"genres,omitempty" gorm:"many2many:anime_genres;"`
 	Characters []AnimeCharacter `json:"characters,omitempty" gorm:"foreignKey:AnimeId"`
 	UserAnimes []UserAnime      `json:"user_animes,omitempty" gorm:"foreignKey:AnimeId"`
+}
+
+func (a *Anime) AverageScore() float64 {
+	if a.RatingCount == 0 {
+		return 0
+	}
+	return float64(a.RatingSum) / float64(a.RatingCount)
 }

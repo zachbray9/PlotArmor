@@ -36,7 +36,7 @@ export default memo(function CarouselCard({ anime, isInList, isListLoading }: Pr
                                 <Text fontSize='sm'>{anime.englishTitle || anime.romajiTitle}</Text>
                                 <Flex alignItems="center" gap={1}>
                                     <Star size={16} />
-                                    <Text fontSize='xs'>{anime.averageScore ? anime.averageScore / 10 : 'Unscored'}</Text>
+                                    <Text fontSize='xs'>{anime.averageScore ?? 'Unscored'}</Text>
                                 </Flex>
                                 <Text fontSize='xs' color='text.subtle'>{(anime.episodes || '?') + ' episodes'}</Text>
                                 <Text fontSize='xs' lineClamp={5}>{cleanDescription}</Text>
