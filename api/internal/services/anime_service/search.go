@@ -61,9 +61,10 @@ func (s *AnimeService) Search(context context.Context, query string, page int, l
 	//transform animes to animeDTOs
 	animeDtos := make([]dtos.AnimeDto, 0, len(animes))
 	for _, anime := range animes {
-		posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key)
+		posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + ".jpg")
+        smallPosterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + "-small.jpg")
 		bannerUrl := s.imageService.GetPublicUrl(anime.BannerS3Key)
-		animeDto := dtos.ToAnimeDTO(&anime, posterUrl, bannerUrl)
+		animeDto := dtos.ToAnimeDTO(&anime, posterUrl, smallPosterUrl, bannerUrl)
 		animeDtos = append(animeDtos, animeDto)
 	}
 

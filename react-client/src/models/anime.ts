@@ -17,6 +17,7 @@ export default interface Anime {
     season: string
     seasonYear: number
     posterImage: string
+    posterImageSmall: string
     bannerImage: string
     trailerUrl: string
     favorites: number

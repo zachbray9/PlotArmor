@@ -28,9 +28,10 @@ func (s *AnimeService) GetHomePageData(ctx context.Context) (*HomePageData, erro
 
 		featuredDTOs := make([]dtos.AnimeDto, len(featured))
         for i, anime := range featured {
-            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key)
+            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + ".jpg")
+			smallPosterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + "-small.jpg")
             bannerUrl := s.imageService.GetPublicUrl(anime.BannerS3Key)
-            featuredDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, bannerUrl)
+            featuredDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, smallPosterUrl, bannerUrl)
         }
 
 		//get top airing shows
@@ -41,9 +42,10 @@ func (s *AnimeService) GetHomePageData(ctx context.Context) (*HomePageData, erro
 
 		topAiringDTOs := make([]dtos.AnimeDto, len(topAiring))
         for i, anime := range topAiring {
-            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key)
+            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + ".jpg")
+			smallPosterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + "-small.jpg")
             bannerUrl := s.imageService.GetPublicUrl(anime.BannerS3Key)
-            topAiringDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, bannerUrl)
+            topAiringDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, smallPosterUrl, bannerUrl)
         }
 
 		//get popular shows
@@ -54,9 +56,10 @@ func (s *AnimeService) GetHomePageData(ctx context.Context) (*HomePageData, erro
 
 		popularDTOs := make([]dtos.AnimeDto, len(popular))
         for i, anime := range popular {
-            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key)
+            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + ".jpg")
+			smallPosterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + "-small.jpg")
             bannerUrl := s.imageService.GetPublicUrl(anime.BannerS3Key)
-            popularDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, bannerUrl)
+            popularDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, smallPosterUrl, bannerUrl)
         }
 
 		//get upcoming shows
@@ -67,9 +70,10 @@ func (s *AnimeService) GetHomePageData(ctx context.Context) (*HomePageData, erro
 
 		upcomingDTOs := make([]dtos.AnimeDto, len(upcoming))
         for i, anime := range upcoming {
-            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key)
+            posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + ".jpg")
+			smallPosterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + "-small.jpg")
             bannerUrl := s.imageService.GetPublicUrl(anime.BannerS3Key)
-            upcomingDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, bannerUrl)
+            upcomingDTOs[i] = dtos.ToAnimeDTO(&anime, posterUrl, smallPosterUrl, bannerUrl)
         }
 
 		

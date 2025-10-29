@@ -12,9 +12,9 @@ type UserAnimeDto struct {
 	NumEpisodesWatched int                `json:"numEpisodesWatched"`
 }
 
-func ToUserAnimeDTO(userAnime *entities.UserAnime, posterUrl string, bannerUrl string) UserAnimeDto {
+func ToUserAnimeDTO(userAnime *entities.UserAnime, originalPosterUrl string, smallPosterUrl string, bannerUrl string) UserAnimeDto {
 	return UserAnimeDto{
-		Anime:              ToAnimeDTO(&userAnime.Anime, posterUrl, bannerUrl),
+		Anime:              ToAnimeDTO(&userAnime.Anime, originalPosterUrl, smallPosterUrl, bannerUrl),
 		WatchStatus:        userAnime.WatchStatus,
 		Rating:             userAnime.Rating,
 		NumEpisodesWatched: userAnime.NumEpisodesWatched,

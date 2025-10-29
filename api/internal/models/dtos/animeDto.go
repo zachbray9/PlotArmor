@@ -30,9 +30,10 @@ type AnimeDto struct {
 	SeasonYear *int       `json:"seasonYear,omitempty"`
 
 	//media urls
-	PosterImage string `json:"posterImage,omitempty"`
-	BannerImage string `json:"bannerImage,omitempty"`
-	TrailerUrl  string `json:"trailerUrl,omitempty"`
+	PosterImage      string `json:"posterImage,omitempty"`
+	PosterImageSmall string `json:"posterImageSmall,omitempty"`
+	BannerImage      string `json:"bannerImage,omitempty"`
+	TrailerUrl       string `json:"trailerUrl,omitempty"`
 
 	//ratings and popularity
 	AverageScore *float64 `json:"averageScore,omitempty"`
@@ -51,7 +52,7 @@ type AnimeDto struct {
 	Characters []AnimeCharacterDto `json:"characters,omitempty"`
 }
 
-func ToAnimeDTO(anime *entities.Anime, posterUrl string, bannerUrl string) AnimeDto {
+func ToAnimeDTO(anime *entities.Anime, originalPosterUrl string, smallPosterUrl, bannerUrl string) AnimeDto {
 	dto := AnimeDto{
 		Id:           anime.Id,
 		EnglishTitle: anime.EnglishTitle,
@@ -69,10 +70,10 @@ func ToAnimeDTO(anime *entities.Anime, posterUrl string, bannerUrl string) Anime
 		AverageScore: anime.AverageScore,
 		IsAdult:      anime.IsAdult,
 		AgeRating:    anime.AgeRating,
-		PosterImage: posterUrl,
-		BannerImage: bannerUrl,
+		PosterImage:  originalPosterUrl,
+		PosterImageSmall: smallPosterUrl,
+		BannerImage:  bannerUrl,
 	}
-
 
 	// Map studio if exists
 	if anime.Studio != nil {

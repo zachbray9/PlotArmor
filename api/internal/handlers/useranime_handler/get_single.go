@@ -74,9 +74,10 @@ func (h *UserAnimeHandler) GetUserAnimeHandler(context *gin.Context) {
 	}
 
 	//convert to dto
-	posterUrl := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key)
+	posterUrl := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key + ".jpg")
+	smallPosterUrl := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key + "-small.jpg")
 	bannerUrl := h.imageService.GetPublicUrl(userAnime.Anime.BannerS3Key)
-	userAnimeDto := dtos.ToUserAnimeDTO(userAnime, posterUrl, bannerUrl)
+	userAnimeDto := dtos.ToUserAnimeDTO(userAnime, posterUrl, smallPosterUrl, bannerUrl)
 
 	context.JSON(http.StatusOK, responses.ApiResponse{
 		Success: true,

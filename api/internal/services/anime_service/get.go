@@ -23,11 +23,12 @@ func (s *AnimeService) GetById(ctx context.Context, id uint) (*dtos.AnimeDto, er
 		}
 
 		// Generate URLs
-		posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key)
+		posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + ".jpg")
+		smallPosterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + "-small.jpg")
 		bannerUrl := s.imageService.GetPublicUrl(anime.BannerS3Key)
 
 		// Convert to DTO
-		dto := dtos.ToAnimeDTO(anime, posterUrl, bannerUrl)
+		dto := dtos.ToAnimeDTO(anime, posterUrl, smallPosterUrl, bannerUrl)
 		animeDto = &dto
 
 		return nil
@@ -76,9 +77,10 @@ func (s *AnimeService) GetByGenre(ctx context.Context, genreId uint, page int, l
 
 	animeDtos := make([]dtos.AnimeDto, 0, len(animes))
 	for _, anime := range animes {
-		posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key)
+		posterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + ".jpg")
+		smallPosterUrl := s.imageService.GetPublicUrl(anime.PosterS3Key + "-small.jpg")
 		bannerUrl := s.imageService.GetPublicUrl(anime.BannerS3Key)
-		animeDto := dtos.ToAnimeDTO(&anime, posterUrl, bannerUrl)
+		animeDto := dtos.ToAnimeDTO(&anime, posterUrl, smallPosterUrl, bannerUrl)
 		animeDtos = append(animeDtos, animeDto)
 	}
 

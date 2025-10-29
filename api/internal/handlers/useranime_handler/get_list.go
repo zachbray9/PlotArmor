@@ -56,9 +56,10 @@ func (h *UserAnimeHandler) GetUserListHandler(context *gin.Context) {
 	userAnimeDtos := make([]dtos.UserAnimeDto, 0, len(animeList))
 
 	for _, userAnime := range animeList {
-		posterURL := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key)
+		posterURL := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key + ".jpg")
+		smallPosterUrl := h.imageService.GetPublicUrl(userAnime.Anime.PosterS3Key + "-small.jpg")
 		bannerURL := h.imageService.GetPublicUrl(userAnime.Anime.BannerS3Key)
-		dto := dtos.ToUserAnimeDTO(&userAnime, posterURL, bannerURL)
+		dto := dtos.ToUserAnimeDTO(&userAnime, posterURL, smallPosterUrl, bannerURL)
 		userAnimeDtos = append(userAnimeDtos, dto)
 	}
 

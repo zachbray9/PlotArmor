@@ -12,7 +12,7 @@ export default function AnimeListEntry({ userAnime }: Props) {
         <NavLink to={`/anime/${userAnime.anime.id}/details`}>
             <Grid gridTemplateColumns="1fr 3fr" bg="background.secondary" rounded="lg" overflow="hidden" w="100%" h="100%">
                 <GridItem>
-                    <Image src={userAnime.anime.posterImage} alt={`${userAnime.anime.englishTitle} poster`} w="100%" h="100%" objectFit="cover" objectPosition="center" />
+                    <Image src={userAnime.anime.posterImageSmall} alt={`${userAnime.anime.englishTitle} poster`} w="100%" h="100%" objectFit="cover" objectPosition="center" />
                 </GridItem>
 
                 <GridItem as={Stack} justifyContent="space-between" padding={4}>
