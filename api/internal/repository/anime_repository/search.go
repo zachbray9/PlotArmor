@@ -29,7 +29,7 @@ func (r *animeRepository) Search(ctx context.Context, tx *gorm.DB, query string,
 	// Apply sorting - simple relevance: exact matches first, then partial matches by score
 	baseQuery = baseQuery.
 		Order(gorm.Expr("CASE WHEN LOWER(english_title) = LOWER(?) OR LOWER(romaji_title) = LOWER(?) THEN 0 ELSE 1 END", query, query)).
-		Order("average_score DESC")
+		Order("favorites DESC")
 
 	// Execute query with pagination
 	if err := baseQuery.Limit(limit).Offset(offset).Find(&animes).Error; err != nil {
