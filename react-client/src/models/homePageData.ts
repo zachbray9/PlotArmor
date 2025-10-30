@@ -2,7 +2,7 @@ import Anime from "./anime"
 
 export default interface HomePageData {
     featured: Anime[],
-    trending: Anime[],
+    topAiring: Anime[],
     popular: Anime[],
     upcoming: Anime[]
 }

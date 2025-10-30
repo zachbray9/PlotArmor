@@ -35,7 +35,7 @@ export default function useHomePageData() {
 
     return {
         featuredShows: data?.featured.filter(anime => anime.bannerImage) ?? [],
-        trendingShows: data?.trending ?? [],
+        topAiring: data?.topAiring ?? [],
         popularShows: data?.popular ?? [],
         upcomingShows: data?.upcoming ?? [],
         isPending

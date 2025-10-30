@@ -6,7 +6,7 @@ import FeaturedCarousel from "../components/carousels/FeaturedCarousel"
 import useHomePageData from "../hooks/useHomePageData"
 
 export default observer(function Home() {
-    const { featuredShows, trendingShows, popularShows, upcomingShows } = useHomePageData()
+    const { featuredShows, topAiring, popularShows, upcomingShows } = useHomePageData()
 
     return (
         <>
@@ -18,7 +18,7 @@ export default observer(function Home() {
                 <FeaturedCarousel data={featuredShows}/>
 
                 <Stack gap={{base: '2rem', md: "4rem"}}>
-                    <AnimeCarousel heading='Top Airing' data={trendingShows} />
+                    <AnimeCarousel heading='Top Airing' data={topAiring} />
                     <AnimeCarousel heading='Popular' data={popularShows} />
                     <AnimeCarousel heading='Upcoming' data={upcomingShows} />
                 </Stack>
