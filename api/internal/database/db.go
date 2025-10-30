@@ -1,83 +1,73 @@
 package database
 
 import (
-	"database/sql"
+	"log"
+	"myanimevault/internal/models/entities"
 	"os"
 
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-var Db *sql.DB
+var Db *gorm.DB
 
-func InitDb(){
+func InitDb() {
 	var err error
-	Db, err = sql.Open("postgres", os.Getenv("CONNECTION_STRING"))
 
-	if(err != nil){
-		panic("The database could not be initialized: " + err.Error())
+	connectionString := os.Getenv("CONNECTION_STRING")
+
+	Db, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+
+	if err != nil {
+		log.Fatal("Failed to connect to database: ", err)
 	}
-	Db.SetMaxOpenConns(10)
-	Db.SetMaxIdleConns(5)
-	
-	createTables()
+
+	sqlDb, err := Db.DB()
+	if err != nil {
+		log.Fatal("Failed to get underlying sql database: ", err)
+	}
+
+	sqlDb.SetMaxOpenConns(25)
+	sqlDb.SetMaxIdleConns(5)
+
+	log.Println("Database connected successfully")
 }
 
-func createTables(){
-	usersTable := `
-	CREATE TABLE IF NOT EXISTS users (
-		id UUID PRIMARY KEY NOT NULL,
-		email VARCHAR(255) NOT NULL UNIQUE,
-		password_hash VARCHAR(255) NOT NULL,
-		date_registered TIMESTAMPTZ NOT NULL
+func RunMigrationsAndSeedData() {
+	err := Db.AutoMigrate(
+		&entities.User{},
+		&entities.Session{},
+		&entities.Anime{},
+		&entities.UserAnime{},
+		&entities.Character{},
+		&entities.AnimeCharacter{},
+		&entities.Genre{},
+		&entities.VoiceActor{},
+		&entities.Studio{},
 	)
-	`
 
-	_, err := Db.Exec(usersTable)
-
-	if(err != nil){
-		panic("Could not create users table: " + err.Error())
+	if err != nil {
+		log.Fatal("Failed to to run database migrations: ", err)
 	}
 
-	userAnimesTable := `
-	CREATE TABLE IF NOT EXISTS userAnimes (
-		id UUID PRIMARY KEY NOT NULL,
-		user_id UUID NOT NULL,
-		anime_id INT NOT NULL,
-		english_title VARCHAR(255),
-		romaji_title VARCHAR(255),
-		large_poster VARCHAR(2083),
-		medium_poster VARCHAR(2083),
-		format VARCHAR(50),
-		season VARCHAR(50),
-		season_year INT,
-		watch_status VARCHAR(50),
-		rating INT,
-		num_episodes_watched INT,
-		episodes INT,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-	)
-	`
+	log.Println("Database migrations completed successfully")
 
-	_, err = Db.Exec(userAnimesTable)
-
-	if(err != nil){
-		panic("Could not create userAnimes table: " + err.Error())
+	//conditionally seed data only if database is empty
+	var genreCount int64
+	Db.Model(&entities.Genre{}).Count(&genreCount)
+	if genreCount == 0 {
+		log.Println("Database is empty. Seeding data...")
+		err = SeedInitialData(Db)
+		if err != nil {
+			log.Fatal("Failed to seed initial data: %w", err)
+		}
+		log.Println("Seeding complete!")
+	} else {
+		log.Println("Database already has data. Skipping seed.")
 	}
 
-	sessionsTable := `
-	CREATE TABLE IF NOT EXISTS sessions (
-		id UUID PRIMARY KEY NOT NULL,
-		user_id UUID NOT NULL,
-		device_id TEXT NOT NULL,
-		created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-		expires_at TIMESTAMPTZ NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-	)
-	`
-
-	_, err = Db.Exec(sessionsTable)
-
-	if(err != nil){
-		panic("Could not create sessions table: " + err.Error())
-	}
 }

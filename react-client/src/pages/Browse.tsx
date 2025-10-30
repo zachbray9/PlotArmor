@@ -1,54 +1,89 @@
 import { Box, Grid, Heading, Stack, Text } from "@chakra-ui/react";
 import { Helmet } from "react-helmet-async";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { AniListAnime } from "../models/aniListAnime";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../stores/store";
+import { useSearchParams } from "react-router-dom";
 import CarouselCard from "../components/carousels/CarouselCard";
 import '../styles/CarouselCard.css'
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { myApiAgent } from "../api/myApiAgent";
+import InfiniteScrollTrigger from "../components/common/loading/InfiniteScrollTrigger";
+import useUserAnimeList from "../hooks/useUserAnimeList";
+import LoadingComponent from "../components/common/loading/LoadingComponent";
 
-export default observer(function Browse() {
-    const { category = 'trending' } = useParams()
-    const navigate = useNavigate()
-    const [animeList, setAnimeList] = useState<AniListAnime[]>([])
-    const { animeStore } = useStore()
-    const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1)
+export default function Browse() {
+    const { animeIds, isPending: isUserListLoading } = useUserAnimeList()
+    const [searchParams] = useSearchParams();
+    const genreIdFromUrl = Number(searchParams.get('genre')) || 0;
 
-    useEffect(() => {
-        const fetchAnimes = async (category: string) => {
-            let genre: string | undefined = undefined
-            let sortBy: string = 'trending'
+    const fetchAnimeByGenre = async ({pageParam = 1}) => {
+        const res = await myApiAgent.Animes.getbyGenre({ genreId: genreIdFromUrl, page: pageParam, limit: 20 })
 
-
-            if (genres.includes(category)) {
-                genre = category
-            }
-            else if (sortValues.includes(category)) {
-                sortBy = category
-            }
-
-            const animes = await animeStore.loadAnimeCategory(genre, sortBy)
-            setAnimeList(animes)
+        if (!res.data) {
+            throw new Error("Failed to fetch anime by genre")
         }
 
-        fetchAnimes(category)
-    }, [animeStore, category, navigate])
+        return res.data
+    }
 
-    if (!genres.includes(category) && !sortValues.includes(category))
-        return <Navigate to='/404' />
+    const { data, isFetchingNextPage, isPending, fetchNextPage, hasNextPage } = useInfiniteQuery({
+        queryKey: ["animeByGenre", genreIdFromUrl],
+        queryFn: fetchAnimeByGenre,
+        enabled: genreIdFromUrl > 0,
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            return lastPage.pagination.hasMore
+                ? lastPage.pagination.currentPage + 1
+                : undefined;
+        },
+        staleTime: 5 * 60 * 1000
+    })
+
+    // Flatten all pages into single array
+    const animeList = data?.pages.flatMap(page => page.results) || [];
+    const genreName = data?.pages[0]?.genre.name || "Genre";
+    const genreDescription = data?.pages[0].genre.description || ""
+
+    // Show loading skeleton for initial load
+    if (isPending && genreIdFromUrl > 0) {
+        return (
+            <>
+                <Helmet>
+                    <title>Browse Anime - PlotArmor</title>
+                </Helmet>
+
+                <LoadingComponent text="Loading shows..."/>
+            </>
+        );
+    }
+
+    // ✅ Fix 4: Show message if no genre selected
+    if (genreIdFromUrl === 0) {
+        return (
+            <>
+                <Helmet>
+                    <title>Browse Anime - PlotArmor</title>
+                </Helmet>
+
+                <Box display='flex' justifyContent='center' width='100%'>
+                    <Stack alignItems='center' maxWidth='1200px' width='100%' gap='1.5rem' paddingX={['1rem', '1.5rem', '2rem', '4rem']} paddingY={['1rem', '1.25rem', '2rem']}>
+                        <Text>Please select a genre to browse</Text>
+                    </Stack>
+                </Box>
+            </>
+        );
+    }
+
 
     return (
         <>
             <Helmet>
-                <title>{`${formattedCategory} Anime Shows and Movies - PlotArmor`}</title>
+                <title>{`${genreName} Anime Shows and Movies - PlotArmor`}</title>
             </Helmet>
 
             <Box display='flex' justifyContent='center' width='100%'>
                 <Stack alignItems='center' maxWidth='1200px' width='100%' gap='1.5rem' paddingX={['1rem', '1.5rem', '2rem', '4rem']} paddingY={['1rem', '1.25rem', '2rem']}>
                     <Stack width='100%' alignItems='center'>
-                        <Heading>{formattedCategory}</Heading>
-                        {category && <Text>{categoryDescriptionMap.get(category)}</Text>}
+                        <Heading>{genreName}</Heading>
+                        <Text>{genreDescription}</Text>
                     </Stack>
 
                     <Grid
@@ -57,68 +92,25 @@ export default observer(function Browse() {
                             sm: 'repeat(3, 1fr)',
                             md: 'repeat(4, 1fr)',
                             lg: 'repeat(5, 1fr)',
-                            xl: 'repeat(6, 1fr)', 
+                            xl: 'repeat(6, 1fr)',
                             xlTo2xl: 'repeat(7, 1fr)'
                         }}
                         gap={['1rem', '1.5rem', '2rem']}
                     >
                         {animeList.map((anime) => (
-                            <CarouselCard key={anime.id} anime={anime} />
+                            <CarouselCard key={anime.id} anime={anime} isInList={animeIds.includes(anime.id)} isListLoading={isUserListLoading} />
                         ))}
                     </Grid>
+
+                    <InfiniteScrollTrigger onLoadMore={() => fetchNextPage} hasMore={hasNextPage || false} isLoading={isFetchingNextPage} />
                 </Stack>
             </Box >
         </>
     )
-})
-
-export const genres = [
-    'action',
-    'adventure',
-    'comedy',
-    'drama',
-    'ecchi',
-    'fantasy',
-    'horror',
-    'mahou shoujo',
-    'mecha',
-    'music',
-    'mystery',
-    'psychological',
-    'romance',
-    'sci-fi',
-    'slice of life',
-    'sports',
-    'supernatural',
-    'thriller'
-]
+}
 
 export const sortValues = [
     'new',
     'popular',
     'trending'
 ]
-
-const categoryDescriptionMap = new Map<string, string>([
-    ['new', 'Fresh releases hot off the press!'],
-    ['popular', "10/10's that everybody loves!"],
-    ['trending', "Trending favorites everyone's watching!"],
-    ['action', 'For all your fist flying, explosion-filled needs!'],
-    ['adventure', 'Epic quests and thrilling journeys await!'],
-    ['comedy', 'Laugh out loud with hilarious antics!'],
-    ['drama', 'Intense emotions and complex relationships.'],
-    ['ecchi', 'Flirty, funny, and a bit daring!'],
-    ['fantasy', 'Magic, mythical worlds, and epic battles!'],
-    ['horror', 'Spine-chilling thrills and eerie encounters.'],
-    ['mahou shoujo', 'Magic, friendship, and unstoppable courage!'],
-    ['mecha', 'Giant robots, high-tech battles, and heroism!'],
-    ['music', 'Feel the rhythm, live the melody!'],
-    ['mystery', 'Puzzles, secrets, and mind-bending twists.'],
-    ['psychological', 'Dive into the mind games and mysteries.'],
-    ['romance', 'Heartfelt stories of love and connection.'],
-    ['sci-fi', 'Futuristic tech, space odysseys, and beyond!'],
-    ['slice of life', 'Everyday stories, real emotions.'],
-    ['sports', 'For the thrill of victory and teamwork!'],
-    ['supernatural', 'Ghosts, spirits, and the otherworldly!'],
-    ['thriller', 'Edge-of-your-seat suspense and tension!'],
-])

@@ -1,15 +1,17 @@
 import { Box, Heading, Stack, useBreakpointValue } from "@chakra-ui/react";
 import { CustomNextCarouselArrow, CustomPrevCarouselArrow, usePrevNextButtons } from "./customCarouselArrowButtons";
-import { AniListAnime } from "../../models/aniListAnime";
 import CarouselCard from "./CarouselCard";
 import useEmblaCarousel from "embla-carousel-react";
+import Anime from "../../models/anime";
+import useUserAnimeList from "../../hooks/useUserAnimeList";
 
 interface Props {
-    data: AniListAnime[],
+    data: Anime[],
     heading: string
 }
 
 export default function AnimeCarousel({ data, heading }: Props) {
+    const {animeIds, isPending: isListPending} = useUserAnimeList()
     const slidesToScroll = useBreakpointValue<number>({ base: 2, sm: 3, md: 4, lg: 5, xl: 6, xxl: 7 })
     const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: slidesToScroll })
     const { onPrevButtonClick, onNextButtonClick, prevBtnDisabled, nextBtnDisabled } = usePrevNextButtons(emblaApi)
@@ -24,7 +26,7 @@ export default function AnimeCarousel({ data, heading }: Props) {
                     <Box id={`${headingLower}-container`} display="flex">
                         {data.map((anime) => (
                             <Box key={anime.id} id={`${headingLower}-slide`} flexGrow={0} flexShrink={0} flexBasis={["44%", "30%", "25%", "20%", "17%", "13%"]} mr={6}>
-                                <CarouselCard anime={anime} key={anime.id} />
+                                <CarouselCard key={anime.id} anime={anime} isInList={animeIds.includes(anime.id)} isListLoading={isListPending}/>
                             </Box>
                         ))}
                     </Box>

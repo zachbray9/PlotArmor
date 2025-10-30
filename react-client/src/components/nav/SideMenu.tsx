@@ -1,7 +1,8 @@
 import { Accordion, AccordionItemIndicator, CloseButton, Drawer, Portal, Span, Stack } from "@chakra-ui/react";
 import { navBarHeight } from "../../theme";
 import SideMenuButton from "./SideMenuButton";
-import { genres, sortValues } from "../../pages/Browse"
+import { sortValues } from "../../pages/Browse"
+import useGenres from "../../hooks/useGenres";
 
 interface Props {
     isOpen: boolean
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export default function SideMenu({ isOpen, onClose }: Props) {
+    const {data: genres} = useGenres()
+
     return (
         <Drawer.Root placement="start" open={isOpen} size={{ base: 'full', sm: 'xs' }} onInteractOutside={onClose}>
             <Portal >
@@ -36,8 +39,8 @@ export default function SideMenu({ isOpen, onClose }: Props) {
                                     <Accordion.ItemContent>
                                         <Accordion.ItemBody as={Stack} background="background.card">
                                             {
-                                                genres.map(genre => (
-                                                    <SideMenuButton key={genre} to={`/anime/browse/${genre}`} onClose={onClose} paddingX="2.5rem" paddingY="1.5rem" >{genre.charAt(0).toUpperCase() + genre.slice(1)}</SideMenuButton>
+                                                genres?.map(genre => (
+                                                    <SideMenuButton key={genre.id} to={`/anime/browse/${genre}`} onClose={onClose} paddingX="2.5rem" paddingY="1.5rem" >{genre.name.charAt(0).toUpperCase() + genre.name.slice(1)}</SideMenuButton>
                                                 ))
                                             }
                                         </Accordion.ItemBody>

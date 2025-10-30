@@ -1,20 +1,20 @@
 package entities
 
-import "github.com/google/uuid"
+import (
+	"myanimevault/internal/models"
+
+	"github.com/google/uuid"
+)
 
 type UserAnime struct {
-	Id                 uuid.UUID
-	UserId             uuid.UUID
-	AnimeId            int64  `binding:"required"`
-	EnglishTitle       string `binding:"required"`
-	RomajiTitle        string `binding:"required"`
-	LargePoster        string `binding:"required"`
-	MediumPoster       string `binding:"required"`
-	Format             string `binding:"required"`
-	Season             string `binding:"required"`
-	SeasonYear         string `binding:"required"`
-	WatchStatus        string
-	Rating             int64
-	NumEpisodesWatched int64
-	Episodes           int64 `binding:"required"`
+	Id                 uuid.UUID          `json:"id" gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
+	UserId             uuid.UUID          `json:"user_id" gorm:"type:uuid;not null"`
+	AnimeId            uint               `json:"anime_id" gorm:"not null"`
+	WatchStatus        models.WatchStatus `json:"watch_status" gorm:"not null;default:'PLAN_TO_WATCH'"`
+	Rating             int                `json:"rating,omitempty" gorm:"check:rating >= 0 AND rating <= 10;default:0"`
+	NumEpisodesWatched int                `json:"num_episodes_watched,omitempty" gorm:"default:0"`
+
+	//relationships
+	User  User  `json:"user,omitempty" gorm:"foreignKey:UserId"`
+	Anime Anime `json:"anime,omitempty" gorm:"foreignKey:AnimeId"`
 }

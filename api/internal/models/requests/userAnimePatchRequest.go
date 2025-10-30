@@ -1,7 +1,9 @@
 package requests
 
+import "myanimevault/internal/models"
+
 type UserAnimePatchRequest struct {
-	Rating             *int64  `json:"rating"`
-	WatchStatus        *string `json:"watchStatus"`
-	NumEpisodesWatched *int64  `json:"numEpisodesWatched"`
+	Rating             int                `json:"rating"`
+	WatchStatus        models.WatchStatus `json:"watchStatus"`
+	NumEpisodesWatched int                `json:"numEpisodesWatched"`
 }

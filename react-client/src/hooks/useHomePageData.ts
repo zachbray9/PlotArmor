@@ -1,13 +1,19 @@
-import { HomePageQuery } from "../api/queries/homePageQuery";
-import { aniListAgent } from "../api/aniListAgent";
 import HomePageData from "../models/homePageData";
 import { useQuery } from "@tanstack/react-query";
 import { toaster } from "../components/ui/toaster";
+import { myApiAgent } from "../api/myApiAgent";
+import ApiResponse from "../models/responses/apiResponse";
 
 export default function useHomePageData() {
     const fetchHomeData = async (): Promise<HomePageData> => {
-        const response: HomePageData = await aniListAgent.AnimeData.getHomePageData(HomePageQuery)
-        return response
+        const response: ApiResponse<HomePageData> = await myApiAgent.Animes.homePage()
+        console.log(response.data)
+
+        if(!response.data) {
+            throw new Error("Failed to fetch home page data")
+        }
+
+        return response.data
     }
 
     const { data, isPending, error } = useQuery({
@@ -28,10 +34,10 @@ export default function useHomePageData() {
     }
 
     return {
-        featuredShows: data?.data.featured.media.filter(anime => anime.bannerImage) ?? [],
-        trendingShows: data?.data.trending.media ?? [],
-        popularShows: data?.data.popular.media ?? [],
-        upcomingShows: data?.data.upcoming.media ?? [],
+        featuredShows: data?.featured.filter(anime => anime.bannerImage) ?? [],
+        trendingShows: data?.trending ?? [],
+        popularShows: data?.popular ?? [],
+        upcomingShows: data?.upcoming ?? [],
         isPending
     }
 }

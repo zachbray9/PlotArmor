@@ -8,4 +8,5 @@ var (
 	ErrIncorrectPassword = errors.New("incorrect_password")
 	ErrRevokedToken = errors.New("token_revoked")
 	ErrInvalidField = errors.New("invalid_field")
+	ErrAnimeAlreadyExists = errors.New("anime_already_exists")
 )

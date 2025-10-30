@@ -1,18 +1,8 @@
-import { AniListAnime } from "./aniListAnime"
+import Anime from "./anime"
 
 export default interface HomePageData {
-    data: {
-        featured: {
-            media: AniListAnime[]
-        },
-        trending: {
-            media: AniListAnime[]
-        },
-        popular: {
-            media: AniListAnime[]
-        },
-        upcoming: {
-            media: AniListAnime[]
-        }
-    }
+    featured: Anime[],
+    trending: Anime[],
+    popular: Anime[],
+    upcoming: Anime[]
 }

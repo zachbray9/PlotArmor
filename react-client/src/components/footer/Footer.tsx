@@ -12,7 +12,7 @@ export default observer(function Footer() {
             <Stack>
                 <Heading size='md'>Connect With Us</Heading>
                 <FooterItem href="https://github.com/zachbray9/PlotArmor" isExternal icon={Github}>Github</FooterItem>
-
+                {userStore.user?.role === "admin" && <FooterItem href="/anime/contribute">Contribute</FooterItem>}
             </Stack>
 
             <Stack>
