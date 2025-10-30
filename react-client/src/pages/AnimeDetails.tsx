@@ -18,7 +18,7 @@ export default function AnimeDetails() {
 
     
 
-    const averageScore = anime?.averageScore ? parseFloat((anime.averageScore * 0.1).toFixed(1)) : null
+    const averageScore = anime?.averageScore ? parseFloat((anime.averageScore).toFixed(1)) : null
 
     if (isAnimePending) {
         return (

@@ -18,6 +18,7 @@ export default function useUpdateUserAnime() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["userAnime", variables.animeId] })
             queryClient.invalidateQueries({ queryKey: ["userAnimeList"] })
+            queryClient.invalidateQueries({queryKey: ["anime"]})
         }
     })
 }
