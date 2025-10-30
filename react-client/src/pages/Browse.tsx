@@ -1,4 +1,4 @@
-import { Box, Grid, Heading, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Box, Grid, Heading, Stack, Text } from "@chakra-ui/react";
 import { Helmet } from "react-helmet-async";
 import { useSearchParams } from "react-router-dom";
 import CarouselCard from "../components/carousels/CarouselCard";
