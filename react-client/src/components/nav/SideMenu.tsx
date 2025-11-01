@@ -23,16 +23,10 @@ export default function SideMenu({ isOpen, onClose }: Props) {
                         </Drawer.Header>
 
                         <Drawer.Body as={Stack}  overflow="auto" pb={navBarHeight} bg="background">
-                            {
-                                sortValues.map(sortValue => (
-                                    <SideMenuButton key={sortValue} to={`/anime/browse/${sortValue}`} onClose={onClose} >{sortValue.charAt(0).toUpperCase() + sortValue.slice(1)}</SideMenuButton>
-                                ))
-                            }
-
                             <Accordion.Root collapsible px="1rem" >
                                 <Accordion.Item value="Browse">
                                     <Accordion.ItemTrigger>
-                                        <Span flex="1">Browse</Span>
+                                        <Span flex="1">Genres</Span>
                                         <AccordionItemIndicator />
                                     </Accordion.ItemTrigger>
 
@@ -40,7 +34,7 @@ export default function SideMenu({ isOpen, onClose }: Props) {
                                         <Accordion.ItemBody as={Stack} background="background.card">
                                             {
                                                 genres?.map(genre => (
-                                                    <SideMenuButton key={genre.id} to={`/anime/browse/${genre}`} onClose={onClose} paddingX="2.5rem" paddingY="1.5rem" >{genre.name.charAt(0).toUpperCase() + genre.name.slice(1)}</SideMenuButton>
+                                                    <SideMenuButton key={genre.id} to={`/anime/browse?genre=${genre.id}`} onClose={onClose} paddingX="2.5rem" paddingY="1.5rem" >{genre.name.charAt(0).toUpperCase() + genre.name.slice(1)}</SideMenuButton>
                                                 ))
                                             }
                                         </Accordion.ItemBody>
