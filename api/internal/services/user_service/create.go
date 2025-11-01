@@ -35,6 +35,7 @@ func Create(email string, password string) (entities.User, error) {
 		Id: uuid.New(),
 		Email:        strings.ToLower(email),
 		PasswordHash: hashedPassword,
+		
 	}
 
 	// Create using GORM
