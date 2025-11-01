@@ -86,6 +86,7 @@ func RegisterHandler(context *gin.Context) {
 		Id:       user.Id.String(),
 		Email:    user.Email,
 		AnimeIds: make([]uint, 0),
+		Role:     user.Role,
 	}
 
 	//add cookies to response
