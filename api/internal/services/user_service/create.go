@@ -9,6 +9,7 @@ import (
 	"myanimevault/internal/utils"
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -31,6 +32,7 @@ func Create(email string, password string) (entities.User, error) {
 
 	// Create the user entity
 	newUser = entities.User{
+		Id: uuid.New(),
 		Email:        strings.ToLower(email),
 		PasswordHash: hashedPassword,
 	}
