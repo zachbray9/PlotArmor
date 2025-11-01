@@ -110,6 +110,7 @@ func LoginHandler(context *gin.Context) {
 		Id:       user.Id.String(),
 		Email:    user.Email,
 		AnimeIds: animeIdList,
+		Role: user.Role,
 	}
 
 	//create session id cookie
