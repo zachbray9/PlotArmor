@@ -1,7 +1,6 @@
 import { Accordion, AccordionItemIndicator, CloseButton, Drawer, Portal, Span, Stack } from "@chakra-ui/react";
 import { navBarHeight } from "../../theme";
 import SideMenuButton from "./SideMenuButton";
-import { sortValues } from "../../pages/Browse"
 import useGenres from "../../hooks/useGenres";
 
 interface Props {
