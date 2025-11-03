@@ -50,13 +50,15 @@ export default observer(function Search() {
                 </Box>
 
                 {query.length >= 2 && isPending && results.length === 0 &&
-                    <Box as={"section"} maxWidth='65rem' width={"100%"} >
+                    <Stack as={"section"} maxWidth='65rem' width={"100%"} gap={['1.25rem', null, '2rem']} padding={['1.25rem', null, '4rem']}>
+                        <Skeleton w={"16"} h={"6"}/>
+
                         <SimpleGrid columns={[2, 3, 4]} gap={['1.25rem', '1.75rem', '2.125rem']}>
                             {Array.from({ length: 20 }).map((_, i) => (
                                 <Skeleton key={i} aspectRatio="2/3" width={"full"} />
                             ))}
                         </SimpleGrid>
-                    </Box>
+                    </Stack>
                 }
 
                 {results.length > 0 &&
