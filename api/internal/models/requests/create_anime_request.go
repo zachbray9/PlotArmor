@@ -26,11 +26,11 @@ type CreateAnimeRequest struct {
 	Banner string `json:"banner"`
 
 	//relationships
-	StudioId uint   `json:"studioId" binding:"required"`
-	Genres   []uint `json:"genres" binding:"required,min=1"`
+	Studios []uint `json:"studios" binding:"required,min=1"`
+	Genres  []uint `json:"genres" binding:"required,min=1"`
 
 	// Optional additional fields
-	TrailerUrl     string     `json:"trailerUrl,omitempty"`
-	StartDate      *time.Time `json:"startDate,omitempty"`
-	EndDate        *time.Time `json:"endDate,omitempty"`
+	TrailerUrl string     `json:"trailerUrl,omitempty"`
+	StartDate  *time.Time `json:"startDate,omitempty"`
+	EndDate    *time.Time `json:"endDate,omitempty"`
 }

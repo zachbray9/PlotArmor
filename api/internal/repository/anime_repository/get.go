@@ -13,7 +13,7 @@ func (r *animeRepository) GetById(ctx context.Context, tx *gorm.DB, animeId uint
 	var anime entities.Anime
 
 	err := tx.WithContext(ctx).
-		Preload("Studio").
+		Preload("Studios").
 		Preload("Genres").
 		Preload("Characters").
 		Where("id = ?", animeId).
@@ -39,7 +39,7 @@ func (r *animeRepository) GetFeatured(ctx context.Context, tx *gorm.DB, limit in
 		// Order("average_score DESC, popularity ASC").
 		Order("created_at DESC").
 		Limit(limit).
-		Preload("Studio").
+		Preload("Studios").
 		Preload("Genres").
 		Find(&animes).Error
 
@@ -59,7 +59,7 @@ func (r *animeRepository) GetTopAiring(ctx context.Context, tx *gorm.DB, limit i
 		// Order("trending ASC").
 		Order("created_at DESC").
 		Limit(limit).
-		Preload("Studio").
+		Preload("Studios").
 		Preload("Genres").
 		Find(&animes).Error
 
@@ -78,7 +78,7 @@ func (r *animeRepository) GetPopular(ctx context.Context, tx *gorm.DB, limit int
 		// Order("trending ASC").
 		Order("favorites DESC, created_at DESC").
 		Limit(limit).
-		Preload("Studio").
+		Preload("Studios").
 		Preload("Genres").
 		Find(&animes).Error
 
@@ -96,7 +96,7 @@ func (r *animeRepository) GetUpcoming(ctx context.Context, tx *gorm.DB, limit in
 		Where("status = ?", models.StatusNotYetReleased).
 		Order("start_date ASC").
 		Limit(limit).
-		Preload("Studio").
+		Preload("Studios").
 		Preload("Genres").
 		Find(&animes).Error
 

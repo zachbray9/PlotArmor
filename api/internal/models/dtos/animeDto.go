@@ -39,46 +39,50 @@ type AnimeDto struct {
 	AverageScore float64 `json:"averageScore,omitempty"`
 	Popularity   int     `json:"popularity,omitempty"` // Popularity rank
 	Trending     int     `json:"trending,omitempty"`   // Trending rank
-	Favorites    int      `json:"favorites"`            // Number of users who favorited
+	Favorites    int     `json:"favorites"`            // Number of users who favorited
 
 	// Content Ratings
 	IsAdult   bool   `json:"isAdult"`
 	AgeRating string `json:"ageRating,omitempty"` // G, PG, PG-13, R, etc.
 
 	// Relationships
-	Studio     *StudioDto          `json:"studio,omitempty"`
+	Studios    []StudioDto         `json:"studio,omitempty"`
 	Genres     []GenreDto          `json:"genres,omitempty"`
 	Characters []AnimeCharacterDto `json:"characters,omitempty"`
 }
 
 func ToAnimeDTO(anime *entities.Anime, originalPosterUrl string, smallPosterUrl, bannerUrl string) AnimeDto {
 	dto := AnimeDto{
-		Id:           anime.Id,
-		EnglishTitle: anime.EnglishTitle,
-		RomajiTitle:  anime.RomajiTitle,
-		Synopsis:     anime.Synopsis,
-		Format:       anime.Format,
-		Status:       anime.Status,
-		Episodes:     anime.Episodes,
-		Duration:     anime.Duration,
-		StartDate:    anime.StartDate,
-		EndDate:      anime.EndDate,
-		Season:       anime.Season,
-		SeasonYear:   anime.SeasonYear,
-		TrailerUrl:   anime.TrailerUrl,
-		AverageScore: anime.AverageScore(),
-		IsAdult:      anime.IsAdult,
-		AgeRating:    anime.AgeRating,
-		PosterImage:  originalPosterUrl,
+		Id:               anime.Id,
+		EnglishTitle:     anime.EnglishTitle,
+		RomajiTitle:      anime.RomajiTitle,
+		Synopsis:         anime.Synopsis,
+		Format:           anime.Format,
+		Status:           anime.Status,
+		Episodes:         anime.Episodes,
+		Duration:         anime.Duration,
+		StartDate:        anime.StartDate,
+		EndDate:          anime.EndDate,
+		Season:           anime.Season,
+		SeasonYear:       anime.SeasonYear,
+		TrailerUrl:       anime.TrailerUrl,
+		AverageScore:     anime.AverageScore(),
+		IsAdult:          anime.IsAdult,
+		AgeRating:        anime.AgeRating,
+		PosterImage:      originalPosterUrl,
 		PosterImageSmall: smallPosterUrl,
-		BannerImage:  bannerUrl,
+		BannerImage:      bannerUrl,
 	}
 
 	// Map studio if exists
-	if anime.Studio != nil {
-		dto.Studio = &StudioDto{
-			Id:   anime.Studio.Id,
-			Name: anime.Studio.Name,
+	if len(anime.Studios) > 0 {
+		dto.Studios = make([]StudioDto, len(anime.Studios))
+		for i, studio := range anime.Studios {
+			dto.Studios[i] = StudioDto{
+				Id: studio.Id,
+				Name: studio.Name,
+				Website: studio.Website,
+			}
 		}
 	}
 
@@ -120,4 +124,3 @@ func ToAnimeDTO(anime *entities.Anime, originalPosterUrl string, smallPosterUrl,
 
 	return dto
 }
-

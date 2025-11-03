@@ -11,5 +11,5 @@ type Studio struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 
 	// Relationships
-	Animes []Anime `json:"animes,omitempty" gorm:"foreignKey:StudioId"`
+	Animes []Anime `json:"animes,omitempty" gorm:"many2many:anime_studios;"`
 }

@@ -1,6 +1,7 @@
 package dtos
 
 type StudioDto struct {
-	Id   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"not null;unique"`
+	Id      uint   `json:"id"`
+	Name    string `json:"name"`
+	Website string `json:"website"`
 }

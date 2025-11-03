@@ -53,11 +53,8 @@ type Anime struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	CreatedAt time.Time `json:"created_at"`
 
-	//studio relationship
-	StudioId *uint `json:"studio_id,omitempty" gorm:"default:null"`
-
 	// Relationships
-	Studio     *Studio          `json:"studio,omitempty" gorm:"foreignKey:StudioId"`
+	Studios    []Studio         `json:"studios,omitempty" gorm:"many2many:anime_studios;"`
 	Genres     []Genre          `json:"genres,omitempty" gorm:"many2many:anime_genres;"`
 	Characters []AnimeCharacter `json:"characters,omitempty" gorm:"foreignKey:AnimeId"`
 	UserAnimes []UserAnime      `json:"user_animes,omitempty" gorm:"foreignKey:AnimeId"`
