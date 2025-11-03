@@ -4,13 +4,12 @@ import (
 	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/responses"
-	useranimeservice "myanimevault/internal/services/useranime_service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetCurrentUserHandler(context *gin.Context) {
+func (h *AuthHandler) GetCurrentUserHandler(context *gin.Context) {
 	userInterface, exists := context.Get("user")
 	if !exists {
 		context.JSON(http.StatusUnauthorized, responses.ApiResponse{
@@ -31,22 +30,10 @@ func GetCurrentUserHandler(context *gin.Context) {
 		return
 	}
 
-	animeIdList, err := useranimeservice.GetIdList(user.Id.String())
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, responses.ApiResponse{
-			Success: false,
-			Message: "Something went wrong. Please try again later.",
-			Data: nil,
-		})
-		return
-	}
-
 	userDto := dtos.UserDto{
 		Id: user.Id.String(),
 		Email: user.Email,
 		Role: user.Role,
-		AnimeIds: animeIdList,
 	}
 
 	context.JSON(http.StatusOK, responses.ApiResponse{

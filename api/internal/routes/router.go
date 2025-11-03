@@ -11,12 +11,17 @@ import (
 	"myanimevault/internal/middleware"
 	animerepo "myanimevault/internal/repository/anime_repository"
 	genrerepository "myanimevault/internal/repository/genre_repository"
+	sessionrepository "myanimevault/internal/repository/session_repository"
 	studiorepository "myanimevault/internal/repository/studio_repository"
+	userrepository "myanimevault/internal/repository/user_repository"
 	useranimerepository "myanimevault/internal/repository/useranime_repository"
 	animeservice "myanimevault/internal/services/anime_service"
+	authservice "myanimevault/internal/services/auth_service"
 	genreservice "myanimevault/internal/services/genre_service"
 	imageservice "myanimevault/internal/services/image_service"
+	sessionservice "myanimevault/internal/services/session_service"
 	studioservice "myanimevault/internal/services/studio_service"
+	userservice "myanimevault/internal/services/user_service"
 	useranimeservice "myanimevault/internal/services/useranime_service"
 	"os"
 
@@ -25,6 +30,8 @@ import (
 
 func InitRouter(server *gin.Engine) {
 	//initialize dependencies
+	userRepo := userrepository.NewUserRepo()
+	sessionRepo := sessionrepository.NewSessionRepository()
 	animeRepo := animerepo.NewAnimeRepository()
 	genreRepo := genrerepository.NewGenreRepository()
 	studioRepo := studiorepository.NewStudioRepository()
@@ -34,11 +41,15 @@ func InitRouter(server *gin.Engine) {
 	if err != nil {
 		panic(fmt.Sprintf("failed to create new image service: %v", err))
 	}
+	userService := userservice.NewUserService(userRepo)
+	sessionService := sessionservice.NewSessionService(sessionRepo)
+	authService := authservice.NewAuthService(*userService, *sessionService, userRepo)
 	animeService := animeservice.NewAnimeService(animeRepo, genreRepo, imageService)
 	genreService := genreservice.NewGenreService(genreRepo)
 	studioService := studioservice.NewStudioService(studioRepo)
 	userAnimeService := useranimeservice.NewUserAnimeService(userAnimeRepo, animeRepo)
 
+	authHandler := authhandler.NewAuthHandler(authService)
 	animeHandler := animehandler.NewAnimeHandler(animeService)
 	imageHandler := imagehandler.NewImageHandler(imageService)
 	genreHandler := genrehandler.NewGenreHandler(genreService)
@@ -47,9 +58,9 @@ func InitRouter(server *gin.Engine) {
 
 	api := server.Group("/api")
 	//auth routes
-	api.GET("/users/getCurrentUser", middleware.Authenticate, authhandler.GetCurrentUserHandler)
-	api.POST("/users/register", authhandler.RegisterHandler)
-	api.POST("/users/login", authhandler.LoginHandler)
+	api.GET("/users/getCurrentUser", middleware.Authenticate, authHandler.GetCurrentUserHandler)
+	api.POST("/users/register", authHandler.RegisterHandler)
+	api.POST("/users/login", authHandler.LoginHandler)
 	api.DELETE("/users/logout", authhandler.LogoutHandler)
 
 	//userAnime routes
