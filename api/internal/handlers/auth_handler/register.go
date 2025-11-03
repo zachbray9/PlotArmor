@@ -3,20 +3,14 @@ package authhandler
 import (
 	"log"
 	"myanimevault/internal/models/customErrors"
-	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/requests"
 	"myanimevault/internal/models/responses"
-	sessionservice "myanimevault/internal/services/session_service"
-	userservice "myanimevault/internal/services/user_service"
-	"myanimevault/internal/utils/cookieutil"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
-func RegisterHandler(context *gin.Context) {
+func (h *AuthHandler) RegisterHandler(context *gin.Context) {
 	var registerRequest requests.RegisterRequest
 	err := context.ShouldBindJSON(&registerRequest)
 
@@ -38,7 +32,7 @@ func RegisterHandler(context *gin.Context) {
 		return
 	}
 
-	user, err := userservice.Create(registerRequest.Email, registerRequest.Password)
+	userDto, sessionIdCookie, deviceIdCookie, err := h.authService.Register(context.Request.Context(), registerRequest.Email, registerRequest.Password)
 
 	if err != nil {
 		log.Printf("userservice.Create: failed to add the new user to the database: %v", err)
@@ -61,33 +55,6 @@ func RegisterHandler(context *gin.Context) {
 		return
 	}
 
-	//create new device id
-	deviceId := uuid.NewString()
-
-	//create session
-	session, err := sessionservice.Create(context.Request.Context(), user.Id, deviceId, 24*time.Hour*30)
-	if err != nil {
-		log.Printf("sessionService.Create: failed to create a session for user %s: %v", user.Id, err)
-		context.JSON(http.StatusInternalServerError, responses.ApiResponse{
-			Success: false,
-			Message: "Something went wrong. Please try again later.",
-			Data:    nil,
-		})
-		return
-	}
-
-	//create session id cookie
-	sessionIdCookie := cookieutil.CreateSessionCookie(session.Id.String())
-
-	//create device id cookie
-	deviceIdCookie := cookieutil.CreateDeviceCookie(deviceId)
-
-	userDto := dtos.UserDto{
-		Id:       user.Id.String(),
-		Email:    user.Email,
-		AnimeIds: make([]uint, 0),
-		Role:     user.Role,
-	}
 
 	//add cookies to response
 	http.SetCookie(context.Writer, sessionIdCookie)

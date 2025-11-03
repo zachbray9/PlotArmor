@@ -2,19 +2,21 @@ package sessionservice
 
 import (
 	"context"
-	"fmt"
 	"myanimevault/internal/database"
-	"myanimevault/internal/models/entities"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func DeleteByUserAndDevice(context context.Context, userId uuid.UUID, deviceId string) error {
-	result := database.Db.WithContext(context).Where("user_id = ? AND device_id = ?", userId, deviceId).Delete(&entities.Session{})
+func (s *SessionService) DeleteByUserAndDevice(ctx context.Context, userId uuid.UUID, deviceId string) error {
+    return s.DeleteByUserAndDeviceWithTx(ctx, nil, userId, deviceId)
+}
 
-	if result.Error != nil {
-		return fmt.Errorf("failed to delete sessions: %w", result.Error)
-	}
+func (s *SessionService) DeleteByUserAndDeviceWithTx(ctx context.Context, tx *gorm.DB, userId uuid.UUID, deviceId string) error {
+    db := tx
+    if db == nil {
+        db = database.Db
+    }
 
-	return nil
+    return s.sessionRepo.DeleteByUserAndDevice(ctx, db, userId, deviceId)
 }
