@@ -20,7 +20,7 @@ export default function CreateEntry() {
         defaultValues: {
             isAdult: false,
             genres: [],
-            studio: "",
+            studios: [],
             format: "",
             season: "",
             startDate: undefined,
@@ -79,7 +79,7 @@ export default function CreateEntry() {
                             <FormNumberInput name="seasonYear" label="Season year" required min={0} max={undefined} />
                             <FormSelect name="format" label="Format" collection={formatCollection} required />
                             <FormSelect name="genres" label="Genres" multiple required collection={genreCollection} loading={pendingGenres} />
-                            <FormSelect name="studio" label="Studio" required collection={studioCollection} loading={pendingStudios} />
+                            <FormSelect name="studios" label="Studios" multiple required collection={studioCollection} loading={pendingStudios} />
                             <FormNumberInput name="episodes" label="Episodes" min={0} max={undefined} required />
                             <FormNumberInput name="duration" label="Episode duration" min={0} max={undefined} required />
 

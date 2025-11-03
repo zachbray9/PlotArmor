@@ -16,3 +16,14 @@ func Exists(tx *gorm.DB, studioId uint) (bool, error) {
 
 	return count > 0, nil
 }
+
+func (r *studioRepository) ExistsAll(tx *gorm.DB, studioIds []uint) (bool, error) {
+	var count int64
+	err := tx.Model(entities.Studio{}).Where("id IN ?", studioIds).Count(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return count == int64(len(studioIds)), nil
+}

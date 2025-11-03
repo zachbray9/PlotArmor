@@ -38,6 +38,20 @@ func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeR
 			}
 		}
 
+		// Fetch studios by IDs
+		var studios []entities.Studio
+		if len(req.Studios) > 0 {
+			studios, err = s.studioRepo.GetByIds(context, tx, req.Studios)
+			if err != nil {
+				return fmt.Errorf("failed to fetch studios: %w", err)
+			}
+
+			// Validate all genres were found
+			if len(studios) != len(req.Studios) {
+				return fmt.Errorf("one or more genre IDs are invalid")
+			}
+		}
+
 		//format text to be vector embedded
 		embeddingText := strings.TrimSpace(fmt.Sprintf("%s. %s", req.EnglishTitle, req.Synopsis))
 
@@ -53,6 +67,7 @@ func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeR
 		anime.RomajiTitle = req.RomajiTitle
 		anime.Synopsis = req.Synopsis
 		anime.Genres = genres
+		anime.Studios = studios
 		anime.Embedding = pgvector.NewVector(vector)
 		anime.Format = req.Format
 		anime.Status = utils.CalculateAiringStatus(req.StartDate, req.EndDate)
@@ -74,7 +89,6 @@ func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeR
 		anime.TrailerUrl = req.TrailerUrl
 		anime.IsAdult = req.IsAdult
 		anime.AgeRating = req.AgeRating
-		anime.StudioId = &req.StudioId
 
 		//Add anime to database
 		err = s.animeRepo.Create(context, tx, &anime)

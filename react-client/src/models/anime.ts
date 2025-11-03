@@ -23,7 +23,7 @@ export default interface Anime {
     favorites: number
     isAdult: boolean
     ageRating: string
-    studio: Studio
+    studios: Studio[]
     genres: Genre[]
     characters: Character[]
     averageScore: number

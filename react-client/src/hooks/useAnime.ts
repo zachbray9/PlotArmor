@@ -10,6 +10,7 @@ export default function useAnime(animeId: number) {
             throw new Error("Failed to fetch anime")
         }
 
+        console.log(res.data.studios)
         return res.data
     }
 

@@ -44,7 +44,7 @@ func InitRouter(server *gin.Engine) {
 	userService := userservice.NewUserService(userRepo)
 	sessionService := sessionservice.NewSessionService(sessionRepo)
 	authService := authservice.NewAuthService(*userService, *sessionService, userRepo)
-	animeService := animeservice.NewAnimeService(animeRepo, genreRepo, imageService)
+	animeService := animeservice.NewAnimeService(animeRepo, genreRepo, studioRepo, imageService)
 	genreService := genreservice.NewGenreService(genreRepo)
 	studioService := studioservice.NewStudioService(studioRepo)
 	userAnimeService := useranimeservice.NewUserAnimeService(userAnimeRepo, animeRepo)

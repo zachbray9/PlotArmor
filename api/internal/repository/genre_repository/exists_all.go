@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ExistsAll(tx *gorm.DB, genreIds []uint) (bool, error) {
+func (r *genreRepository) ExistsAll(tx *gorm.DB, genreIds []uint) (bool, error) {
 	var count int64
 	err := tx.Model(entities.Genre{}).Where("id IN ?", genreIds).Count(&count).Error
 
