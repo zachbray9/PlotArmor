@@ -46,7 +46,7 @@ type AnimeDto struct {
 	AgeRating string `json:"ageRating,omitempty"` // G, PG, PG-13, R, etc.
 
 	// Relationships
-	Studios    []StudioDto         `json:"studio,omitempty"`
+	Studios    []StudioDto         `json:"studios,omitempty"`
 	Genres     []GenreDto          `json:"genres,omitempty"`
 	Characters []AnimeCharacterDto `json:"characters,omitempty"`
 }

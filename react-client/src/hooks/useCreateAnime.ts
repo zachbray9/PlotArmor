@@ -45,7 +45,7 @@ export default function useCreateAnime() {
                 seasonYear: data.seasonYear,
                 format: data.format,
                 genres: data.genres.map((id) => Number(id)),
-                studioId: Number(data.studio),
+                studios: data.studios.map((id) => Number(id)),
                 episodes: data.episodes,
                 duration: data.duration,
                 startDate: new Date(data.startDate),

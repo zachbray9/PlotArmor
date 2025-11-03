@@ -7,7 +7,7 @@ export default interface CreateAnimeRequest {
     seasonYear: number
     format: string
     genres: number[]
-    studioId: number
+    studios: number[]
     episodes: number
     duration: number
     startDate: Date
