@@ -7,7 +7,7 @@ import useUserAnimeList from "../../hooks/useUserAnimeList";
 
 interface Props {
     data: Anime[],
-    heading: string
+    heading?: string
 }
 
 export default function AnimeCarousel({ data, heading }: Props) {
@@ -15,11 +15,11 @@ export default function AnimeCarousel({ data, heading }: Props) {
     const slidesToScroll = useBreakpointValue<number>({ base: 2, sm: 3, md: 4, lg: 5, xl: 6, xxl: 7 })
     const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: slidesToScroll })
     const { onPrevButtonClick, onNextButtonClick, prevBtnDisabled, nextBtnDisabled } = usePrevNextButtons(emblaApi)
-    const headingLower = heading.toLowerCase()
+    const headingLower = heading?.toLowerCase()
 
     return (
         <Stack className="carousel-main-wrapper" gap={{ base: '0.5rem', md: '1rem' }} paddingX={{ base: '1.25rem', md: '4rem' }} overflow='hidden' >
-            <Heading size={{ base: "xl", md: "3xl" }} fontWeight="semibold">{heading}</Heading>
+            { heading && <Heading size={{ base: "xl", md: "3xl" }} fontWeight="semibold">{heading}</Heading>}
 
             <Box id={headingLower} pos="relative">
                 <Box id={`${headingLower}-viewport`} ref={emblaRef}>
