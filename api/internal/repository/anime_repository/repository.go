@@ -16,6 +16,7 @@ type AnimeRepository interface {
 	GetByGenre(ctx context.Context, tx *gorm.DB, genreId uint, page int, limit int) ([]entities.Anime, int64, error)
 	Create(ctx context.Context, tx *gorm.DB, anime *entities.Anime) error
 	Search(ctx context.Context, tx *gorm.DB, query string, page int, limit int, sort string) ([]entities.Anime, int64, error)
+	SearchSimilar(ctx context.Context, tx *gorm.DB, queryEmbedding []float32, limit int) ([]AnimeWithSimilarity, error)
 	IncrementFavorites(ctx context.Context, tx *gorm.DB, animeId uint) error
 	DecrementFavorites(ctx context.Context, tx *gorm.DB, animeId uint) error
 	UpdateRatingAggregates(ctx context.Context, tx *gorm.DB, animeId uint, oldRating int, newRating int) error

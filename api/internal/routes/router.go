@@ -78,6 +78,7 @@ func InitRouter(server *gin.Engine) {
 	api.GET("/anime/search", animeHandler.Search)
 	api.GET("/anime/genre/:genreId", animeHandler.GetByGenre)
 	api.POST("/anime", middleware.Authenticate, middleware.RequireAdmin, animeHandler.AddAnimeHandler)
+	api.POST("/anime/recommendations", animeHandler.GenerateRecommendations)
 
 	//image routes
 	api.POST("/images/upload", imageHandler.UploadImageHandler)
