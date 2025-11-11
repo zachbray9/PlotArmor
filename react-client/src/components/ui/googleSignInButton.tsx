@@ -7,9 +7,14 @@ interface Props extends ButtonProps {
     children?: ReactNode
 }
 
+const handleClick = () => {
+    const url = `${apiUrl}/auth/google/login`
+    window.location.href = url
+}
+
 export default function GoogleSignInButton({children = "Sign in with Google", ...props} : Props) {
     return (
-        <Button {...props} onClick={() => window.location.href = `${apiUrl}/auth/google/login`} alignItems={"center"} w={"100%"}>
+        <Button {...props} onClick={handleClick} alignItems={"center"} w={"100%"}>
             <Image src="/images/google-new.svg" boxSize={6} />
             {children}
         </Button>
