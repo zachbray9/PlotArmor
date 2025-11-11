@@ -138,6 +138,7 @@ func (s *AuthService) FindOrCreateUser(ctx context.Context, tx *gorm.DB, googleU
 		Id:       uuid.New(),
 		Email:    googleUserInfo.Email,
 		GoogleId: &googleUserInfo.Sub,
+		AuthProvider: models.AuthProviderGoogle,
 		Role:     models.RoleUser,
 	}
 

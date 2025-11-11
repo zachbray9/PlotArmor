@@ -4,6 +4,7 @@ import (
 	"myanimevault/internal/models/responses"
 	"myanimevault/internal/utils"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
@@ -75,6 +76,7 @@ func (h *AuthHandler) GoogleCallBack(ctx *gin.Context) {
 			Message: "Something went wrong. Please try again.",
 			Data: nil,
 		})
+		return
 	}
 
 	//add cookies to response
@@ -82,6 +84,6 @@ func (h *AuthHandler) GoogleCallBack(ctx *gin.Context) {
 	http.SetCookie(ctx.Writer, result.DeviceIdCookie)
 
 	// Redirect to home page on frontend
-	ctx.Redirect(http.StatusFound, "/home")
+	ctx.Redirect(http.StatusFound, os.Getenv("CLIENT_BASE_URL"))
 }
 

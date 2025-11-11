@@ -70,7 +70,7 @@ func InitRouter(server *gin.Engine) {
 	//auth routes
 	api.GET("/users/getCurrentUser", middleware.Authenticate, authHandler.GetCurrentUserHandler)
 	api.GET("/auth/google/login", authHandler.GoogleLogin)
-	api.GET("/auth/google/callback")
+	api.GET("/auth/google/callback", authHandler.GoogleCallBack)
 	api.POST("/users/register", authHandler.RegisterHandler)
 	api.POST("/users/login", authHandler.LoginHandler)
 	api.DELETE("/users/logout", authhandler.LogoutHandler)

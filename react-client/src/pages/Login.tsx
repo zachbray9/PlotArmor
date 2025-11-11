@@ -72,6 +72,7 @@ export default observer(function Login() {
                                 </Box>
 
                                 <Button type="submit" bg="interactive.primary" color="text" w="100%" rounded="lg" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Log In</Button>
+                                <Button onClick={() => window.location.href = "http://localhost:8080/api/auth/google/login"}>Sign in with Google</Button>
 
                                 <Flex gap={1} color="text.subtle">
                                     <Text>No account?</Text>
