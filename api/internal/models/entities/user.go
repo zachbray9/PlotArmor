@@ -20,3 +20,11 @@ type User struct {
 	Sessions   []Session   `json:"sessions,omitempty" gorm:"foreignKey:UserId"`
 	UserAnimes []UserAnime `json:"user_animes,omitempty" gorm:"foreignKey:UserId"`
 }
+
+func (u *User) HasPassword() bool {
+	return u.PasswordHash != nil && *u.PasswordHash != ""
+}
+
+func (u *User) CanLoginWithPassword() bool {
+	return u.HasPassword()
+}

@@ -9,7 +9,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { LoginFormFields, loginValidationSchema } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { TriangleAlert } from "lucide-react"
-import { UnauthorizedError } from "../api/errors/httpErrors"
+import { BadRequestError, UnauthorizedError } from "../api/errors/httpErrors"
 
 export default observer(function Login() {
     const { userStore } = useStore()
@@ -28,6 +28,9 @@ export default observer(function Login() {
         } catch (error) {
             if (error instanceof UnauthorizedError) {
                 methods.setError("root", { message: "Incorrect email or password." })
+            }
+            else if (error instanceof BadRequestError) {
+                methods.setError("root", { message: "This account uses Google sign in. Please click Sign in With Google." })
             }
             else {
                 methods.setError("root", { message: "Something went wrong. Please try again later." })
@@ -62,17 +65,23 @@ export default observer(function Login() {
                             <Card.Footer display='flex' flexDirection='column' justifyContent='start' alignItems='center' gap={['1.25rem', '1.75', '2rem']}>
                                 <Box width='100%' >
                                     {methods.formState.errors.root &&
-                                        <Flex gap={1} alignItems="center">
-                                            <Icon color="status.error" size="sm">
+                                        <Flex gap={1} alignItems="start">
+                                            <Icon color="status.error" size="sm" mt={0.5}>
                                                 <TriangleAlert />
                                             </Icon>
                                             <Text color='status.error' fontSize="sm" >{methods.formState.errors.root.message}</Text>
                                         </Flex>
                                     }
                                 </Box>
-
-                                <Button type="submit" bg="interactive.primary" color="text" w="100%" rounded="lg" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Log In</Button>
-                                <Button onClick={() => window.location.href = "http://localhost:8080/api/auth/google/login"}>Sign in with Google</Button>
+                                
+                                <Stack w={"100%"} gap={4} alignItems={"center"}>
+                                    <Button type="submit" bg="interactive.primary" color="text" w="100%" rounded="lg" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Log In</Button>
+                                   
+                                    <Button onClick={() => window.location.href = "http://localhost:8080/api/auth/google/login"} alignItems={"center"} rounded={"lg"} w={"100%"}>
+                                        <Image src="/images/google-new.svg" boxSize={6}/>
+                                        Sign in with Google
+                                    </Button>
+                                </Stack>
 
                                 <Flex gap={1} color="text.subtle">
                                     <Text>No account?</Text>

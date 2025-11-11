@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"myanimevault/internal/database"
+	"myanimevault/internal/models"
 	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/dtos"
 	"myanimevault/internal/models/entities"
@@ -22,6 +23,10 @@ func (s *AuthService) Login(ctx context.Context, email string, password string, 
 
 	if err != nil {
 		return nil, nil, nil, err
+	}
+
+	if user.AuthProvider != models.AuthProviderLocal || !user.CanLoginWithPassword(){
+		return nil, nil, nil, customErrors.ErrNoPassword
 	}
 
 	passwordIsValid := utils.ComparePasswordWithHash(password, *user.PasswordHash)

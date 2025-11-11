@@ -27,12 +27,12 @@ export default observer(function Register() {
         try {
             await userStore.register(fields)
         } catch (error) {
-                if(error instanceof ConflictError) {
-                    methods.setError("root", {message: "An account with this email already exists."})
-                }
-                else {
-                    methods.setError("root", {message: "Something went wrong. Please try again later."})
-                }
+            if (error instanceof ConflictError) {
+                methods.setError("root", { message: "An account with this email already exists." })
+            }
+            else {
+                methods.setError("root", { message: "Something went wrong. Please try again later." })
+            }
         }
     }
 
@@ -66,8 +66,8 @@ export default observer(function Register() {
                             <Card.Footer display='flex' flexDirection='column' justifyContent='start' alignItems='center' gap={['1.25rem', '1.75', '2rem']}>
                                 <Box width='100%' >
                                     {methods.formState.errors.root &&
-                                        <Flex gap={1} alignItems="center">
-                                            <Icon color="status.error" size="sm">
+                                        <Flex gap={1} alignItems="start">
+                                            <Icon color="status.error" size="sm" mt={0.5}>
                                                 <TriangleAlert />
                                             </Icon>
                                             <Text color='status.error' fontSize="sm">{methods.formState.errors.root.message}</Text>
@@ -75,10 +75,16 @@ export default observer(function Register() {
                                     }
                                 </Box>
 
-                                <Button type="submit" bg="interactive.primary" color="text" w="100%" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Create Account</Button>
+                                <Stack w={"100%"} alignItems={"center"} gap={4}>
+                                    <Button type="submit" bg="interactive.primary" color="text" w="100%" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Create Account</Button>
+                                    <Button onClick={() => window.location.href = "http://localhost:8080/api/auth/google/login"} alignItems={"center"} rounded={"lg"} w={"100%"}>
+                                        <Image src="/images/google-new.svg" boxSize={6} />
+                                        Sign up with Google
+                                    </Button>
+                                </Stack>
 
 
-                                <Flex gap={1}>
+                                <Flex gap={1} color={"text.subtle"}>
                                     <Text>Already have an account?</Text>
                                     <NavLink to="/login">
                                         <Text color='interactive.primary' _hover={{ color: 'interactive.primary-hover' }} transition='all 0.3s'>Log In</Text>

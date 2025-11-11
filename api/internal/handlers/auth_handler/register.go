@@ -1,6 +1,7 @@
 package authhandler
 
 import (
+	"errors"
 	"log"
 	"myanimevault/internal/models/customErrors"
 	"myanimevault/internal/models/requests"
@@ -37,14 +38,14 @@ func (h *AuthHandler) RegisterHandler(context *gin.Context) {
 	if err != nil {
 		log.Printf("userservice.Create: failed to add the new user to the database: %v", err)
 
-		switch err {
-		case customErrors.ErrEmailAlreadyExists:
+		if errors.Is(err, customErrors.ErrEmailAlreadyExists) {
 			context.JSON(http.StatusConflict, responses.ApiResponse{
 				Success: false,
 				Message: "An account with this email already exists.",
 				Data:    nil,
 			})
-		default:
+
+		} else {
 			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
 				Success: false,
 				Message: "Something went wrong. Please try again later.",
@@ -54,7 +55,6 @@ func (h *AuthHandler) RegisterHandler(context *gin.Context) {
 
 		return
 	}
-
 
 	//add cookies to response
 	http.SetCookie(context.Writer, sessionIdCookie)
