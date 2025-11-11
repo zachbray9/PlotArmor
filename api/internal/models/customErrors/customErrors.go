@@ -6,6 +6,7 @@ var (
 	ErrEmailAlreadyExists = errors.New("email_already_exists")
 	ErrNotFound = errors.New("not_found")
 	ErrIncorrectPassword = errors.New("incorrect_password")
+	ErrNoPassword = errors.New("no password set")
 	ErrRevokedToken = errors.New("token_revoked")
 	ErrInvalidField = errors.New("invalid_field")
 	ErrAnimeAlreadyExists = errors.New("anime_already_exists")

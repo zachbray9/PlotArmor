@@ -51,6 +51,7 @@ const requests = {
 const Auth = {
     login: (request: LoginFormFields) => requests.post<ApiResponse<User>>('/users/login', request),
     register: (request: RegisterFormFields) => requests.post<ApiResponse<User>>('/users/register', request),
+    AuthenticateWithGoogle: () => requests.get("/auth/google/login"),
     getCurrentUser: () => requests.get<ApiResponse<User>>('/users/getCurrentUser'),
     refresh: () => requests.get<RefreshResponse>('/users/refresh'),
     logout: () => requests.delete('/users/logout')

@@ -9,7 +9,8 @@ import { FormProvider, useForm } from "react-hook-form"
 import { LoginFormFields, loginValidationSchema } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { TriangleAlert } from "lucide-react"
-import { UnauthorizedError } from "../api/errors/httpErrors"
+import { BadRequestError, UnauthorizedError } from "../api/errors/httpErrors"
+import GoogleSignInButton from "../components/ui/googleSignInButton"
 
 export default observer(function Login() {
     const { userStore } = useStore()
@@ -28,6 +29,9 @@ export default observer(function Login() {
         } catch (error) {
             if (error instanceof UnauthorizedError) {
                 methods.setError("root", { message: "Incorrect email or password." })
+            }
+            else if (error instanceof BadRequestError) {
+                methods.setError("root", { message: "This account uses Google sign in. Please click Sign in With Google." })
             }
             else {
                 methods.setError("root", { message: "Something went wrong. Please try again later." })
@@ -54,24 +58,28 @@ export default observer(function Login() {
                             </Card.Header>
 
                             <Card.Body as={Stack} gap={4}>
-                                <FormInput name="email" placeholder="Email" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} />
+                                <FormInput name="email" placeholder="Email" bg="surface.sunken" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} />
 
-                                <FormInput name="password" placeholder="Password" bg="surface.sunken" rounded="lg" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} hideable />
+                                <FormInput name="password" placeholder="Password" bg="surface.sunken" _autofill={{ WebkitTextFillColor: "text", boxShadow: "0 0 0px 1000px var(--chakra-colors-surface-sunken) inset !important" }} hideable />
                             </Card.Body>
 
                             <Card.Footer display='flex' flexDirection='column' justifyContent='start' alignItems='center' gap={['1.25rem', '1.75', '2rem']}>
                                 <Box width='100%' >
                                     {methods.formState.errors.root &&
-                                        <Flex gap={1} alignItems="center">
-                                            <Icon color="status.error" size="sm">
+                                        <Flex gap={1} alignItems="start">
+                                            <Icon color="status.error" size="sm" mt={0.5}>
                                                 <TriangleAlert />
                                             </Icon>
                                             <Text color='status.error' fontSize="sm" >{methods.formState.errors.root.message}</Text>
                                         </Flex>
                                     }
                                 </Box>
-
-                                <Button type="submit" bg="interactive.primary" color="text" w="100%" rounded="lg" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Log In</Button>
+                                
+                                <Stack w={"100%"} gap={4} alignItems={"center"}>
+                                    <Button type="submit" bg="interactive.primary" color="text" w="100%" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Log In</Button>
+                                   
+                                    <GoogleSignInButton>Sign in with Google</GoogleSignInButton>
+                                </Stack>
 
                                 <Flex gap={1} color="text.subtle">
                                     <Text>No account?</Text>

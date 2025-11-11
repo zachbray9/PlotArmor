@@ -39,7 +39,13 @@ func (h *AuthHandler) LoginHandler(context *gin.Context) {
 				Message: "Incorrect email or password.",
 				Data:    nil,
 			})
-		} else {
+		} else if (errors.Is(err, customErrors.ErrNoPassword)) {
+			context.JSON(http.StatusBadRequest, responses.ApiResponse{
+				Success: false,
+				Message: "This account uses Google sign-in. Please click sign in with Google.",
+				Data: nil,
+			})
+		}else {
 			context.JSON(http.StatusInternalServerError, responses.ApiResponse{
 				Success: false,
 				Message: "Something went wrong. Please try again later.",
