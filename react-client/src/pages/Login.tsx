@@ -31,7 +31,7 @@ export default observer(function Login() {
                 methods.setError("root", { message: "Incorrect email or password." })
             }
             else if (error instanceof BadRequestError) {
-                methods.setError("root", { message: "This account uses Google sign in. Please click Sign in With Google." })
+                methods.setError("root", { message: "This account uses Google sign in. Please click Sign in with Google." })
             }
             else {
                 methods.setError("root", { message: "Something went wrong. Please try again later." })
