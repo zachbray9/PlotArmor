@@ -9,7 +9,7 @@ interface Props extends ButtonProps {
 
 export default function GoogleSignInButton({children = "Sign in with Google", ...props} : Props) {
     return (
-        <Button {...props} onClick={() => window.location.href = `${apiUrl}/auth/google/login`} alignItems={"center"} rounded={"lg"} w={"100%"}>
+        <Button {...props} onClick={() => window.location.href = `${apiUrl}/auth/google/login`} alignItems={"center"} w={"100%"}>
             <Image src="/images/google-new.svg" boxSize={6} />
             {children}
         </Button>
