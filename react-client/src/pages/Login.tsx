@@ -10,6 +10,7 @@ import { LoginFormFields, loginValidationSchema } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { TriangleAlert } from "lucide-react"
 import { BadRequestError, UnauthorizedError } from "../api/errors/httpErrors"
+import GoogleSignInButton from "../components/ui/googleSignInButton"
 
 export default observer(function Login() {
     const { userStore } = useStore()
@@ -77,10 +78,7 @@ export default observer(function Login() {
                                 <Stack w={"100%"} gap={4} alignItems={"center"}>
                                     <Button type="submit" bg="interactive.primary" color="text" w="100%" rounded="lg" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Log In</Button>
                                    
-                                    <Button onClick={() => window.location.href = "http://localhost:8080/api/auth/google/login"} alignItems={"center"} rounded={"lg"} w={"100%"}>
-                                        <Image src="/images/google-new.svg" boxSize={6}/>
-                                        Sign in with Google
-                                    </Button>
+                                    <GoogleSignInButton>Sign in with Google</GoogleSignInButton>
                                 </Stack>
 
                                 <Flex gap={1} color="text.subtle">

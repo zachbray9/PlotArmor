@@ -10,6 +10,7 @@ import { RegisterFormFields, registerValidationSchema } from "../schemas/registe
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TriangleAlert } from "lucide-react";
 import { ConflictError } from "../api/errors/httpErrors";
+import GoogleSignInButton from "../components/ui/googleSignInButton";
 
 export default observer(function Register() {
     const { userStore } = useStore()
@@ -77,10 +78,7 @@ export default observer(function Register() {
 
                                 <Stack w={"100%"} alignItems={"center"} gap={4}>
                                     <Button type="submit" bg="interactive.primary" color="text" w="100%" _hover={{ bg: "interactive.primary-hover" }} loading={methods.formState.isSubmitting} >Create Account</Button>
-                                    <Button onClick={() => window.location.href = "http://localhost:8080/api/auth/google/login"} alignItems={"center"} rounded={"lg"} w={"100%"}>
-                                        <Image src="/images/google-new.svg" boxSize={6} />
-                                        Sign up with Google
-                                    </Button>
+                                    <GoogleSignInButton>Sign up with Google</GoogleSignInButton>
                                 </Stack>
 
 
