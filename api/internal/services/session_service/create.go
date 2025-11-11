@@ -31,6 +31,10 @@ func (s *SessionService) CreateWithTx(ctx context.Context, tx *gorm.DB, userId u
 }
 
 func (s *SessionService) createSession(ctx context.Context, db *gorm.DB, userId uuid.UUID, deviceId string, duration time.Duration) (*entities.Session, error) {
+    if deviceId == "" {
+        deviceId = uuid.NewString()
+    }
+
     expiresAt := time.Now().Add(duration)
     session := entities.Session{
         Id:        uuid.New(),

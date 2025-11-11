@@ -24,7 +24,7 @@ func (s *AuthService) Login(ctx context.Context, email string, password string, 
 		return nil, nil, nil, err
 	}
 
-	passwordIsValid := utils.ComparePasswordWithHash(password, user.PasswordHash)
+	passwordIsValid := utils.ComparePasswordWithHash(password, *user.PasswordHash)
 	if !passwordIsValid {
 		return nil, nil, nil, customErrors.ErrIncorrectPassword
 	}

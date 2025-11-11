@@ -10,7 +10,9 @@ import (
 type User struct {
 	Id           uuid.UUID       `json:"id" gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
 	Email        string          `json:"email" gorm:"unique;not null"`
-	PasswordHash string          `json:"password_hash" gorm:"not null"`
+	PasswordHash *string          `json:"password_hash"`
+	GoogleId     *string         `json:"googleId" gorm:"unique"`
+	AuthProvider string          `json:"authProvider" gorm:"default:'local'"`
 	Role         models.UserRole `json:"role" gorm:"type:varchar(20);default:'user';not null"`
 	CreatedAt    time.Time       `json:"created_at"`
 

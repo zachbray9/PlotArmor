@@ -26,10 +26,20 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func InitRouter(server *gin.Engine) {
 	//initialize dependencies
+	googleOAuthConfig := &oauth2.Config{
+		RedirectURL: os.Getenv("GOOGLE_REDIRECT_URI"),
+		ClientID: os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		Scopes: []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
+		Endpoint: google.Endpoint,
+	}
+
 	userRepo := userrepository.NewUserRepo()
 	sessionRepo := sessionrepository.NewSessionRepository()
 	animeRepo := animerepo.NewAnimeRepository()
@@ -49,7 +59,7 @@ func InitRouter(server *gin.Engine) {
 	studioService := studioservice.NewStudioService(studioRepo)
 	userAnimeService := useranimeservice.NewUserAnimeService(userAnimeRepo, animeRepo)
 
-	authHandler := authhandler.NewAuthHandler(authService)
+	authHandler := authhandler.NewAuthHandler(authService, googleOAuthConfig)
 	animeHandler := animehandler.NewAnimeHandler(animeService)
 	imageHandler := imagehandler.NewImageHandler(imageService)
 	genreHandler := genrehandler.NewGenreHandler(genreService)
@@ -59,6 +69,8 @@ func InitRouter(server *gin.Engine) {
 	api := server.Group("/api")
 	//auth routes
 	api.GET("/users/getCurrentUser", middleware.Authenticate, authHandler.GetCurrentUserHandler)
+	api.GET("/auth/google/login", authHandler.GoogleLogin)
+	api.GET("/auth/google/callback")
 	api.POST("/users/register", authHandler.RegisterHandler)
 	api.POST("/users/login", authHandler.LoginHandler)
 	api.DELETE("/users/logout", authhandler.LogoutHandler)
