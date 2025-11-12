@@ -39,7 +39,7 @@ func (s *UserService) CreateWithTx(ctx context.Context, tx *gorm.DB, email strin
 // Extracted logic (no transaction handling)
 func (s *UserService) createUser(ctx context.Context, db *gorm.DB, email string, password string) (*entities.User, error) {
 	existingUser, err := s.userRepo.GetByEmail(ctx, db, email)
-	if err != nil && !errors.Is(err, customErrors.ErrNotFound) {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("failed to check existing user: %w", err)
 	}
 	if existingUser != nil {
