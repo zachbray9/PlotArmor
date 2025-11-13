@@ -1,4 +1,4 @@
-import { Box, Heading, Stack, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Heading, Skeleton, Stack, useBreakpointValue } from "@chakra-ui/react";
 import { CustomNextCarouselArrow, CustomPrevCarouselArrow, usePrevNextButtons } from "./customCarouselArrowButtons";
 import CarouselCard from "./CarouselCard";
 import useEmblaCarousel from "embla-carousel-react";
@@ -8,9 +8,10 @@ import useUserAnimeList from "../../hooks/useUserAnimeList";
 interface Props {
     data: Anime[],
     heading?: string
+    isLoading?: boolean
 }
 
-export default function AnimeCarousel({ data, heading }: Props) {
+export default function AnimeCarousel({ data, heading, isLoading }: Props) {
     const {animeIds, isPending: isListPending} = useUserAnimeList()
     const slidesToScroll = useBreakpointValue<number>({ base: 2, sm: 3, md: 4, lg: 5, xl: 6, xxl: 7 })
     const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: slidesToScroll })
@@ -24,11 +25,20 @@ export default function AnimeCarousel({ data, heading }: Props) {
             <Box id={headingLower} pos="relative">
                 <Box id={`${headingLower}-viewport`} ref={emblaRef}>
                     <Box id={`${headingLower}-container`} display="flex">
-                        {data.map((anime) => (
-                            <Box key={anime.id} id={`${headingLower}-slide`} flexGrow={0} flexShrink={0} flexBasis={["44%", "30%", "25%", "20%", "17%", "13%"]} mr={6}>
-                                <CarouselCard key={anime.id} anime={anime} isInList={animeIds.includes(anime.id)} isListLoading={isListPending}/>
-                            </Box>
-                        ))}
+                        { isLoading ? (
+                            Array.from({length: 20}).map((_, i) => (
+                                <Box key={i} flexGrow={0} flexShrink={0} flexBasis={["44%", "30%", "25%", "20%", "17%", "13%"]} mr={6}>
+                                    <Skeleton w={"full"} aspectRatio={"2/3"} mb={2}/>
+                                    <Skeleton w={"80%"} h={"16px"}/>
+                                </Box>
+                            ))
+                        ) : (
+                            data.map((anime) => (
+                                <Box key={anime.id} id={`${headingLower}-slide`} flexGrow={0} flexShrink={0} flexBasis={["44%", "30%", "25%", "20%", "17%", "13%"]} mr={6}>
+                                    <CarouselCard key={anime.id} anime={anime} isInList={animeIds.includes(anime.id)} isListLoading={isListPending}/>
+                                </Box>
+                            ))
+                        )}
                     </Box>
                 </Box>
 

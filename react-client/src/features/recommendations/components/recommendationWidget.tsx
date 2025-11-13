@@ -44,7 +44,7 @@ export default function RecommendationWidget() {
 
                 <Heading as={"h2"} size={{ base: "xl", md: "3xl" }} fontWeight="semibold">AI powered recommendations</Heading>
             </Flex>
-            {data && <RecommendationCarousel data={recommendations} />}
+            {(data || isPending) && <RecommendationCarousel data={recommendations} isLoading={isPending}/>}
 
 
             <Box w={"full"} paddingX={{ base: '1.25rem', md: '4rem' }} >
