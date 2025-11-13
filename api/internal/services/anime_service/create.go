@@ -70,7 +70,7 @@ func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeR
 		anime.Studios = studios
 		anime.Embedding = pgvector.NewVector(vector)
 		anime.Format = req.Format
-		anime.Status = utils.CalculateAiringStatus(req.StartDate, req.EndDate)
+		anime.Status = utils.CalculateAiringStatus(req.StartDate, req.EndDate, req.Format)
 		anime.Episodes = req.Episodes
 		anime.Duration = req.Duration
 		//calculate total duration
