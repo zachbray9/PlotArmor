@@ -79,11 +79,11 @@ export default function FeaturedCarousel({ data, isLoading }: Props) {
                 >
                     <Stack maxW={["100%", null, "70%", null, "50%"]} w={"100%"} gap={4} alignItems={["center", null, "start"]}>
                         <Skeleton height={["40px", null, "60px", "80px"]} width="70%" />
-                        <Flex gap={2}>
-                            <Skeleton height="24px" width="80px" borderRadius="full" />
-                            <Skeleton height="24px" width="100px" borderRadius="full" />
-                            <Skeleton height="24px" width="90px" borderRadius="full" />
-                        </Flex>
+                        <Wrap gap={1}>
+                            <Skeleton height={3} width={8} borderRadius="full" />
+                            <Skeleton height={3} width={8} borderRadius="full" />
+                            <Skeleton height={3} width={8} borderRadius="full" />
+                        </Wrap>
                         <Skeleton display={{ base: 'none', md: 'block' }} height="80px" width="100%" />
                         <Flex gap={2} width={['100%', 'auto']}>
                             <Skeleton height="40px" width={['100%', '150px']} borderRadius="md" />
