@@ -7,7 +7,7 @@ import useHomePageData from "../hooks/useHomePageData"
 import RecommendationWidget from "../features/recommendations/components/recommendationWidget"
 
 export default observer(function Home() {
-    const { featuredShows, topAiring, popularShows, upcomingShows } = useHomePageData()
+    const { featuredShows, topAiring, popularShows, upcomingShows, isPending } = useHomePageData()
 
     return (
         <>
@@ -16,14 +16,14 @@ export default observer(function Home() {
             </Helmet>
 
             <Stack as="main" gap='4rem' overflow='hidden'>
-                <FeaturedCarousel data={featuredShows}/>
+                <FeaturedCarousel data={featuredShows} />
 
                 <RecommendationWidget />
 
-                <Stack gap={{base: '2rem', md: "4rem"}}>
-                    <AnimeCarousel heading='Top Airing' data={topAiring} />
-                    <AnimeCarousel heading='Popular' data={popularShows} />
-                    <AnimeCarousel heading='Upcoming' data={upcomingShows} />
+                <Stack gap={{ base: '2rem', md: "4rem" }}>
+                    <AnimeCarousel heading='Top Airing' data={topAiring} isLoading={isPending} />
+                    <AnimeCarousel heading='Popular' data={popularShows} isLoading={isPending} />
+                    <AnimeCarousel heading='Upcoming' data={upcomingShows} isLoading={isPending} />
                 </Stack>
             </Stack>
         </>
