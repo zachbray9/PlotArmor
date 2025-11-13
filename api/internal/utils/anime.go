@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func CalculateAiringStatus(startDate *time.Time, endDate *time.Time) models.Status {
+func CalculateAiringStatus(startDate *time.Time, endDate *time.Time, mediaType string) models.Status {
 	now := time.Now()
 
 	// Has a start date
@@ -13,6 +13,10 @@ func CalculateAiringStatus(startDate *time.Time, endDate *time.Time) models.Stat
 		// Not yet released
 		if startDate.After(now) {
 			return models.StatusNotYetReleased
+		}
+
+		if mediaType == "MOVIE" {
+			return models.StatusFinished
 		}
 
 		// Currently airing (started but no end date OR end date is in future)
