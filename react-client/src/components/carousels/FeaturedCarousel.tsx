@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex, Heading, Stack, Text, Wrap } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Heading, Skeleton, Stack, Text, Wrap } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { CustomFeaturedNextArrow, CustomFeaturedPrevArrow, usePrevNextButtons } from "./customCarouselArrowButtons";
 import CustomDot, { useDotButton } from "./customDot";
@@ -15,11 +15,12 @@ import useRemoveAnimeFromList from "../../hooks/useRemoveAnimeFromList";
 
 interface Props {
     data: Anime[]
+    isLoading?: boolean
 }
 
 const DELAY: number = 10000 //in milliseconds
 
-export default function FeaturedCarousel({ data }: Props) {
+export default function FeaturedCarousel({ data, isLoading }: Props) {
     const {animeIds, isPending: isLoadingList} = useUserAnimeList()
     const {mutate: addToList, isPending: isAddingAnime} = useAddAnimeToList()
     const {mutate: removeFromList, isPending: isRemovingAnime} = useRemoveAnimeFromList()
@@ -41,6 +42,66 @@ export default function FeaturedCarousel({ data }: Props) {
     const onUnhover = () => {
         setIsHovered(false)
         onStart()
+    }
+
+    if (isLoading) {
+        return (
+            <Box id="featured" pos="relative" display="flex" flexDir="column" gap={4}>
+            <Box 
+                height={['60vh', null, '70vh']}
+                width="100%"
+                position="relative"
+                display="flex"
+                alignItems={['end', null, 'center']}
+                justifyContent='left'
+            >
+                <Skeleton height="100%" width="100%" position="absolute" top={0} left={0} right={0} bottom={0} />
+                
+                {/* Gradient overlay - same as the actual carousel */}
+                <Box 
+                    zIndex={1} 
+                    position='absolute' 
+                    bottom={0} 
+                    width={'100%'} 
+                    height={'75%'} 
+                    bgGradient='to-b' 
+                    gradientFrom="transparent" 
+                    gradientTo="background" 
+                />
+                
+                {/* Content skeletons */}
+                <Box 
+                    zIndex={2}
+                    marginTop={[null, '10%']} 
+                    width='100%'
+                    paddingX={[4, null, 40]} 
+                    paddingY={[4, null, 0]}
+                >
+                    <Stack maxW={["100%", null, "70%", null, "50%"]} w={"100%"} gap={4} alignItems={["center", null, "start"]}>
+                        <Skeleton height={["40px", null, "60px", "80px"]} width="70%" />
+                        <Wrap gap={1}>
+                            <Skeleton height={3} width={8} borderRadius="full" />
+                            <Skeleton height={3} width={8} borderRadius="full" />
+                            <Skeleton height={3} width={8} borderRadius="full" />
+                        </Wrap>
+                        <Skeleton display={{ base: 'none', md: 'block' }} height="80px" width="100%" />
+                        <Flex gap={2} width={['100%', 'auto']}>
+                            <Skeleton height="40px" width={['100%', '150px']} borderRadius="md" />
+                            <Skeleton height="40px" width="40px" borderRadius="md" />
+                        </Flex>
+                    </Stack>
+                </Box>
+            </Box>
+            
+            <Box w="100%" display="flex" justifyContent="center">
+                <Flex gap={2}>
+                    <Skeleton height={1.5} width={8} borderRadius="full" />
+                    <Skeleton height={1.5} width={4} borderRadius="full" />
+                    <Skeleton height={1.5} width={4} borderRadius="full" />
+                </Flex>
+            </Box>
+        </Box>
+        )
     }
 
     return (

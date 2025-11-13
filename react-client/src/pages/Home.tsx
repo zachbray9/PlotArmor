@@ -16,7 +16,7 @@ export default observer(function Home() {
             </Helmet>
 
             <Stack as="main" gap='4rem' overflow='hidden'>
-                <FeaturedCarousel data={featuredShows} />
+                <FeaturedCarousel data={featuredShows} isLoading={isPending}/>
 
                 <RecommendationWidget />
 
