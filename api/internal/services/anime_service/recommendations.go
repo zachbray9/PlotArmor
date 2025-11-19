@@ -7,12 +7,12 @@ import (
 	"myanimevault/internal/database"
 	"myanimevault/internal/embedding"
 	"myanimevault/internal/models/dtos"
+	"myanimevault/internal/utils"
+	openAiAgent "myanimevault/internal/openai"
 	"os"
 
-	"github.com/invopop/jsonschema"
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
-	"github.com/openai/openai-go/v3/responses"
 )
 
 type AnimeExplanation struct {
@@ -28,29 +28,6 @@ type RecommonendationsResponse struct {
 	Query string `json:"query"`
 	Recommendations []dtos.AnimeRecommendationDto `json:"recommendations"`
 	Explanations []AnimeExplanation `json:"explanations"`
-}
-
-func GenerateSchema[T any]() map[string]interface{} {
-	// Structured Outputs uses a subset of JSON schema
-	// These flags are necessary to comply with the subset
-	reflector := jsonschema.Reflector{
-		AllowAdditionalProperties: false,
-		DoNotReference:            true,
-	}
-	var v T
-	schema := reflector.Reflect(v)
-	schemaJson, err := schema.MarshalJSON()
-	if err != nil {
-		panic(err)
-	}
-
-	var schemaObj map[string]interface{}
-	err = json.Unmarshal(schemaJson, &schemaObj)
-	if err != nil {
-		panic(err)
-	}
-
-	return schemaObj
 }
 
 func (s *AnimeService) GenerateRecommendations(ctx context.Context, query string) (*RecommonendationsResponse, error) {
@@ -93,27 +70,9 @@ func (s *AnimeService) GenerateRecommendations(ctx context.Context, query string
 		query, showsList, len(results), len(results))
 
 	client := openai.NewClient(option.WithAPIKey(apiKey))
-	schema := GenerateSchema[AnimeExplanationsResponse]()
+	schema := utils.GenerateSchema[AnimeExplanationsResponse]()
 
-	params := responses.ResponseNewParams{
-		Model:       openai.ChatModelGPT4o,
-		Temperature: openai.Float(0.7),
-		Input: responses.ResponseNewParamsInputUnion{
-			OfString: openai.String(prompt),
-		},
-		Text: responses.ResponseTextConfigParam{
-			Format: responses.ResponseFormatTextConfigUnionParam{
-				OfJSONSchema: &responses.ResponseFormatTextJSONSchemaConfigParam{
-					Name:   "anime_explanations",
-					Schema: schema,
-					Strict: openai.Bool(true),
-					Type:   "json_schema",
-				},
-			},
-		},
-	}
-
-	res, err := client.Responses.New(ctx, params)
+	res, err := openAiAgent.GenerateResponse(ctx, client, schema, "anime_explanations", prompt)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate ai response for recommendation explanations: %w", err)

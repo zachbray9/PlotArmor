@@ -9,6 +9,13 @@ import (
 	"gorm.io/gorm"
 )
 
+func (r *animeRepository) GetAll(ctx context.Context, tx *gorm.DB) ([]entities.Anime, error) {
+	var animes []entities.Anime
+	err := tx.WithContext(ctx).Preload("Studios").Preload("Genres").Preload("Characters").Find(&animes).Error
+
+	return animes, err
+}
+
 func (r *animeRepository) GetById(ctx context.Context, tx *gorm.DB, animeId uint) (*entities.Anime, error) {
 	var anime entities.Anime
 

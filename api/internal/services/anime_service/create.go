@@ -2,21 +2,26 @@ package animeservice
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"myanimevault/internal/database"
 	"myanimevault/internal/embedding"
+	"myanimevault/internal/models"
 	"myanimevault/internal/models/entities"
 	"myanimevault/internal/models/requests"
+	openaiAgent "myanimevault/internal/openai"
 	"myanimevault/internal/utils"
 	"os"
-	"strings"
 
+	"github.com/openai/openai-go/v3"
+	"github.com/openai/openai-go/v3/option"
 	"github.com/pgvector/pgvector-go"
 	"gorm.io/gorm"
 )
 
 func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeRequest) (*entities.Anime, error) {
 	anime := entities.Anime{}
+	apiKey := os.Getenv("OPENAI_API_KEY")
 
 	err := database.Db.WithContext(context).Transaction(func(tx *gorm.DB) error {
 		err := s.ValidateAnimeData(req)
@@ -52,8 +57,39 @@ func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeR
 			}
 		}
 
+		//generate meta data
+		prompt := fmt.Sprintf(
+			`Extract structured metadata for the following anime: 
+			
+			Title: %s
+			Synopsis: %s
+			Age-Rating: %s
+			`,
+			req.EnglishTitle, req.Synopsis, req.AgeRating)
+
+		client := openai.NewClient(option.WithAPIKey(apiKey))
+		schema := utils.GenerateSchema[models.AnimeMetaData]()
+
+		res, err := openaiAgent.GenerateResponse(context, client, schema, "anime_metadata", prompt)
+
+		if err != nil {
+			return fmt.Errorf("failed to generate ai response for creating metadata: %w", err)
+		}
+
+		// Parse the response
+		var metadata models.AnimeMetaData
+		if err := json.Unmarshal([]byte(res.OutputText()), &metadata); err != nil {
+			return fmt.Errorf("failed to parse response: %w", err)
+		}
+
+		//create slice of genre names
+		genreNames := make([]string, 0, len(genres))
+		for _, g := range genres {
+			genreNames = append(genreNames, g.Name)
+		}
+
 		//format text to be vector embedded
-		embeddingText := strings.TrimSpace(fmt.Sprintf("%s. %s", req.EnglishTitle, req.Synopsis))
+		embeddingText := embedding.BuildEmbeddingText(req.EnglishTitle, genreNames, metadata.Themes, metadata.Tags, metadata.Demographic, metadata.Tone, metadata.Vibes, metadata.Pacing, metadata.RecommendedAudience, req.Synopsis)
 
 		//create vector embedding for english title and synopsis
 		apiKey := os.Getenv("OPENAI_API_KEY")
@@ -89,6 +125,13 @@ func (s *AnimeService) Create(context context.Context, req requests.CreateAnimeR
 		anime.TrailerUrl = req.TrailerUrl
 		anime.IsAdult = req.IsAdult
 		anime.AgeRating = req.AgeRating
+		anime.Themes = metadata.Themes
+		anime.Tags = metadata.Tags
+		anime.Demographic = metadata.Demographic
+		anime.Tone = metadata.Tone
+		anime.Pacing = metadata.Pacing
+		anime.Vibes = metadata.Vibes
+		anime.RecommendedAudience = metadata.RecommendedAudience
 
 		//Add anime to database
 		err = s.animeRepo.Create(context, tx, &anime)

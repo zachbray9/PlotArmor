@@ -8,6 +8,7 @@ import (
 )
 
 type AnimeRepository interface {
+	GetAll(ctx context.Context, tx *gorm.DB) ([]entities.Anime, error)
 	GetById(ctx context.Context, tx *gorm.DB, animeId uint) (*entities.Anime, error)
 	GetFeatured(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
 	GetTopAiring(ctx context.Context, tx *gorm.DB, limit int) ([]entities.Anime, error)
