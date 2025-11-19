@@ -4,6 +4,7 @@ import (
 	"myanimevault/internal/models"
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/pgvector/pgvector-go"
 )
 
@@ -20,7 +21,7 @@ type Anime struct {
 	Status   models.Status `json:"status" gorm:"not null;default:'NOT_YET_RELEASED'"`
 
 	//vector embedding
-	Embedding pgvector.Vector `gorm:"type:vector(1536)"`
+	Embedding pgvector.Vector `gorm:"type:vector(3072)"`
 
 	//episode info
 	Episodes      *int `json:"episodes,omitempty"`       // Total episodes (null for unknown)
@@ -50,8 +51,15 @@ type Anime struct {
 	AgeRating string `json:"age_rating,omitempty"` // G, PG, PG-13, R, etc.
 
 	//metadata
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedAt time.Time `json:"created_at"`
+	Themes              pq.StringArray  `json:"themes" gorm:"type:text[]"`
+	Tags                pq.StringArray  `json:"tags" gorm:"type:text[]"`
+	Demographic         string    `json:"demographic"`
+	Tone                string    `json:"tone"`
+	Pacing              string    `json:"pacing"`
+	Vibes               pq.StringArray  `json:"vibes" gorm:"type:text[]"`
+	RecommendedAudience string    `json:"recommendedAudience"`
+	UpdatedAt           time.Time `json:"updated_at"`
+	CreatedAt           time.Time `json:"created_at"`
 
 	// Relationships
 	Studios    []Studio         `json:"studios,omitempty" gorm:"many2many:anime_studios;"`

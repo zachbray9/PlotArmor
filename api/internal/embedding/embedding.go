@@ -7,12 +7,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
 const (
 	openAIURL  = "https://api.openai.com/v1/embeddings"
-	embedModel = "text-embedding-3-small"
+	embedModel = "text-embedding-3-large"
 )
 
 type EmbeddingResponse struct {
@@ -64,4 +65,19 @@ func GenerateEmbedding(ctx context.Context, apiKey, text string) ([]float32, err
 	}
 
 	return result.Data[0].Embedding, nil
+}
+
+func BuildEmbeddingText(title string, genres []string, themes []string, tags []string, demographic string, tone string, vibes []string, pacing string, recommendedAudience string, description string) string {
+	return fmt.Sprintf(`
+		Title: %s
+		Genres: %s
+		Themes: %s
+		Tags: %s
+		Demographic: %s
+		Tone: %s
+		Vibes: %s
+		Pacing: %s
+		Recommended audience: %s
+		Description: %s
+	`, title, strings.Join(genres, ", "), strings.Join(themes, ", "), strings.Join(tags, ", "), demographic, tone, strings.Join(vibes, ", "), pacing, recommendedAudience, description)
 }
