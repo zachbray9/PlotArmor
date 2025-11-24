@@ -13,7 +13,7 @@ export default observer(function Navbar() {
     const { userStore } = useStore()
 
     return (
-        <Flex bg='background.card' position='fixed' width='100%' minWidth="fit-content" height={navBarHeight} paddingX={{ base: '0', md: '4rem' }} gap={4} alignItems="center" zIndex={1500} >
+        <Flex bg='background.card' position='fixed' top={0} width='100%' minWidth="fit-content" height={navBarHeight} paddingX={{ base: '0', md: '4rem' }} gap={4} alignItems="center" zIndex={1500} >
             {/* Hamburger menu button for small screens */}
             <IconButton
                 aria-label="hamburger-menu"
