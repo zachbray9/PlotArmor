@@ -16,7 +16,7 @@ export default function SideMenu({ isOpen, onClose }: Props) {
             <Portal >
                 <Drawer.Backdrop mt={navBarHeight} />
                 <Drawer.Positioner >
-                    <Drawer.Content height={'calc(100vh - 3.75rem)'} mt={navBarHeight} bg="background" display="flex" flexDirection="column">
+                    <Drawer.Content height={'calc(100dvh - 3.75rem)'} mt={navBarHeight} bg="background" display="flex" flexDirection="column">
                         <Drawer.Header >
                             <Drawer.Title color='text.subtle'>Browse</Drawer.Title>
                         </Drawer.Header>
