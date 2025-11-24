@@ -16,12 +16,12 @@ export default function SideMenu({ isOpen, onClose }: Props) {
             <Portal >
                 <Drawer.Backdrop mt={navBarHeight} />
                 <Drawer.Positioner >
-                    <Drawer.Content mt={navBarHeight} bg="background">
-                        <Drawer.Header>
+                    <Drawer.Content height={'calc(100vh - 3.75rem)'} mt={navBarHeight} bg="background" display="flex" flexDirection="column">
+                        <Drawer.Header >
                             <Drawer.Title color='text.subtle'>Browse</Drawer.Title>
                         </Drawer.Header>
 
-                        <Drawer.Body as={Stack}  overflow="auto" pb={navBarHeight} bg="background">
+                        <Drawer.Body overflowY="auto" bg="background" flex="1">
                             <Accordion.Root collapsible px="1rem" >
                                 <Accordion.Item value="Browse">
                                     <Accordion.ItemTrigger>
