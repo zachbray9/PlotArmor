@@ -1,9 +1,9 @@
-import { AspectRatio, Badge, Box, Button, Flex, Grid, Heading, Image, Skeleton, Stack, Text, Wrap } from "@chakra-ui/react";
+import { AspectRatio, Badge, Box, Button, Flex, Grid, GridItem, Heading, Image, Skeleton, Stack, Text, Wrap } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import LoadingComponent from "../components/common/loading/LoadingComponent";
 import { Helmet } from "react-helmet-async";
 import CharacterCard from "../components/animeDetails/characterCard";
-import { Plus, Star } from "lucide-react";
+import { Plus } from "lucide-react";
 import useAnime from "../hooks/useAnime";
 import { extractYoutubeId } from "../utils/youtube";
 import useUserAnime from "../hooks/useUserAnime";
@@ -12,12 +12,13 @@ import useAddAnimeToList from "../hooks/useAddAnimeToList";
 
 export default function AnimeDetails() {
     const { animeId = "0" } = useParams()
-    const {anime, isPending: isAnimePending} = useAnime(Number.parseInt(animeId, 10))
-    const {userAnime, isPending: isUserAnimePending} = useUserAnime(Number.parseInt(animeId, 10))
-    const {mutate: addAnimeToList, isPending: isAddingAnimeToList} = useAddAnimeToList()
+    const { anime, isPending: isAnimePending } = useAnime(Number.parseInt(animeId, 10))
+    const { userAnime, isPending: isUserAnimePending } = useUserAnime(Number.parseInt(animeId, 10))
+    const { mutate: addAnimeToList, isPending: isAddingAnimeToList } = useAddAnimeToList()
 
-    
 
+    const formattedStartDate = anime?.startDate ? new Date(anime.startDate).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' }) : "?"
+    const formattedEndDate = anime?.endDate ? new Date(anime.endDate).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' }) : "?"
     const averageScore = anime?.averageScore ? parseFloat((anime.averageScore).toFixed(1)) : null
 
     if (isAnimePending) {
@@ -33,67 +34,147 @@ export default function AnimeDetails() {
                     <title>{`${anime?.englishTitle || anime?.romajiTitle} - PlotArmor`}</title>
                 </Helmet>
 
-                <Box padding={['1.25rem', null, '4rem']} display='flex' alignItems='start' justifyContent='center' width='100%' >
-                    <Stack maxWidth='1200px' width='100%' justifyContent='center' alignItems='center' gap='8rem'>
-                        <Flex justify='center' wrap='wrap' gap='2rem' >
-                            <Image src={anime?.posterImage} aspectRatio='2/3' maxHeight="md"/>
-                            <Stack gap={4}>
-                                {/* Title */}
-                                <Heading size='3xl'>{anime?.englishTitle || anime?.romajiTitle}</Heading>
+                <Stack width='100%' >
+                    <Box pos="relative" width="100%" h={{smDown: "20dvh", md: "60dvh"}} display="flex" flexDir="column" justifyContent="end" alignItems="center" bgImage={`url(${anime.bannerImage})`} backgroundPosition="center" backgroundSize="cover" paddingX={['1.25rem', null, '4rem']} paddingY="2rem" mb={24}>
+                        <Box pos="absolute" top={0} bottom={0} right={0} left={0} bg="background" opacity={0.8} zIndex={1} />
 
-                                {/* Genres */}
-                                <Wrap>
-                                    {anime?.genres && anime.genres.map(genre => (
-                                        <Badge key={genre.id} variant='subtle' borderRadius={14} width='fit-content' paddingX={2} color='gray.500' fontSize='xs'>{genre.name}</Badge>
-                                    ))}
-                                </Wrap>
+                        <Grid zIndex={2} maxW="6xl" w="100%" templateColumns="3fr 7fr" gap={8}>
+                            <GridItem position="relative">
+                                <Image position="absolute" bottom="-20" src={anime?.posterImage} aspectRatio='2/3' maxHeight="md" rounded="sm" />
+                            </GridItem>
+
+                            <GridItem display="flex" flexDir="column" justifyContent="end">
+                                {/* Title */}
+                                <Heading visibility={{smDown: "hidden"}} size='4xl' mb={1}>{anime?.englishTitle || anime?.romajiTitle}</Heading>
+
 
                                 {/* Media Type and season */}
-                                <Text fontSize='xs' color='text.subtle'>{`${anime?.format} | ${anime?.season} ${anime?.seasonYear}`}</Text>
+                                <Text fontSize='xs' color='text.subtle' mb={8}>{`${anime?.format} - ${anime?.season.charAt(0).toUpperCase() + anime?.season.slice(1).toLowerCase()} ${anime?.seasonYear}`}</Text>
 
-                                {/* Score */}
-                                <Flex align='center' justify='start' gap={1}>
-                                    <Star size={24} color="yellow" fill="yellow"/>
-                                    <Text fontSize='1.25rem'>{averageScore ?? 'Unscored'}</Text>
+                                <Flex mb={8}>
+                                    {/* List controls */}
+                                    <Skeleton loading={isUserAnimePending}>
+                                        {userAnime ? (
+                                            <EditEntryDrawer userAnime={userAnime} />
+                                        ) : (
+                                            <Button bg="interactive.primary" color="text" _hover={{ bg: "primary.hover" }} loading={isAddingAnimeToList} width='fit-content' onClick={() => addAnimeToList(parseInt(animeId))}>Add to list <Plus /></Button>
+                                        )}
+                                    </Skeleton>
                                 </Flex>
 
-                                {/* List controls */}
-                                <Skeleton loading={isUserAnimePending}>
-                                    {userAnime ? (
-                                        <EditEntryDrawer userAnime={userAnime}/>
-                                    ) : (
-                                        <Button bg="interactive.primary" _hover={{bg: "primary.hover"}} loading={isAddingAnimeToList} width='fit-content' onClick={() => addAnimeToList(parseInt(animeId))}>Add to list <Plus /></Button>
-                                    )}
-                                </Skeleton>
-                            </Stack>
-                        </Flex>
+                                {/* Genres */}
+                                <Wrap visibility={{smDown: "hidden"}}>
+                                    {anime?.genres && anime.genres.map(genre => (
+                                        <Badge key={genre.id} borderRadius={14} width='fit-content' paddingX={2} fontSize='xs'>{genre.name}</Badge>
+                                    ))}
+                                </Wrap>
+                            </GridItem>
+
+                        </Grid>
+                    </Box>
+                    <Stack width='100%' justifyContent='center' alignItems='center' gap='8rem'padding="1rem">
+                        <Grid maxW="6xl" w="100%" templateColumns={{smDown: "1fr", md: "3fr 7fr"}} gap={8}>
+                            <GridItem overflow="hidden">
+                                <Box display="flex" flexDir={{smDown: "row", md: "column"}} gap={4} overflowX="auto" textWrap="nowrap" padding={2}>
+                                    <Box>
+                                        <Heading as={"h5"} size="sm" >Format</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{anime.format}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">Episodes</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{anime.episodes ?? "?"}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm" >Episode duration</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{anime.duration ?? "?"}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">Status</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{anime.status}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">Start date</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{formattedStartDate}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">End date</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{formattedEndDate}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">Season</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{`${anime.season.charAt(0) + anime.season.slice(1).toLowerCase()} ${anime.seasonYear}`}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">Studios</Heading>
+                                        <Box>
+                                            {anime.studios.map((studio) => (
+                                                <Text key={studio.id} fontSize="sm" color="text.subtle">{studio.name}</Text>
+                                            ))}
+                                        </Box>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">Genres</Heading>
+                                        <Box display={{smDown: "flex", md: "block"}} gap={1}>
+                                            {anime.genres.map((genre) => (
+                                                <Text key={genre.id} fontSize="sm" color="text.subtle">{genre.name}</Text>
+                                            ))}
+                                        </Box>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">English</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{anime.englishTitle}</Text>
+                                    </Box>
+
+                                    <Box>
+                                        <Heading as={"h5"} size="sm">Romaji</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{anime.romajiTitle}</Text>
+                                    </Box>
+                                </Box>
+
+                            </GridItem>
+
+                            <GridItem>
+                                <Stack gap={8}>
+                                    {/* Synopsis */}
+                                    <Stack gap='1rem' width='100%'>
+                                        <Heading size='md'>Synopsis</Heading>
+                                        {anime?.synopsis ? (
+                                            <Text whiteSpace="pre-line">{anime.synopsis.replace(/\\n/g, '\n')}</Text>
+                                        ) : (
+                                            <Text>No synopsis</Text>
+                                        )}
+                                    </Stack>
+
+                                    {/* trailer */}
+                                    <Stack gap='1rem' width='100%'>
+                                        <Heading size='md'>Trailer</Heading>
+                                        {anime?.trailerUrl ? (
+                                            <AspectRatio ratio={4 / 3} maxWidth={560}>
+                                                <iframe
+                                                    src={`https://www.youtube.com/embed/${extractYoutubeId(anime.trailerUrl)}`}
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                />
+                                            </AspectRatio>
+                                        ) : (
+                                            <Text>No trailer</Text>
+                                        )}
+                                    </Stack>
+                                </Stack>
+                            </GridItem>
+
+                        </Grid>
 
 
-                        {/* Synopsis */}
-                        <Stack gap='1rem' width='100%'>
-                            <Heading size='md'>Synopsis</Heading>
-                            {anime?.synopsis ? (
-                                <Text whiteSpace="pre-line">{anime.synopsis.replace(/\\n/g, '\n')}</Text>
-                            ) : (
-                                <Text>No synopsis</Text>
-                            )}
-                        </Stack>
-
-                        {/* trailer */}
-                        <Stack gap='1rem' width='100%'>
-                            <Heading size='md'>Trailer</Heading>
-                            {anime?.trailerUrl ? (
-                                <AspectRatio ratio={4 / 3} maxWidth={560}>
-                                    <iframe
-                                        src={`https://www.youtube.com/embed/${extractYoutubeId(anime.trailerUrl)}`}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    />
-                                </AspectRatio>
-                            ) : (
-                                <Text>No trailer</Text>
-                            )}
-                        </Stack>
 
                         {/* Characters */}
                         <Stack gap='1rem' width='100%'>
@@ -111,7 +192,7 @@ export default function AnimeDetails() {
                         </Stack>
 
                     </Stack>
-                </Box>
+                </Stack>
             </>
         )
     }
