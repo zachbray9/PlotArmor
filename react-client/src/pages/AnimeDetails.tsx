@@ -9,7 +9,6 @@ import { extractYoutubeId } from "../utils/youtube";
 import useUserAnime from "../hooks/useUserAnime";
 import EditEntryDrawer from "../components/animeList/editEntryDrawer";
 import useAddAnimeToList from "../hooks/useAddAnimeToList";
-import { navBarHeight } from "../theme";
 
 export default function AnimeDetails() {
     const { animeId = "0" } = useParams()
