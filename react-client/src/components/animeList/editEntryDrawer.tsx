@@ -1,4 +1,4 @@
-import { Button, CloseButton, Drawer, Flex, IconButton, Portal, Text } from "@chakra-ui/react";
+import { Button, CloseButton, Drawer, IconButton, Portal, Text } from "@chakra-ui/react";
 import { Pencil } from "lucide-react";
 import { UserAnime } from "../../models/userAnime";
 import { FormProvider, useForm } from "react-hook-form";

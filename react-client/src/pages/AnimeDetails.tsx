@@ -1,9 +1,9 @@
-import { AspectRatio, Badge, Box, Button, Flex, Grid, GridItem, Heading, Image, Skeleton, Stack, Text, Wrap } from "@chakra-ui/react";
+import { AspectRatio, Badge, Box, Button, Flex, Grid, GridItem, Heading, Icon, Image, Skeleton, Stack, Text, Wrap } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import LoadingComponent from "../components/common/loading/LoadingComponent";
 import { Helmet } from "react-helmet-async";
 import CharacterCard from "../components/animeDetails/characterCard";
-import { Plus } from "lucide-react";
+import { LucideStar, Plus } from "lucide-react";
 import useAnime from "../hooks/useAnime";
 import { extractYoutubeId } from "../utils/youtube";
 import useUserAnime from "../hooks/useUserAnime";
@@ -51,20 +51,20 @@ export default function AnimeDetails() {
                                 {/* Media Type and season */}
                                 <Text visibility={{ smDown: "hidden" }} fontSize='xs' color='text.subtle' mb={8}>{`${anime?.format} - ${anime?.season.charAt(0).toUpperCase() + anime?.season.slice(1).toLowerCase()} ${anime?.seasonYear}`}</Text>
 
-                                <Flex mb={8} position={{smDown: "absolute"}} bottom="-20">
+                                <Flex mb={8} position={{ smDown: "absolute" }} bottom="-20">
                                     {/* List controls */}
                                     <Skeleton loading={isUserAnimePending}>
                                         {userAnime ? (
                                             <EditEntryDrawer userAnime={userAnime} />
                                         ) : (
-                                            <Button bg="interactive.primary" size={{smDown:"xs", md: "md"}} color="text" rounded="sm" _hover={{ bg: "primary.hover" }} loading={isAddingAnimeToList} width='fit-content' onClick={() => addAnimeToList(parseInt(animeId))}>Add to list <Plus /></Button>
+                                            <Button bg="interactive.primary" size={{ smDown: "xs", md: "md" }} color="text" rounded="sm" _hover={{ bg: "primary.hover" }} loading={isAddingAnimeToList} width='fit-content' onClick={() => addAnimeToList(parseInt(animeId))}>Add to list <Plus /></Button>
                                         )}
                                     </Skeleton>
                                 </Flex>
 
                                 {/* Genres */}
                                 <Wrap visibility={{ smDown: "hidden" }}>
-                                    {anime?.genres && anime.genres.map(genre => (
+                                    {anime?.genres && anime.genres.map((genre) => (
                                         <Badge key={genre.id} borderRadius={14} width='fit-content' paddingX={2} fontSize='xs'>{genre.name}</Badge>
                                     ))}
                                 </Wrap>
@@ -72,12 +72,17 @@ export default function AnimeDetails() {
 
                         </Grid>
                     </Box>
-                    <Stack width='100%' justifyContent='center' alignItems={{smDown: "start", md:'center'}} gap='1rem' padding="1rem">
+                    <Stack width='100%' justifyContent='center' alignItems={{ smDown: "start", md: 'center' }} gap='1rem' padding="1rem">
                         <Heading visibility={{ md: "hidden" }} alignItems="start" size='2xl' mb={1}>{anime?.englishTitle || anime?.romajiTitle}</Heading>
 
                         <Grid maxW="6xl" w="100%" templateColumns={{ smDown: "1fr", md: "3fr 7fr" }} gap={8}>
                             <GridItem overflow="hidden">
                                 <Box display="flex" flexDir={{ smDown: "row", md: "column" }} gap={4} overflowX="auto" textWrap="nowrap" padding={2}>
+                                    <Box>
+                                        <Heading as={"h5"} size="sm" >Average score</Heading>
+                                        <Text fontSize="sm" color="text.subtle">{averageScore}</Text>
+                                    </Box>
+
                                     <Box>
                                         <Heading as={"h5"} size="sm" >Format</Heading>
                                         <Text fontSize="sm" color="text.subtle">{anime.format}</Text>
@@ -187,7 +192,7 @@ export default function AnimeDetails() {
                                         </Grid>
                                     </Stack>
                                 </Stack>
-                                
+
                             </GridItem>
 
                         </Grid>
