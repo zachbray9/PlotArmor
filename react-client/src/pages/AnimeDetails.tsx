@@ -35,7 +35,7 @@ export default function AnimeDetails() {
                 </Helmet>
 
                 <Stack width='100%' >
-                    <Box pos="relative" width="100%" h={{smDown: "20dvh", md: "60dvh"}} display="flex" flexDir="column" justifyContent="end" alignItems="center" bgImage={`url(${anime.bannerImage})`} backgroundPosition="center" backgroundSize="cover" paddingX={['1.25rem', null, '4rem']} paddingY="2rem" mb={24}>
+                    <Box pos="relative" width="100%" h={{ smDown: "20dvh", md: "60dvh" }} display="flex" flexDir="column" justifyContent="end" alignItems="center" bgImage={`url(${anime.bannerImage})`} backgroundPosition="center" backgroundSize="cover" paddingX={['1.25rem', null, '4rem']} paddingY="2rem" mb={24}>
                         <Box pos="absolute" top={0} bottom={0} right={0} left={0} bg="background" opacity={0.8} zIndex={1} />
 
                         <Grid zIndex={2} maxW="6xl" w="100%" templateColumns="3fr 7fr" gap={8}>
@@ -45,25 +45,25 @@ export default function AnimeDetails() {
 
                             <GridItem display="flex" flexDir="column" justifyContent="end">
                                 {/* Title */}
-                                <Heading visibility={{smDown: "hidden"}} size='4xl' mb={1}>{anime?.englishTitle || anime?.romajiTitle}</Heading>
+                                <Heading visibility={{ smDown: "hidden" }} size='4xl' mb={1}>{anime?.englishTitle || anime?.romajiTitle}</Heading>
 
 
                                 {/* Media Type and season */}
-                                <Text fontSize='xs' color='text.subtle' mb={8}>{`${anime?.format} - ${anime?.season.charAt(0).toUpperCase() + anime?.season.slice(1).toLowerCase()} ${anime?.seasonYear}`}</Text>
+                                <Text visibility={{ smDown: "hidden" }} fontSize='xs' color='text.subtle' mb={8}>{`${anime?.format} - ${anime?.season.charAt(0).toUpperCase() + anime?.season.slice(1).toLowerCase()} ${anime?.seasonYear}`}</Text>
 
-                                <Flex mb={8}>
+                                <Flex mb={8} position={{smDown: "absolute"}} bottom="-20">
                                     {/* List controls */}
                                     <Skeleton loading={isUserAnimePending}>
                                         {userAnime ? (
                                             <EditEntryDrawer userAnime={userAnime} />
                                         ) : (
-                                            <Button bg="interactive.primary" color="text" _hover={{ bg: "primary.hover" }} loading={isAddingAnimeToList} width='fit-content' onClick={() => addAnimeToList(parseInt(animeId))}>Add to list <Plus /></Button>
+                                            <Button bg="interactive.primary" size={{smDown:"xs", md: "md"}} color="text" rounded="sm" _hover={{ bg: "primary.hover" }} loading={isAddingAnimeToList} width='fit-content' onClick={() => addAnimeToList(parseInt(animeId))}>Add to list <Plus /></Button>
                                         )}
                                     </Skeleton>
                                 </Flex>
 
                                 {/* Genres */}
-                                <Wrap visibility={{smDown: "hidden"}}>
+                                <Wrap visibility={{ smDown: "hidden" }}>
                                     {anime?.genres && anime.genres.map(genre => (
                                         <Badge key={genre.id} borderRadius={14} width='fit-content' paddingX={2} fontSize='xs'>{genre.name}</Badge>
                                     ))}
@@ -72,10 +72,12 @@ export default function AnimeDetails() {
 
                         </Grid>
                     </Box>
-                    <Stack width='100%' justifyContent='center' alignItems='center' gap='8rem'padding="1rem">
-                        <Grid maxW="6xl" w="100%" templateColumns={{smDown: "1fr", md: "3fr 7fr"}} gap={8}>
+                    <Stack width='100%' justifyContent='center' alignItems={{smDown: "start", md:'center'}} gap='1rem' padding="1rem">
+                        <Heading visibility={{ md: "hidden" }} alignItems="start" size='2xl' mb={1}>{anime?.englishTitle || anime?.romajiTitle}</Heading>
+
+                        <Grid maxW="6xl" w="100%" templateColumns={{ smDown: "1fr", md: "3fr 7fr" }} gap={8}>
                             <GridItem overflow="hidden">
-                                <Box display="flex" flexDir={{smDown: "row", md: "column"}} gap={4} overflowX="auto" textWrap="nowrap" padding={2}>
+                                <Box display="flex" flexDir={{ smDown: "row", md: "column" }} gap={4} overflowX="auto" textWrap="nowrap" padding={2}>
                                     <Box>
                                         <Heading as={"h5"} size="sm" >Format</Heading>
                                         <Text fontSize="sm" color="text.subtle">{anime.format}</Text>
@@ -122,7 +124,7 @@ export default function AnimeDetails() {
 
                                     <Box>
                                         <Heading as={"h5"} size="sm">Genres</Heading>
-                                        <Box display={{smDown: "flex", md: "block"}} gap={1}>
+                                        <Box display={{ smDown: "flex", md: "block" }} gap={1}>
                                             {anime.genres.map((genre) => (
                                                 <Text key={genre.id} fontSize="sm" color="text.subtle">{genre.name}</Text>
                                             ))}
@@ -169,27 +171,29 @@ export default function AnimeDetails() {
                                             <Text>No trailer</Text>
                                         )}
                                     </Stack>
+
+                                    {/* Characters */}
+                                    <Stack gap='1rem' width='100%'>
+                                        <Heading size='md'>Characters</Heading>
+                                        <Grid templateColumns={['1fr', null, '1fr 1fr', '1fr 1fr 1fr']} rowGap='1rem' columnGap='2rem'>
+                                            {anime?.characters ? (
+                                                anime.characters.map((character) => (
+                                                    <CharacterCard character={character} key={character.name} />
+                                                ))
+                                            ) : (
+                                                <Text>No characters</Text>
+                                            )}
+
+                                        </Grid>
+                                    </Stack>
                                 </Stack>
+                                
                             </GridItem>
 
                         </Grid>
 
 
 
-                        {/* Characters */}
-                        <Stack gap='1rem' width='100%'>
-                            <Heading size='md'>Characters</Heading>
-                            <Grid templateColumns={['1fr', null, '1fr 1fr', '1fr 1fr 1fr']} rowGap='1rem' columnGap='2rem'>
-                                {anime?.characters ? (
-                                    anime.characters.map((character) => (
-                                        <CharacterCard character={character} key={character.name} />
-                                    ))
-                                ) : (
-                                    <Text>No characters</Text>
-                                )}
-
-                            </Grid>
-                        </Stack>
 
                     </Stack>
                 </Stack>
