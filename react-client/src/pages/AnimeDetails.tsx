@@ -80,7 +80,7 @@ export default function AnimeDetails() {
                                 <Box display="flex" flexDir={{ mdDown: "row", lg: "column" }} gap={4} overflowX="auto" textWrap="nowrap" padding={2}>
                                     <Box>
                                         <Heading as={"h5"} size="sm" >Average score</Heading>
-                                        <Text fontSize="sm" color="text.subtle">{averageScore}</Text>
+                                        <Text fontSize="sm" color="text.subtle">{averageScore ?? "Unscored"}</Text>
                                     </Box>
 
                                     <Box>
