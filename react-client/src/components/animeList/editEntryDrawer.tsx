@@ -37,24 +37,26 @@ export default function EditEntryDrawer({ userAnime }: Props) {
                 numEpisodesWatched: fields.numEpisodesWatched,
                 rating: fields.rating
             }
-        }, {onSuccess: () => {
-            setIsOpen(false)
-            toaster.create({
-                title: "List updated",
-                description: "Your anime list has been updated successfully.",
-                type: "success",
-                duration: 3000,
-                closable: true
-            })
-        }, onError: (error) => {
-            toaster.create({
-                title: "Update failed",
-                description: error.message || "Failed to update your list. Please try again.",
-                type: "error",
-                duration: 3000,
-                closable: true,
-            })
-        }})
+        }, {
+            onSuccess: () => {
+                setIsOpen(false)
+                toaster.create({
+                    title: "List updated",
+                    description: "Your anime list has been updated successfully.",
+                    type: "success",
+                    duration: 3000,
+                    closable: true
+                })
+            }, onError: (error) => {
+                toaster.create({
+                    title: "Update failed",
+                    description: error.message || "Failed to update your list. Please try again.",
+                    type: "error",
+                    duration: 3000,
+                    closable: true,
+                })
+            }
+        })
     }
 
     useEffect(() => {
@@ -70,7 +72,7 @@ export default function EditEntryDrawer({ userAnime }: Props) {
     }, [isOpen, methods])
 
     return (
-        <Drawer.Root open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} placement={{ base: "bottom", md: "end" }} size={{ base: "xl", md: "xs" }} >
+        <Drawer.Root open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} placement={{ base: "bottom", md: "end" }} size={{ smDown: "full", md: "xs" }} >
             <Drawer.Trigger pos={"fixed"} bottom={5} right={5} asChild>
                 <IconButton padding={4} borderRadius={"full"} bg={"interactive.primary"} color={"text"}>
                     <Text>{`${userAnime.numEpisodesWatched ?? "0"} / ${userAnime.anime.episodes || "?"}`}</Text>
@@ -82,9 +84,9 @@ export default function EditEntryDrawer({ userAnime }: Props) {
                 <Drawer.Backdrop />
 
                 <Drawer.Positioner>
-                    <Drawer.Content bg={"background.secondary"}>
+                    <Drawer.Content bg={"background.secondary"} maxH="80dvh">
                         <FormProvider {...methods}>
-                            <form onSubmit={methods.handleSubmit(handleSubmit)} style={{height: "100%", display: "flex", flexDirection: "column"}}>
+                            <form onSubmit={methods.handleSubmit(handleSubmit)} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
                                 <Drawer.Header>
                                     <Drawer.Title>Update list</Drawer.Title>
                                 </Drawer.Header>
